@@ -1,37 +1,46 @@
 import { Link } from "react-router-dom";
 import Logo from "../assets/Urban_Move_Colour.svg";
+import HomeIcon from "../assets/Home.svg";
+import RideIcon from "../assets/Ride.svg";
+import RentalIcon from "../assets/Rental.svg";
+import CustomerIcon from "../assets/Customer.svg";
+import DriverIcon from "../assets/Driver.svg";
+import FinancialIcon from "../assets/Financial.svg";
+import MessageIcon from "../assets/Message.svg";
+import AccountIcon from "../assets/Account.svg";
+import SettingIcon from "../assets/Setting.svg";
 
 function Navbar() {
   console.log("Navbar is rendering");
 
   const navItems = [
-    { path: "/home", label: "Home" },
-    { path: "/rides", label: "Rides" },
-    { path: "/rentals", label: "Rentals" },
-    { path: "/customers", label: "Customers" },
-    { path: "/drivers", label: "Drivers" },
-    { path: "/financials", label: "Financials" },
-    { path: "/messages", label: "Messages" },
-    { path: "/account", label: "Account" },
-    { path: "/settings", label: "Settings" },
+    { path: "/", label: "Home", icon: HomeIcon  },
+    { path: "/rides", label: "Rides", icon: RideIcon  },
+    { path: "/rentals", label: "Rentals", icon: RentalIcon  },
+    { path: "/customers", label: "Customers", icon: CustomerIcon  },
+    { path: "/drivers", label: "Drivers", icon: DriverIcon  },
+    { path: "/financials", label: "Financials", icon: FinancialIcon  },
+    { path: "/messages", label: "Messages", icon: MessageIcon },
+    { path: "/account", label: "Account", icon: AccountIcon  },
+    { path: "/settings", label: "Settings", icon: SettingIcon  },
   ];
   const Linkstyles =
-    "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text";
+    "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex gap-[10px] group";
 
-
-  
   return (
     <nav className="bg-black h-screen w-[200px] flex flex-col items-center py-5 justify-between">
       <header>
         <img src={Logo} alt="Logo" className="w-[148px] h-[139px]" />
       </header>
       <div className="flex flex-col min-h-[500px] justify-between ">
-      <div className="flex flex-col min-h-[500px] justify-between ">
-        {navItems.map((item) => (
-          <Link to={item.path} key={item.path} className={Linkstyles}>{item.label}</Link>
-        ))}
-      </div>
-
+        <div className="flex flex-col min-h-[500px] justify-between ">
+          {navItems.map((item) => (
+            <Link to={item.path} key={item.path} className={Linkstyles}>
+              <img src={item.icon} alt={item.label}/>
+              {item.label}
+            </Link>
+          ))}
+        </div>
       </div>
       <div className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text pt-[20px]">
         Sign out

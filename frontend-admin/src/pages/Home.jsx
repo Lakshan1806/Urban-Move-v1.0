@@ -1,5 +1,5 @@
 function Home() {
-    return <div className="text-red-500 text-center">Home</div>;
+    return <div className="gredient-stroke">Home</div>;
   }
   
   export default Home;

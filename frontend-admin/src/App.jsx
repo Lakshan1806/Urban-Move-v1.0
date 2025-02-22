@@ -20,7 +20,7 @@ function App() {
 
       <main className="grow">
         <Routes>
-          <Route path="/home" element={<Home />} />
+          <Route path="/" element={<Home />} />
           <Route path="/rides" element={<Rides />} />
           <Route path="/rentals" element={<Rentals />} />
           <Route path="/customers" element={<Customers />} />
