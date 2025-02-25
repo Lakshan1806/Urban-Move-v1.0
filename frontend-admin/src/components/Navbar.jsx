@@ -24,7 +24,7 @@ function Navbar() {
     { path: "/account", label: "Account", icon: AccountIcon  },
     { path: "/settings", label: "Settings", icon: SettingIcon  },
   ];
-  const Linkstyles =
+  const linkstyles =
     "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex gap-[10px] group";
 
   return (
@@ -35,7 +35,7 @@ function Navbar() {
       <div className="flex flex-col min-h-[500px] justify-between ">
         <div className="flex flex-col min-h-[500px] justify-between ">
           {navItems.map((item) => (
-            <Link to={item.path} key={item.path} className={Linkstyles}>
+            <Link to={item.path} key={item.path} className={linkstyles}>
               <img src={item.icon} alt={item.label}/>
               {item.label}
             </Link>
