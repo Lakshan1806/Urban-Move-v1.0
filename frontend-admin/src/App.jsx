@@ -12,13 +12,13 @@ import Settings from "./pages/Settings";
 
 function App() {
   return (
-    <div className="w-full h-full flex bg-neutral-100">
+    <div className="w-full h-full flex bg-[#F5F5F5]">
 
       <div>
         <Navbar />
       </div>
 
-      <main className="grow">
+      <main className="grow mt-[25px] mx-[50px]">
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/rides" element={<Rides />} />

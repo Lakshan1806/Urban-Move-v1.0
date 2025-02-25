@@ -14,34 +14,34 @@ function Navbar() {
   console.log("Navbar is rendering");
 
   const navItems = [
-    { path: "/", label: "Home", icon: HomeIcon  },
-    { path: "/rides", label: "Rides", icon: RideIcon  },
-    { path: "/rentals", label: "Rentals", icon: RentalIcon  },
-    { path: "/customers", label: "Customers", icon: CustomerIcon  },
-    { path: "/drivers", label: "Drivers", icon: DriverIcon  },
-    { path: "/financials", label: "Financials", icon: FinancialIcon  },
+    { path: "/", label: "Home", icon: HomeIcon },
+    { path: "/rides", label: "Rides", icon: RideIcon },
+    { path: "/rentals", label: "Rentals", icon: RentalIcon },
+    { path: "/customers", label: "Customers", icon: CustomerIcon },
+    { path: "/drivers", label: "Drivers", icon: DriverIcon },
+    { path: "/financials", label: "Financials", icon: FinancialIcon },
     { path: "/messages", label: "Messages", icon: MessageIcon },
-    { path: "/account", label: "Account", icon: AccountIcon  },
-    { path: "/settings", label: "Settings", icon: SettingIcon  },
+    { path: "/account", label: "Account", icon: AccountIcon },
+    { path: "/settings", label: "Settings", icon: SettingIcon },
   ];
   const linkstyles =
-    "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex gap-[10px] group";
+    "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex gap-[10px]";
 
   return (
     <nav className="bg-black h-screen w-[200px] flex flex-col items-center py-5 justify-between">
       <header>
         <img src={Logo} alt="Logo" className="w-[148px] h-[139px]" />
       </header>
+
       <div className="flex flex-col min-h-[500px] justify-between ">
-        <div className="flex flex-col min-h-[500px] justify-between ">
-          {navItems.map((item) => (
-            <Link to={item.path} key={item.path} className={linkstyles}>
-              <img src={item.icon} alt={item.label}/>
-              {item.label}
-            </Link>
-          ))}
-        </div>
+        {navItems.map((item) => (
+          <Link to={item.path} key={item.path} className={linkstyles}>
+            <img src={item.icon} alt={item.label} />
+            {item.label}
+          </Link>
+        ))}
       </div>
+
       <div className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text pt-[20px]">
         Sign out
       </div>
