@@ -14,7 +14,7 @@ function Navbardrive(){
 
     const linkstyle="flex p-[10px] justify-center items-center gap-[10px]";
     return(
-     <nav className="flex w-screen p-[0px 20px] justify-between items-center absolute top-[81px]">
+     <nav className="flex w-screen p-[0px 20px] justify-between items-center  top-[81px] ">
         <div className="flex p-[10px] justify-center items-center gap-[10px] text-black text-center stroke-black stroke-[1px] font-[Inter] text-[20px] non-italic font-[400] leading-none">
         {navItemsDrive.map((item) =>(
                 <Link to={item.path} key={item.path}>
