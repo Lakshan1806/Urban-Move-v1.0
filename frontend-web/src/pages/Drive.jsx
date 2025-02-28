@@ -1,13 +1,9 @@
-/*import { useState } from "react";
-import { Link } from "react-router-dom";
-import img3 from "../drive_photos/img3.svg";
-import img4 from "../drive_photos/img4.svg";*/
+//import { useState } from "react";
 import Navbardrive from "../drive_components/Navbardrive";
 import Drive1stpageleft from "../drive_components/drive1stpageleft";
 import img1 from "../drive_photos/img1.svg";
-
-import img2R from "../drive_photos/img2R.svg";
-import Drive2ndpageleft from "../drive_components/drive2ndpageleft"
+import Drive2ndpageleft from "../drive_components/drive2ndpageleft";
+import Drive2ndpageright from "../drive_components/drive2ndpageright";
 
 function Drive() {
   return (
@@ -27,12 +23,12 @@ function Drive() {
         <div className="p-[10px] text-center text-[36px] font-[700] font-sans">
           Why become a rideshare driver?
         </div>
-        <div>
+        <div className="grid grid-cols-2 gap-40 fontsans items-center" >
           <div>
             <Drive2ndpageleft />
           </div>
           <div>
-
+            <Drive2ndpageright />
           </div>
 
         </div>

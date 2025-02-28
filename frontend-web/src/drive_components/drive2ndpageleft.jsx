@@ -1,9 +1,9 @@
-import { Link } from "react-router-dom";
+
 import img2L from "../drive_photos/img2L.svg";
 
 function Drive2ndpageleft() {
   return (
-    <div className="fontsans  flex flex-col leading-10 p-30 w-[650px] pt-6 ">
+    <div className=" flex flex-col leading-10 p-30 w-[650px] pt-6 ">
       <p className="text-[32px] font-[700] mb-5">Take control of your time</p>
       <p className="text-[24px] font-[500] ">
         . Many driving jobs come with long hours and strict schedules. With
