@@ -1,3 +1,8 @@
+import ActivePromotions from "../components/Home/ActivePromotions";
+import CarTypes from "../components/Home/CarTypes";
+import RecentActivities from "../components/Home/RecentActivities";
+import YearlyIncome from "../components/Home/YearlyIncome";
+
 function Home() {
   return (
     <div>
@@ -6,15 +11,11 @@ function Home() {
           Home
         </h1>
       </div>
-      <div className="flex">
-        <div className="flex flex-col">
-          <div className="flex">
-            <div>income</div>
-            <div>active promotion</div>
-          </div>
-          <div>recent activities</div>
-        </div>
-        <div>car types</div>
+      <div className="grid gap-3 grid-cols-12 grid-rows-12 h-svh">
+        <YearlyIncome />
+        <ActivePromotions />
+        <CarTypes />
+        <RecentActivities />
       </div>
     </div>
   );

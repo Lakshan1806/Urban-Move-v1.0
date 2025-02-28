@@ -1,36 +1,11 @@
-import { Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import Home from "./pages/Home";
-import Rides from "./pages/Rides";
-import Rentals from "./pages/Rentals";
-import Customers from "./pages/Customers";
-import Drivers from "./pages/Drivers";
-import Financials from "./pages/Financials";
-import Messages from "./pages/Messages";
-import Account from "./pages/Account";
-import Settings from "./pages/Settings";
+import RouteSelect from "./components/RouteSelect";
 
 function App() {
   return (
-    <div className="w-full h-full flex bg-[#F5F5F5]">
-
-      <div>
-        <Navbar />
-      </div>
-
-      <main className="grow mt-[25px] mx-[50px]">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/rides" element={<Rides />} />
-          <Route path="/rentals" element={<Rentals />} />
-          <Route path="/customers" element={<Customers />} />
-          <Route path="/drivers" element={<Drivers />} />
-          <Route path="/financials" element={<Financials />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/settings" element={<Settings />} />
-        </Routes>
-      </main>
+    <div className="grid gap-4 grid-cols-[200px_1fr] ">
+      <Navbar/>
+      <RouteSelect />
     </div>
   );
 }
