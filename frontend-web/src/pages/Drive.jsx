@@ -3,9 +3,11 @@ import Navbardrive from "../drive_components/Navbardrive";
 import Drive1stpageleft from "../drive_components/drive1stpageleft";
 import img1 from "../drive_photos/img1.svg";
 import img3 from "../drive_photos/img3.svg";
+import img4 from "../drive_photos/img4.svg";
 import Drive2ndpageleft from "../drive_components/drive2ndpageleft";
 import Drive2ndpageright from "../drive_components/drive2ndpageright";
 import Drive3rdpage from "../drive_components/drive3rdpage";
+import Drive4thpage from "../drive_components/drive4thpage";
 
 function Drive() {
   return (
@@ -35,11 +37,23 @@ function Drive() {
       </div>
       <div className="flex flex-col  text-black px-[60px] py-0 items-center self-stretch ">
         <div className="px-[10px] py-[20px] items-center gap-[10px]">
-          <p className=" text-center text-[36px] font-[700]">Here's what you need to become a driver</p>
-          <img src={img3} alt="img3"  />
+          <p className=" text-center text-[36px] font-[700]">
+            Here's what you need to become a driver
+          </p>
+          <img src={img3} alt="img3" />
         </div>
-        
+
         <Drive3rdpage />
+      </div>
+      <div className="flex flex-col  text-black px-[60px] py-0 items-center self-stretch ">
+        <div className="px-[10px] py-[20px] items-center gap-[9px]">
+          <p className=" text-center text-[36px] font-[700] p-2">
+            Safety on the road
+          </p>
+          <img src={img4} alt="img4" />
+        </div>
+
+        <Drive4thpage />
       </div>
     </div>
   );
