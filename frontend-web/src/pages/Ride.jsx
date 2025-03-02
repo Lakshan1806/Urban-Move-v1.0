@@ -1,6 +1,7 @@
 import { useState } from "react";
 import ridecar from "../assets/Ride-pics/ridecar.svg";
 import promotion from "../assets/Ride-pics/promotionpic.svg";
+import Earnings from "./Earnings";
 
 
 function Ride() {
@@ -15,7 +16,9 @@ function Ride() {
 
   return (
     <div>
-      
+      <div>
+        <Earnings/>
+      </div>
       <div className="flex items-center min-h-screen bg-white text-black px-12 py-8">
         <div className="flex flex-col items-center w-1/2 pr-20 pl-[1px]">
           <h1 className="text-4xl font-bold mb-6 leading-tight text-center">
@@ -23,7 +26,6 @@ function Ride() {
             for later
           </h1>
 
-          
           <form
             onSubmit={handleSubmit}
             className="bg-black p-8 rounded-[35px] shadow-md border-2 border-[#FF7C1D] flex flex-col gap-5 w-full max-w-md"
@@ -56,7 +58,6 @@ function Ride() {
               />
             </div>
 
-            
             <div className="flex gap-4 justify-center">
               <button
                 type="submit"
@@ -74,7 +75,6 @@ function Ride() {
           </form>
         </div>
 
-        
         <div className="w-1/2 flex justify-end">
           <img
             src={ridecar}
@@ -85,7 +85,6 @@ function Ride() {
       </div>
       <div>
         <div className="flex items-center justify-start px-12 py-8">
-          
           <div className="w-2/5 flex justify-start">
             <img
               src={promotion}
@@ -94,7 +93,6 @@ function Ride() {
             />
           </div>
 
-          
           <div className="w-2/3 text-left pl-1.5">
             <div>
               <h1 className="text-[32px] font-bold text-black font-Inter leading-normal whitespace-nowrap">
@@ -112,7 +110,6 @@ function Ride() {
           </div>
         </div>
       </div>
-    
     </div>
   );
 }
