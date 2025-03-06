@@ -1,4 +1,5 @@
 import { useForm } from "react-hook-form";
+import axios from "axios";
 
 function FeedbackForm() {
   const {
@@ -8,10 +9,23 @@ function FeedbackForm() {
     reset,
   } = useForm();
 
-  const onSubmit = (data) => {
-    console.log("Feedback Submitted:", data);
-    alert("Thank you for your feedback! 😊");
-    reset(); // Clear form after submission
+  const onSubmit = async (data) => {
+    try {
+      console.log("Submitting feedback:", data);
+
+      const response = await axios.post("http://localhost:8000/", data);
+      console.log("Response:", response.data);
+
+      if (response.data.success) {
+        alert("Thank you for your feedback! 😊");
+        reset(); // Clear form
+      } else {
+        alert("Failed to submit feedback. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      alert("Failed to submit feedback. Please check the server.");
+    }
   };
 
   return (
