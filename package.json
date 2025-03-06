@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Lakshan1806/Software-Development-Project#readme",
   "description": "",
   "dependencies": {
+    "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "mongoose": "^8.10.1"

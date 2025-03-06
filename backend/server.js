@@ -2,14 +2,15 @@
 import express from "express";
 import dotenv, { config } from "dotenv";
 import { connectDB } from "./config/db.js";
+import cors from "cors";
+import sampleRoute from "./routes/sampleRoute.js";
 
 dotenv.config();
 
 const app = express();
+app.use(express.json());
 
-app.get("/", (req, res) => {
-  res.send("Server is ready");
-});
+app.use("/user", sampleRoute);
 
 console.log(process.env.MONGO_URI);
 
