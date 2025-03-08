@@ -6,6 +6,7 @@ import Drive from "./pages/Drive";
 import Ride from "./pages/Ride";
 import Help from "./pages/Help";
 import Feedback from "./pages/Feedback";
+import PaymentPage from "./pages/PaymentPage.jsx"; // Import PaymentPage
 
 function App() {
   return (
@@ -18,7 +19,6 @@ function App() {
           <Route path="/drive" element={<Drive />} />
           <Route path="/ride" element={<Ride />} />
           <Route path="/help" element={<Help />} />
-          <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </main>
     </div>
@@ -26,3 +26,5 @@ function App() {
 }
 
 export default App;
+
+
