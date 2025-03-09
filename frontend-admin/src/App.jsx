@@ -5,7 +5,7 @@ function App() {
   return (
     <div className="grid gap-4 grid-cols-[200px_1fr] ">
       <Navbar/>
-      <RouteSelect />
+      <RouteSelect/>
     </div>
   );
 }
