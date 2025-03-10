@@ -4,15 +4,20 @@ import { connectDB } from "./config/db.js";
 import cors from "cors";
 import adminRoutes from "./routes/adminRoute.js";
 import checkAndCreateAdmin from "./utils/adminInitialSetup.js";
+import feedbackRoutes from "./routes/feedbackRoute.js";
 
 dotenv.config();
-
 const app = express();
+app.use(cors());
+
+
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 console.log("server is ready");
 
 app.use("/admin", adminRoutes);
+app.use("/feedback", feedbackRoutes);
 
 console.log(process.env.MONGO_URI);
 
