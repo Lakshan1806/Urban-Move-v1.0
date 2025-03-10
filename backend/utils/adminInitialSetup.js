@@ -14,7 +14,7 @@ async function checkAndCreateAdmin() {
 
       const newAdmin = new Admin({
         name: "Default Admin",
-        username: "admin",
+        username: email,
         email: email,
         password: temporaryPassword,
         age: 0,
