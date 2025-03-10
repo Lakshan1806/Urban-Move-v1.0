@@ -9,14 +9,3 @@ export const connectDB = async () => {
     process.exit(1);//1-failure exit, 0-success
   }
 };
-
-const newSchema = new mongoose.Schema({
-  data: {
-    type: String,
-    required: true
-  }
-});
-
-const collection = mongoose.model("collection", newSchema);
-
-export default collection;
