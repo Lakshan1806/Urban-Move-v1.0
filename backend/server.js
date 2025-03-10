@@ -1,5 +1,5 @@
 import express from "express";
-import dotenv, { config } from "dotenv";
+import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import cors from "cors";
 import adminRoutes from "./routes/adminRoute.js";
@@ -11,6 +11,7 @@ import feedbackRoutes from "./routes/feedbackRoute.js";
 dotenv.config();
 const app = express();
 
+const app = express();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(
