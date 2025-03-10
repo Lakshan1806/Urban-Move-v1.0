@@ -14,6 +14,9 @@ import review4 from "../assets/rent.review.4.png";
 import review5 from "../assets/rent.review.5.png";
 import review6 from "../assets/rent.review.6.png";
 import { Link } from "react-router-dom";
+import { Calendar, Clock, MapPin } from 'lucide-react';
+
+
 
 function Rent() {
   return (
@@ -28,7 +31,7 @@ function Rent() {
         <Image1 />
         <Text1 />
       </div>
-      <CarRentalForm />
+      <TransportationForm/>
       <div className="flex justify-center gap-6 mt-12">
         <Image src={myImage2} />
         <Image src={myImage3} />
@@ -69,60 +72,201 @@ function Text1() {
   );
 }
 
-function CarRentalForm() {
-  const [pickupLocation, setPickupLocation] = useState("");
-  const [dropoffLocation, setDropoffLocation] = useState("");
+const TransportationForm = () => {
+  // Available branches/cities
+  const locations = [
+    "Nuwarelliya",
+    "Galle",
+    "Colombo",
+    "Jaffna",
+    "Batticaloa"
+  ];
+
+  const [formData, setFormData] = useState({
+    pickupLocation: '',
+    dropoffLocation: '',
+    pickupDate: '',
+    pickupTime: '',
+    dropoffDate: '',
+    dropoffTime: '',
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    // Here you would handle form submission, e.g., API call
+    console.log('Form submitted:', formData);
+    alert('Booking request submitted successfully!');
+  };
 
   return (
-    <div className="mt-12 flex justify-center">
-      <div className="bg-black text-white p-6 rounded-2xl border-2 border-yellow-400 shadow-lg w-full max-w-lg">
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <DateSelector title="Pick up date & time" />
-          <DateSelector title="Drop off date & time" />
+    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-bold text-gray-800 mb-6">Book Your Transportation</h2>
+      
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Pickup Location */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Pickup Branch
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MapPin className="h-5 w-5 text-gray-400" />
+            </div>
+            <select
+              name="pickupLocation"
+              value={formData.pickupLocation}
+              onChange={handleChange}
+              required
+              className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            >
+              <option value="">Select pickup location</option>
+              {locations.map((location) => (
+                <option key={`pickup-${location}`} value={location}>
+                  {location}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center mb-6">
-          <LocationSelect label="Pick up branch" value={pickupLocation} onChange={setPickupLocation} />
-          <LocationSelect label="Drop off branch" value={dropoffLocation} onChange={setDropoffLocation} />
+        {/* Dropoff Location */}
+        <div className="space-y-2">
+          <label className="block text-sm font-medium text-gray-700">
+            Drop-off Branch
+          </label>
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <MapPin className="h-5 w-5 text-gray-400" />
+            </div>
+            <select
+              name="dropoffLocation"
+              value={formData.dropoffLocation}
+              onChange={handleChange}
+              required
+              className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
+            >
+              <option value="">Select drop-off location</option>
+              {locations.map((location) => (
+                <option key={`dropoff-${location}`} value={location}>
+                  {location}
+                </option>
+              ))}
+            </select>
+          </div>
         </div>
 
-        <div className="flex justify-center">
-          <button className="mt-4 px-6 py-3 text-orange-400 border-2 border-orange-400 rounded-full text-lg font-bold hover:bg-orange-500 hover:text-black transition">
-            Show cars
-          </button>
+        {/* Pickup Date & Time */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Pickup Date
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Calendar className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="date"
+                name="pickupDate"
+                value={formData.pickupDate}
+                onChange={handleChange}
+                required
+                className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Pickup Time
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Clock className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="time"
+                name="pickupTime"
+                value={formData.pickupTime}
+                onChange={handleChange}
+                required
+                className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
         </div>
-      </div>
-    </div>
-  );
-}
 
-function DateSelector({ title }) {
-  return (
-    <div className="text-center">
-      <h2 className="text-lg font-semibold text-orange-400">{title}</h2>
-      <div className="bg-white text-black p-4 rounded-lg mt-2 w-48">
-        <p className="text-gray-400 text-sm">Mon Feb 14</p>
-        <p className="text-xl font-bold">Today <span className="text-2xl">9 : 41 AM</span></p>
-        <p className="text-gray-400 text-sm">Weds Feb 16</p>
-      </div>
+        {/* Dropoff Date & Time */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Drop-off Date
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Calendar className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="date"
+                name="dropoffDate"
+                value={formData.dropoffDate}
+                onChange={handleChange}
+                required
+                className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+          
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Drop-off Time
+            </label>
+            <div className="relative">
+              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <Clock className="h-5 w-5 text-gray-400" />
+              </div>
+              <input
+                type="time"
+                name="dropoffTime"
+                value={formData.dropoffTime}
+                onChange={handleChange}
+                required
+                className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+              />
+            </div>
+          </div>
+        </div>
+        
+        {/* Submit Button */}
+        <button
+          type="submit"
+          className="mt-6 w-full bg-transparent text-black bg-clip-text border-3 border-yellow  py-2 px-4 rounded-md 
+          hover:shadow-[0_0_15px_rgba(255,165,0,0.8)] 
+          focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 
+          transition-all 
+          text-lg font-semibold
+          border-gradient-to-r from-yellow-400 to-orange-500 
+          hover:text-yellow-400 hover:border-yellow-400"
+        >
+          BOOK CAR
+        </button>
+      </form>
     </div>
   );
-}
+};
 
-function LocationSelect({ label, value, onChange }) {
-  return (
-    <div className="w-full md:w-48">
-      <h3 className="text-orange-400 text-md mb-1">{label}</h3>
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="w-full p-2 rounded-lg text-black bg-white">
-        <option value="">Select location</option>
-        <option value="colombo">Colombo</option>
-        <option value="jaffna">Jaffna</option>
-        <option value="batticaloa">Batticaloa</option>
-        <option value="galle">Galle</option>
-      </select>
-    </div>
-  );
-}
+
+
+
+
 
 function Image({ src }) {
   return (
@@ -150,7 +294,7 @@ function AutoSlideshow() {
           <img key={index} src={image} alt={`Slide ${index + 1}`} className={`absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-700 ${index === currentIndex ? "opacity-100" : "opacity-0"}`} />
         ))}
       </div>
-    </div>
+    </div>                                      
   );
 }
 
