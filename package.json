@@ -19,9 +19,6 @@
   "homepage": "https://github.com/Lakshan1806/Software-Development-Project#readme",
   "description": "",
   "dependencies": {
-    "connect-mongo": "^5.1.0",
-    "cookie-parser": "^1.4.7",
-    "twilio": "^5.4.5",
     "bcrypt": "^5.1.1",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
