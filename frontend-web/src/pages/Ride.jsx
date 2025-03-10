@@ -3,7 +3,6 @@ import ridecar from "../assets/Ride-pics/ridecar.svg";
 import promotion from "../assets/Ride-pics/promotionpic.svg";
 import Earnings from "./Earnings";
 
-
 function Ride() {
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
@@ -17,7 +16,7 @@ function Ride() {
   return (
     <div>
       <div>
-        <Earnings/>
+        <Earnings />
       </div>
       <div className="flex items-center min-h-screen bg-white text-black px-12 py-8">
         <div className="flex flex-col items-center w-1/2 pr-20 pl-[1px]">
@@ -110,6 +109,7 @@ function Ride() {
           </div>
         </div>
       </div>
+      
     </div>
   );
 }
