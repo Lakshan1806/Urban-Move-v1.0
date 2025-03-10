@@ -1,17 +1,16 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom"; 
 import NavBar from "./components/Navbar";
-import Home from "./pages/Home.jsx";
-import Rent from "./pages/Rent.jsx";
-import Drive from "./pages/Drive.jsx";
-import Ride from "./pages/Ride.jsx";
-import Help from "./pages/Help.jsx";
+import Home from "./pages/Home";
+import Rent from "./pages/Rent";
+import Drive from "./pages/Drive";
+import Ride from "./pages/Ride";
+import Help from "./pages/Help";
+import Feedback from "./pages/Feedback";
 
 function App() {
   return (
     <div>
-      <div>
-        <NavBar />
-      </div>
+      <NavBar />
       <main>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -19,6 +18,7 @@ function App() {
           <Route path="/drive" element={<Drive />} />
           <Route path="/ride" element={<Ride />} />
           <Route path="/help" element={<Help />} />
+          <Route path="/feedback" element={<Feedback />} />
         </Routes>
       </main>
     </div>
