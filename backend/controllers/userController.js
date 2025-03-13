@@ -1,4 +1,4 @@
-import userModel from "../models/usermodel.js";
+ import userModel from "../models/usermodel.js";
 
 export const getUserData = async (req, res) => {
   try {
@@ -20,4 +20,7 @@ export const getUserData = async (req, res) => {
   } catch (error) {
     res.json({ succes: false, message: error.message });
   }
+  console.log({ getUserData });
+
 };
+ 

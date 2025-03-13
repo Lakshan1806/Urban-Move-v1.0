@@ -15,4 +15,20 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export default transporter;
+async function sendEmail(email, subject, text) {
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: email,
+    subject,
+    text,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending welcome email:", error.message);
+    throw error;
+  }
+}
+
+export default sendEmail;

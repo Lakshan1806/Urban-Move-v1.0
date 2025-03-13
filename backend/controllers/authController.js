@@ -1,16 +1,176 @@
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-import transporter from "../config/nodemailer.js";
 import dotenv from "dotenv";
-import Client from "../utils/twilioClient.js";
-import otp from "../models/otpModels.js";
+import hashPassword from  "../utils/hashPassword.js";
+import generateJwtToken from "../utils/generateJWTToken.js";
+import checkExistingUser from "../utils/checkExistingUser.js";
+import validateOtp from "../utils/validateOtp.js";
+import saveSession from "../utils/saveSession.js";
+import sendOtp from "../utils/sendOtp.js";
 import userModel from "../models/usermodel.js";
+import otpModel from "../models/otpModels.js";
+import sendEmail from "../utils/nodemailer.js";
+
 
 dotenv.config({
   path: "C:/Users/USER/Videos/Software-Development-Project/.env",
 });
 
-export const register = async (req, res) => {
+
+ const userController ={
+register: async (req, res) => {
+
+  if (!req.session) return res.status(500).json({ message: "Session is not initialized" });
+  
+  if (!req.session.tempUser) req.session.tempUser = {};
+  
+  try {
+    const { username, password, phoneNumber, otp: phoneOTP, email, emailOTP } = req.body;
+    let userSession = req.session.tempUser || {};
+
+    if (!userSession.username && !userSession.password) {
+      if (!username || !password) {
+        return res.status(400).json({ message: "Username and Password are required" });
+      }
+
+      if (await checkExistingUser("username", username, userModel)) {
+        return res.status(400).json({ message: "Username already exists" });
+      }
+
+      const hashedPassword = await hashPassword(password);
+      req.session.tempUser = { username, password: hashedPassword };
+      saveSession(req.session, res, "Step 1 complete. Please enter your phone number.");
+      return;
+    }
+
+    if (userSession.username && !userSession.phoneNumber) {
+      if (!phoneNumber) return res.status(400).json({ message: "Phone number is required" });
+         
+      if (await checkExistingUser("phone", phoneNumber, userModel)) {
+        return res.status(400).json({ message: "Phone number already exists" });
+      }
+
+      await sendOtp({ body: { type: "phone", phone: phoneNumber } }, res);
+
+      req.session.tempUser.phoneNumber = phoneNumber;
+      saveSession(req.session, res, "OTP sent to phone. Please verify.");
+      return;
+    }
+
+    if (userSession.username && userSession.phoneNumber && !userSession.phoneVerified) {
+      if (!phoneOTP) return res.status(400).json({ message: "Phone OTP is required" });
+      
+      if (!(await validateOtp("phone", userSession.phoneNumber, phoneOTP, otpModel))) {
+        return res.status(400).json({ message: "Invalid or expired phone OTP" });
+      }
+
+      userSession.phoneVerified = true;
+      saveSession(req.session, res, "Phone number verified. Please enter your email address.");
+      return;
+    }
+
+    if (userSession.username && userSession.phoneVerified && !userSession.email) {
+      if (!email) return res.status(400).json({ message: "Email address is required" });
+      
+      if (await checkExistingUser("email", email, userModel)) {
+        return res.status(400).json({ message: "Email already exists" });
+      }
+     
+      await sendOtp({ body: { type: "email", email } }, res);
+      req.session.tempUser.email = email;
+      saveSession(req.session, res, "OTP sent to email. Please verify.");
+      return;
+    }
+
+    if (userSession.username && userSession.phoneVerified && userSession.email && !userSession.emailVerified) {
+      if (!emailOTP) {
+        return res.status(400).json({ message: "Email OTP is required" });
+      }
+
+      if (!(await validateOtp("email", userSession.email, emailOTP, otpModel))) {
+        return res.status(400).json({ message: "Invalid or expired email OTP" });
+      }
+
+      userSession.emailVerified = true;
+
+      const newUser = await userModel.create({
+        username: userSession.username,
+        password: userSession.password,
+        phone: userSession.phoneNumber,
+        email: userSession.email,
+      });
+
+      const token = generateJwtToken(newUser._id, newUser.username);
+      clearTempUserSession(req.session);
+
+      try {
+        await sendEmail(newUser.email, "Welcome to the Cab Booking System", "Registration successful");
+      } catch (error) {
+        return res.status(500).json({ message: "Failed to send welcome email", error: error.message });
+      }
+      return res.status(201).json({ message: "Registration successful!", token });
+    }
+
+    return res.status(400).json({ message: "Unexpected state of registration process." });
+  } catch (error) {
+    return res.status(500).json({ message: "Server error", error: error.message });
+  }
+},
+
+login: async (req, res) => {
+  const { email, password } = req.body;
+  if (!email || !password) return res.status(400).json({ message: "Email and password are required" });
+  try {
+    const user = await userModel.findOne({ email });
+    if (!user || !(await bcrypt.compare(password, user.password))) return res.status(400).json({ message: "Invalid credentials" });
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
+    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000 });
+    return res.status(200).json({ message: "Login successful", token });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
+  }
+},
+
+logout: async (req, res) => {
+  res.clearCookie("token");
+  return res.status(200).json({ message: "Logged out" });
+},
+
+isAuthenticated : async (req, res) => {
+  return res.json({ success: true });
+},
+ 
+resetPassword : async (req, res) => {
+    const { email, otp, newPassword } = req.body;
+  
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "Email, OTP, and new password are required" });
+    }
+  
+    try {
+      const otpRecord = await otpModel.findOne({ email, otp });
+      if (!otpRecord || otpRecord.expiresAt < Date.now()) {
+        return res.status(400).json({ message: "Invalid or expired OTP" });
+      }
+  
+      const user = await userModel.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ message: "User not found" });
+      }
+  
+      user.password = await bcrypt.hash(newPassword, 10);
+      await user.save();
+  
+      await otpModel.deleteOne({ _id: otpRecord._id });
+      res.status(200).json({ message: "Password reset successfully" });
+    } catch (error) {
+      res.status(500).json({ message: "Error resetting password", error: error.message });
+    }
+  }
+ }
+
+ 
+ export default userController;
+
+/* export const register = async (req, res) => {
   console.log("Incoming request:", req.body); //  Log request body
   console.log("Session data before processing:", req.session); // Log session details
   // Ensure session object exists
@@ -441,3 +601,4 @@ export const resetPassword = async (req, res) => {
     return res.json({ success: false, message: error.message });
   }
 };
+ */

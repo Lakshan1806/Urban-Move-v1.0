@@ -1,14 +1,14 @@
 import express from 'express'
-import { isAuthenticated, login, logout, register, resetPassword, sendResetotp} from '../controllers/authController.js';
-import userAuth from '../middleware/userAuth.js';
+import userController from '../controllers/authController.js';
+import {userAuth} from '../middleware/userAuth.js';
 
 const authRouter=express.Router();
-authRouter.post("/register",register);
-authRouter.post('/login',login);
-authRouter.post('/logout',logout);
-authRouter.post('/is-auth',userAuth,isAuthenticated);
-authRouter.post('/send-reset-otp',sendResetotp);
-authRouter.post('/reset-password',resetPassword);
+authRouter.post("/register",userController.register);
+authRouter.post('/login',userController.login);
+authRouter.post('/logout',userController.logout);
+authRouter.post('/reset-password',userController.resetPassword);
+authRouter.post('/is-auth',userAuth,userController.isAuthenticated);
+
   
 
 export default authRouter;
