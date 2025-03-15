@@ -9,20 +9,32 @@ import FinancialIcon from "../assets/Financial.svg";
 import MessageIcon from "../assets/Message.svg";
 import AccountIcon from "../assets/Account.svg";
 import SettingIcon from "../assets/Setting.svg";
+import { useNavigate } from "react-router-dom";
+import { UserContext } from "../context/userContext";
+import { useContext } from "react";
 
 function Navbar() {
+  const { setUser } = useContext(UserContext);
+  const navigate = useNavigate();
   console.log("Navbar is rendering");
 
+  function handleSignout() {
+    localStorage.removeItem("userData");
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    setUser(null);
+    navigate("/", { replace: true });
+  }
+
   const navItems = [
-    { path: "/", label: "Home", icon: HomeIcon },
-    { path: "/rides", label: "Rides", icon: RideIcon },
-    { path: "/rentals", label: "Rentals", icon: RentalIcon },
-    { path: "/customers", label: "Customers", icon: CustomerIcon },
-    { path: "/drivers", label: "Drivers", icon: DriverIcon },
-    { path: "/financials", label: "Financials", icon: FinancialIcon },
-    { path: "/messages", label: "Messages", icon: MessageIcon },
-    { path: "/account", label: "Account", icon: AccountIcon },
-    { path: "/settings", label: "Settings", icon: SettingIcon },
+    { path: "/dashboard", label: "Home", icon: HomeIcon },
+    { path: "/dashboard/rides", label: "Rides", icon: RideIcon },
+    { path: "/dashboard/rentals", label: "Rentals", icon: RentalIcon },
+    { path: "/dashboard/customers", label: "Customers", icon: CustomerIcon },
+    { path: "/dashboard/drivers", label: "Drivers", icon: DriverIcon },
+    { path: "/dashboard/financials", label: "Financials", icon: FinancialIcon },
+    { path: "/dashboard/messages", label: "Messages", icon: MessageIcon },
+    { path: "/dashboard/account", label: "Account", icon: AccountIcon },
+    { path: "/dashboard/settings", label: "Settings", icon: SettingIcon },
   ];
   const linkstyles =
     "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex gap-[10px]";
@@ -42,7 +54,10 @@ function Navbar() {
         ))}
       </div>
 
-      <div className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text pt-[20px]">
+      <div
+        className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text pt-[20px] cursor-pointer"
+        onClick={handleSignout}
+      >
         Sign out
       </div>
     </nav>

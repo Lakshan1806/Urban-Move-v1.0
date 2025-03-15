@@ -8,5 +8,6 @@ adminRoutes.post("/logout");
 adminRoutes.post("/change_password");
 adminRoutes.post("/add_admin");
 adminRoutes.get("/get_info");
+adminRoutes.get("/profile", adminController.profile);
 
 export default adminRoutes;

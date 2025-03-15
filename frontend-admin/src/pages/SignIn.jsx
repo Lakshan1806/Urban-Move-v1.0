@@ -1,31 +1,31 @@
 import Logo from "../assets/Urban_Move.svg";
 import Line from "../assets/Line.svg";
 import { useState } from "react";
+import { UserContext } from "../context/userContext";
+import { useContext } from "react";
+import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-function SignIn({ setAuth }) {
+function SignIn() {
+  const navigate = useNavigate();
+  const { setUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const navigate = useNavigate();
 
-  const handleLogin = async (e) => {
-    e.preventDefault();
+  console.log(username, password);
 
-    const response = await fetch("http://localhost:5000/api/login", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ username, password }),
-    });
+  const loginData = {
+    username: username,
+    password: password,
+  };
 
-    const data = await response.json();
-
-    if (data.success) {
-      localStorage.setItem("token", data.token); // Store token
-      setAuth(true); // Update authentication state
-      navigate("/dashboard"); // Redirect to dashboard
-    } else {
-      alert("Invalid credentials");
-    }
+  const handleSignin = async (event) => {
+    event.preventDefault();
+    await axios.post("/admin/login", loginData);
+    const response = await axios.get("/admin/profile");
+    localStorage.setItem("userData", JSON.stringify(response.data));
+    setUser(response.data);
+    navigate("/dashboard", { replace: true });
   };
 
   return (
@@ -41,39 +41,43 @@ function SignIn({ setAuth }) {
 
         <div>
           <form
-            onSubmit={handleLogin}
+            onSubmit={handleSignin}
             className="flex flex-col gap-[42px]  items-center "
           >
             <div className="flex flex-col w-[300px]">
-              <label for="username">Username</label>
+              <label htmlFor="username">Username</label>
               <input
                 type="text"
                 id="username"
                 name="username"
                 placeholder="Enter your username"
+                onChange={(e) => {
+                  setUsername(e.target.value);
+                }}
                 value={username}
-                onChange={(e) => setUsername(e.target.value)}
                 required
               />
             </div>
 
             <div className="flex flex-col w-[300px]">
-              <label for="password">Password</label>
+              <label htmlFor="password">Password</label>
               <input
                 type="password"
                 id="password"
                 name="password"
                 placeholder="Enter your password"
+                onChange={(e) => {
+                  setPassword(e.target.value);
+                }}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
                 required
               />
             </div>
 
-            <div className="bg-black rounded-[50px] max-w-[115px] flex justify-center px-[22px] py-[10px] text-[20px]">
+            <div className="bg-black rounded-[50px] max-w-[115px] flex justify-center px-[22px] py-[5px] text-[20px]">
               <button
                 type="submit"
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text "
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
               >
                 SIGN IN
               </button>

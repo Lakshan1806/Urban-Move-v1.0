@@ -14,15 +14,15 @@ function RouteSelect() {
     <div>
       <main className="mt-[25px] mx-[50px]">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/rides" element={<Rides />} />
-          <Route path="/rentals" element={<Rentals />} />
-          <Route path="/customers" element={<Customers />} />
-          <Route path="/drivers" element={<Drivers />} />
-          <Route path="/financials" element={<Financials />} />
-          <Route path="/messages" element={<Messages />} />
-          <Route path="/account" element={<Account />} />
-          <Route path="/settings" element={<Settings />} />
+          <Route index element={<Home />} />
+          <Route path="rides" element={<Rides />} />
+          <Route path="rentals" element={<Rentals />} />
+          <Route path="customers" element={<Customers />} />
+          <Route path="drivers" element={<Drivers />} />
+          <Route path="financials" element={<Financials />} />
+          <Route path="messages" element={<Messages />} />
+          <Route path="account" element={<Account />} />
+          <Route path="settings" element={<Settings />} />
         </Routes>
       </main>
     </div>
