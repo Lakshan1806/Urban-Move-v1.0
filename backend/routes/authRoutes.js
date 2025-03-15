@@ -1,6 +1,6 @@
 import express from 'express'
 import userController from '../controllers/authController.js';
-import {userAuth} from '../middleware/userAuth.js';
+import userAuth from '../middleware/userAuth.js';
 
 const authRouter=express.Router();
 authRouter.post("/register",userController.register);

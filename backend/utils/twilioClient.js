@@ -19,4 +19,4 @@ const client = twilio(process.env.TWILIO_ACCOUNT_SID, process.env.TWILIO_AUTH_TO
     }; 
 
 
-export default client;
+export default phoneMessage;

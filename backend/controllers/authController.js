@@ -8,6 +8,8 @@ import sendOtp from "../utils/sendOtp.js";
 import userModel from "../models/usermodel.js";
 import otpModel from "../models/otpModels.js";
 import sendEmail from "../utils/nodemailer.js";
+import clearTempUserSession from "../utils/clearTempUserSession.js";
+import bcrypt from "bcrypt";
 
 
 dotenv.config({
@@ -37,8 +39,8 @@ register: async (req, res) => {
 
       const hashedPassword = await hashPassword(password);
       req.session.tempUser = { username, password: hashedPassword };
-      saveSession(req.session, res, "Step 1 complete. Please enter your phone number.");
-      return;
+      return saveSession(req.session, res, "Step 1 complete. Please enter your phone number.");
+     
     }
 
     if (userSession.username && !userSession.phoneNumber) {
@@ -51,8 +53,8 @@ register: async (req, res) => {
       await sendOtp({ body: { type: "phone", phone: phoneNumber } }, res);
 
       req.session.tempUser.phoneNumber = phoneNumber;
-      saveSession(req.session, res, "OTP sent to phone. Please verify.");
-      return;
+      return saveSession(req.session, res, "OTP sent to phone. Please verify.");
+      
     }
 
     if (userSession.username && userSession.phoneNumber && !userSession.phoneVerified) {
@@ -63,8 +65,8 @@ register: async (req, res) => {
       }
 
       userSession.phoneVerified = true;
-      saveSession(req.session, res, "Phone number verified. Please enter your email address.");
-      return;
+     return saveSession(req.session, res, "Phone number verified. Please enter your email address.");
+      
     }
 
     if (userSession.username && userSession.phoneVerified && !userSession.email) {
@@ -76,8 +78,8 @@ register: async (req, res) => {
      
       await sendOtp({ body: { type: "email", email } }, res);
       req.session.tempUser.email = email;
-      saveSession(req.session, res, "OTP sent to email. Please verify.");
-      return;
+      return saveSession(req.session, res, "OTP sent to email. Please verify.");
+      
     }
 
     if (userSession.username && userSession.phoneVerified && userSession.email && !userSession.emailVerified) {
@@ -116,16 +118,62 @@ register: async (req, res) => {
 },
 
 login: async (req, res) => {
-  const { email, password } = req.body;
-  if (!email || !password) return res.status(400).json({ message: "Email and password are required" });
   try {
-    const user = await userModel.findOne({ email });
-    if (!user || !(await bcrypt.compare(password, user.password))) return res.status(400).json({ message: "Invalid credentials" });
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "7d" });
-    res.cookie("token", token, { httpOnly: true, secure: process.env.NODE_ENV === "production", sameSite: "strict", maxAge: 7 * 24 * 60 * 60 * 1000 });
-    return res.status(200).json({ message: "Login successful", token });
+      if (!req.session) {
+          return res.status(500).json({ message: "Session is not initialized" });
+      }
+
+      if (!req.session.tempUser) {
+          req.session.tempUser = {};
+      }
+
+      const { username, password, otp: phoneOTP } = req.body;
+      const userSession = req.session.tempUser;
+
+      if (!userSession.username && !userSession.password) {
+          if (!username || !password) {
+              return res.status(400).json({ message: "Username and Password are required" });
+          }
+
+          const user = await userModel.findOne({ username });
+          if (!user || !(await bcrypt.compare(password, user.password))) {
+              return res.status(400).json({ message: "Invalid credentials" });
+          }
+
+          req.session.tempUser = { username, password };
+          const phoneNumber = user.phone;
+          if (!phoneNumber) {
+              return res.status(400).json({ message: "Phone number not found for the user" });
+          }
+          await sendOtp({ body: { type: "phone", phone: phoneNumber } });
+          req.session.tempUser.phoneNumber = phoneNumber;
+
+          return res.status(200).json({ message: "OTP sent to your phone. Please verify to continue." });
+      }
+
+      if (userSession.username && userSession.phoneNumber && !userSession.phoneVerified) {
+          if (!phoneOTP) {
+              return res.status(400).json({ message: "Phone OTP is required" });
+          }
+
+          const isValidOtp = await validateOtp("phone", userSession.phoneNumber, phoneOTP, otpModel);
+          if (!isValidOtp) {
+              return res.status(400).json({ message: "Invalid or expired phone OTP" });
+          }
+
+          req.session.tempUser.phoneVerified = true;
+
+          const user = await userModel.findOne({ username: userSession.username }); 
+          const token = generateJwtToken(user._id, user.username);
+
+          clearTempUserSession(req.session);
+
+          return res.status(200).json({ message: "Phone number verified. Login successful!"});
+      }
+      return res.status(400).json({ message: "Invalid request or process step." });
+
   } catch (error) {
-    return res.status(500).json({ message: error.message });
+      return res.status(500).json({ message: "An unexpected server error occurred", error: error.message });
   }
 },
 
@@ -167,7 +215,6 @@ resetPassword : async (req, res) => {
   }
  }
 
- 
  export default userController;
 
 /* export const register = async (req, res) => {

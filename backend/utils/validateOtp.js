@@ -1,16 +1,24 @@
 const validateOtp = async (type, identifier, otp, otpModel) => {
+  try{
     const query = {};
     query[type] = identifier;
     query.otp = otp;
   
     const otpRecord = await otpModel.findOne(query);
-    if (!otpRecord || otpRecord.expiresAt < Date.now()) {
-      return false; // OTP is invalid or expired
+    if (!otpRecord) {
+      return { isValid: false, message: "OTP not found" }; 
+    }
+
+    if (otpRecord.expiresAt < Date.now()) {
+      return { isValid: false, message: "OTP expired" }; 
     }
   
-    // Delete OTP record after validation
     await otpModel.deleteOne({ _id: otpRecord._id });
-    return true;
-  };
+    return { isValid: true, message: "OTP validated successfully" };
+  }
+  catch(error){
+    return false;
+  }
+};
   export default validateOtp;
   
