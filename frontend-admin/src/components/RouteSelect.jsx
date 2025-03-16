@@ -7,7 +7,7 @@ import Drivers from "../pages/Drivers";
 import Financials from "../pages/Financials";
 import Messages from "../pages/Messages";
 import Account from "../pages/Account";
-import Settings from "../pages/Settings";
+import Administration from "../pages/Administration";
 
 function RouteSelect() {
   return (
@@ -22,7 +22,7 @@ function RouteSelect() {
           <Route path="financials" element={<Financials />} />
           <Route path="messages" element={<Messages />} />
           <Route path="account" element={<Account />} />
-          <Route path="settings" element={<Settings />} />
+          <Route path="settings" element={<Administration />} />
         </Routes>
       </main>
     </div>

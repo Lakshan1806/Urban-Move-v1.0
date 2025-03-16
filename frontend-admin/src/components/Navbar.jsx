@@ -34,7 +34,7 @@ function Navbar() {
     { path: "/dashboard/financials", label: "Financials", icon: FinancialIcon },
     { path: "/dashboard/messages", label: "Messages", icon: MessageIcon },
     { path: "/dashboard/account", label: "Account", icon: AccountIcon },
-    { path: "/dashboard/settings", label: "Settings", icon: SettingIcon },
+    { path: "/dashboard/settings", label: "Administration", icon: SettingIcon },
   ];
   const linkstyles =
     "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex gap-[10px]";
