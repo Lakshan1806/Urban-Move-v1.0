@@ -44,7 +44,7 @@ const adminController = {
     }
   },
 
-  root: (req, res) => {
+  changePassword: (req, res) => {
     res.send("Server is ready");
   },
 };
