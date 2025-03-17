@@ -46,12 +46,14 @@ function Navbar() {
       </header>
 
       <div className="flex flex-col min-h-[500px] justify-between ">
-        {navItems.map((item) => (
-          <Link to={item.path} key={item.path} className={linkstyles}>
-            <img src={item.icon} alt={item.label} />
-            {item.label}
-          </Link>
-        ))}
+        {navItems.map((item) => {
+          return (
+            <Link to={item.path} key={item.path} className={linkstyles}>
+              <img src={item.icon} alt={item.label} />
+              {item.label}
+            </Link>
+          );
+        })}
       </div>
 
       <div

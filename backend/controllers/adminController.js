@@ -1,6 +1,8 @@
 import Admin from "../models/admin.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import generateRandomPassword from "../utils/passwordGenerator.js";
+import sendWelcomeMail from "../utils/mailer.js";
 
 const adminController = {
   login: async (req, res) => {
@@ -30,12 +32,12 @@ const adminController = {
     }
   },
 
-  profile: (req, res) => {
+  profile: async (req, res) => {
     const { token } = req.cookies;
     if (token) {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
         if (err) {
-          throw err;
+          return res.status(403).json({ error: "Token verification failed" });
         }
         res.json(user);
       });
@@ -46,6 +48,51 @@ const adminController = {
 
   changePassword: (req, res) => {
     res.send("Server is ready");
+  },
+
+  addAdmin: async (req, res) => {
+    const { token } = req.cookies;
+    const { username, email } = req.body;
+
+    if (token) {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
+        if (err) {
+          return res.status(403).json({ error: "Token verification failed" });
+        }
+      });
+    }
+
+    const existingUser = await Admin.findOne({
+      $or: [{ username: username }, { email: email }],
+    });
+
+    if (existingUser) {
+      return res.status(409).json({ error: "user already exist" });
+    }
+    const temporaryPassword = generateRandomPassword();
+    req.body.password = temporaryPassword;
+    req.body.name = "newAdmin";
+    const newAdmin = new Admin(req.body);
+    await newAdmin.save();
+    await sendWelcomeMail(email, temporaryPassword, username);
+    console.log(`Welcome email sent to ${email}`);
+  },
+
+  getAllAdmin: async (req, res) => {
+    const { token } = req.cookies;
+    if (token) {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
+        if (err) {
+          return res.status(403).json({ error: "Token verification failed" });
+        }
+      });
+    }
+    const admin = await Admin.find().select({
+      name: 1,
+      username: 1,
+      email: 1,
+    });
+    res.json(admin);
   },
 };
 

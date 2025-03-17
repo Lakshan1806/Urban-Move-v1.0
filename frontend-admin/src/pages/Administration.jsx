@@ -10,7 +10,7 @@ function Administration() {
           Administration
         </h1>
         <div className="grid grid-cols-12 grid-rows-12 gap-3 h-svh">
-          <AdminCard />
+          
           <AdminList />
           <AddAdmin />
         </div>

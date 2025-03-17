@@ -11,10 +11,11 @@ async function checkAndCreateAdmin() {
     } else {
       const email = process.env.DEFAULT_ADMIN_EMAIL;
       const temporaryPassword = generateRandomPassword();
+      const username = "Default_Admin";
 
       const newAdmin = new Admin({
         name: "Default Admin",
-        username: email,
+        username: username,
         email: email,
         password: temporaryPassword,
         age: 0,
@@ -26,7 +27,7 @@ async function checkAndCreateAdmin() {
         `Admin account created for ${email} with temporary password ${temporaryPassword}`
       );
 
-      await sendWelcomeMail(email, temporaryPassword);
+      await sendWelcomeMail(email, temporaryPassword, username);
       console.log(`Welcome email sent to ${email}`);
     }
   } catch (error) {

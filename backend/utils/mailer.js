@@ -12,13 +12,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-async function sendWelcomeEmail(email, temporaryPassword) {
+async function sendWelcomeEmail(email, temporaryPassword, username) {
   const mailOptions = {
-    from: " 'Urban Move'<yourusername@email.com>",
+    from: " Urban Move Admin <yourusername@email.com>",
     to: email,
     subject: "Urban Move Admin Registration",
-    text: ` Welcome!\n Your temporary password is: ${temporaryPassword}
-     Please log in and change your password immediately.`,
+    text: ` Welcome!\n Your username is: ${username}\n Your temporary password is: ${temporaryPassword}\n Please log in and change your password immediately.`,
   };
 
   transporter.sendMail(mailOptions, function (error, info) {
