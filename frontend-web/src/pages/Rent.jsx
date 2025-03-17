@@ -14,7 +14,11 @@ import review4 from "../assets/rent.review.4.png";
 import review5 from "../assets/rent.review.5.png";
 import review6 from "../assets/rent.review.6.png";
 import { Link } from "react-router-dom";
-import { Calendar, Clock, MapPin } from 'lucide-react';
+import axios from 'axios';
+import CarSelection from "./CarSelection.jsx"; // Adjust the path if necessary
+
+
+
 
 
 
@@ -31,7 +35,6 @@ function Rent() {
         <Image1 />
         <Text1 />
       </div>
-      <TransportationForm/>
       <div className="flex justify-center gap-6 mt-12">
         <Image src={myImage2} />
         <Image src={myImage3} />
@@ -39,9 +42,209 @@ function Rent() {
       </div>
       <AutoSlideshow />
       <Review />
+      <RentNowForm/>
     </div>
   );
 }
+
+
+
+function  RentNowForm ()   {
+  // List of available cities
+  const availableCities = [
+    "New York",
+    "Los Angeles",
+    "Chicago",
+    "Miami",
+    "San Francisco"
+  ];
+  
+  const [formData, setFormData] = useState({
+    pickupLocation: '',
+    dropoffLocation: '',
+    pickupTime: '',
+    dropoffTime: ''
+  });
+  
+  const [message, setMessage] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [availableCars, setAvailableCars] = useState([]);
+  const [searchParams, setSearchParams] = useState(null);
+  const [showCarSelection, setShowCarSelection] = useState(false);
+  
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value
+    });
+    
+    // If we were showing cars and the user changes any form data,
+    // hide the car selection until they search again
+    if (showCarSelection) {
+      setShowCarSelection(false);
+    }
+  };
+  
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setMessage('');
+    
+    try {
+      // Search for available cars
+      const response = await axios.get('http://localhost:5000/api/cars/available', {
+        params: formData
+      });
+      
+      setAvailableCars(response.data.data.cars);
+      setSearchParams(response.data.data);
+      setShowCarSelection(true);
+      
+      // If no cars are available, show a message
+      if (response.data.data.cars.length === 0) {
+        setMessage('No cars available for the selected time and location. Please try different dates or locations.');
+      }
+    } catch (error) {
+      setMessage(error.response?.data?.message || 'Error searching for available cars');
+      setShowCarSelection(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  return (
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+      <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 mb-6">
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Rent Now</h2>
+        
+        {message && (
+          <div className={`p-3 mb-4 rounded ${message.includes('Error') || message.includes('No cars') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+            {message}
+          </div>
+        )}
+        
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label htmlFor="pickupLocation" className="block text-gray-700 font-medium mb-2">
+              Pickup Location
+            </label>
+            <select
+              id="pickupLocation"
+              name="pickupLocation"
+              value={formData.pickupLocation}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Pickup City</option>
+              {availableCities.map((city) => (
+                <option key={`pickup-${city}`} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="dropoffLocation" className="block text-gray-700 font-medium mb-2">
+              Drop-off Location
+            </label>
+            <select
+              id="dropoffLocation"
+              name="dropoffLocation"
+              value={formData.dropoffLocation}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            >
+              <option value="">Select Drop-off City</option>
+              {availableCities.map((city) => (
+                <option key={`dropoff-${city}`} value={city}>
+                  {city}
+                </option>
+              ))}
+            </select>
+          </div>
+          
+          <div className="mb-4">
+            <label htmlFor="pickupTime" className="block text-gray-700 font-medium mb-2">
+              Pickup Time
+            </label>
+            <input
+              type="datetime-local"
+              id="pickupTime"
+              name="pickupTime"
+              value={formData.pickupTime}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          
+          <div className="mb-6">
+            <label htmlFor="dropoffTime" className="block text-gray-700 font-medium mb-2">
+              Drop-off Time
+            </label>
+            <input
+              type="datetime-local"
+              id="dropoffTime"
+              name="dropoffTime"
+              value={formData.dropoffTime}
+              onChange={handleChange}
+              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              required
+            />
+          </div>
+          
+          <button
+            type="submit"
+            disabled={isLoading}
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
+          >
+            {isLoading ? 'Searching...' : 'Find Available Cars'}
+          </button>
+        </form>
+      </div>
+      
+      {showCarSelection && (
+        <CarSelection 
+          cars={availableCars} 
+          searchParams={searchParams}
+          onBookingComplete={() => {
+            setShowCarSelection(false);
+            setFormData({
+              pickupLocation: '',
+              dropoffLocation: '',
+              pickupTime: '',
+              dropoffTime: ''
+            });
+            setMessage('Booking completed successfully!');
+          }}
+        />
+      )}
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 function Button({ text, link }) {
   return (
@@ -72,196 +275,6 @@ function Text1() {
   );
 }
 
-const TransportationForm = () => {
-  // Available branches/cities
-  const locations = [
-    "Nuwarelliya",
-    "Galle",
-    "Colombo",
-    "Jaffna",
-    "Batticaloa"
-  ];
-
-  const [formData, setFormData] = useState({
-    pickupLocation: '',
-    dropoffLocation: '',
-    pickupDate: '',
-    pickupTime: '',
-    dropoffDate: '',
-    dropoffTime: '',
-  });
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({
-      ...formData,
-      [name]: value,
-    });
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // Here you would handle form submission, e.g., API call
-    console.log('Form submitted:', formData);
-    alert('Booking request submitted successfully!');
-  };
-
-  return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">Book Your Transportation</h2>
-      
-      <form onSubmit={handleSubmit} className="space-y-4">
-        {/* Pickup Location */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Pickup Branch
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MapPin className="h-5 w-5 text-gray-400" />
-            </div>
-            <select
-              name="pickupLocation"
-              value={formData.pickupLocation}
-              onChange={handleChange}
-              required
-              className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
-            >
-              <option value="">Select pickup location</option>
-              {locations.map((location) => (
-                <option key={`pickup-${location}`} value={location}>
-                  {location}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Dropoff Location */}
-        <div className="space-y-2">
-          <label className="block text-sm font-medium text-gray-700">
-            Drop-off Branch
-          </label>
-          <div className="relative">
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-              <MapPin className="h-5 w-5 text-gray-400" />
-            </div>
-            <select
-              name="dropoffLocation"
-              value={formData.dropoffLocation}
-              onChange={handleChange}
-              required
-              className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500 bg-white"
-            >
-              <option value="">Select drop-off location</option>
-              {locations.map((location) => (
-                <option key={`dropoff-${location}`} value={location}>
-                  {location}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-
-        {/* Pickup Date & Time */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Pickup Date
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Calendar className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="date"
-                name="pickupDate"
-                value={formData.pickupDate}
-                onChange={handleChange}
-                required
-                className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Pickup Time
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Clock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="time"
-                name="pickupTime"
-                value={formData.pickupTime}
-                onChange={handleChange}
-                required
-                className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Dropoff Date & Time */}
-        <div className="grid grid-cols-2 gap-4">
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Drop-off Date
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Calendar className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="date"
-                name="dropoffDate"
-                value={formData.dropoffDate}
-                onChange={handleChange}
-                required
-                className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-          
-          <div className="space-y-2">
-            <label className="block text-sm font-medium text-gray-700">
-              Drop-off Time
-            </label>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Clock className="h-5 w-5 text-gray-400" />
-              </div>
-              <input
-                type="time"
-                name="dropoffTime"
-                value={formData.dropoffTime}
-                onChange={handleChange}
-                required
-                className="pl-10 block w-full rounded-md border border-gray-300 shadow-sm py-2 px-3 focus:outline-none focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-              />
-            </div>
-          </div>
-        </div>
-        
-        {/* Submit Button */}
-        <button
-          type="submit"
-          className="mt-6 w-full bg-transparent text-black bg-clip-text border-3 border-yellow  py-2 px-4 rounded-md 
-          hover:shadow-[0_0_15px_rgba(255,165,0,0.8)] 
-          focus:outline-none focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 
-          transition-all 
-          text-lg font-semibold
-          border-gradient-to-r from-yellow-400 to-orange-500 
-          hover:text-yellow-400 hover:border-yellow-400"
-        >
-          BOOK CAR
-        </button>
-      </form>
-    </div>
-  );
-};
 
 
 
