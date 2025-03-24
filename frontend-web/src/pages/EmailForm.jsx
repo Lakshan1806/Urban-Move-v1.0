@@ -1,70 +1,77 @@
 import React, { useState } from "react";
 
-const EmailForm = () => {
-    const [emailData, setEmailData] = useState({
-        recipient: "",
-        subject: "",
-        message: ""
-    });
-    const [responseMessage, setResponseMessage] = useState("");
+function EmailForm() {
+  const [emailData, setEmailData] = useState({
+    recipient: "",
+    subject: "",
+    message: "",
+  });
 
-    const handleChange = (e) => {
-        setEmailData({ ...emailData, [e.target.name]: e.target.value });
-    };
+  const handleChange = (e) => {
+    setEmailData({ ...emailData, [e.target.name]: e.target.value });
+  };
 
-    const sendEmail = async (e) => {
-        e.preventDefault();
-        try {
-            const response = await fetch("http://localhost:5000/api/send-email", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify(emailData)
-            });
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch("http://localhost:5000/api/email/send-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(emailData),
+      });
 
-            const data = await response.json();
-            if (data.success) {
-                setResponseMessage("Email sent successfully!");
-                setEmailData({ recipient: "", subject: "", message: "" });
-            } else {
-                setResponseMessage("Failed to send email.");
-            }
-        } catch (error) {
-            setResponseMessage("An error occurred.");
-        }
-    };
+      const result = await response.json();
+      alert(result.message);
+    } catch (error) {
+      console.error("Error sending email:", error);
+    }
+  };
 
-    return (
+  return (
+    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
+      <h2 className="text-2xl font-semibold text-gray-700 text-center mb-6">Send Email</h2>
+      <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-            <h2>Send an Email</h2>
-            <form onSubmit={sendEmail}>
-                <input
-                    type="email"
-                    name="recipient"
-                    placeholder="Recipient Email"
-                    value={emailData.recipient}
-                    onChange={handleChange}
-                    required
-                />
-                <input
-                    type="text"
-                    name="subject"
-                    placeholder="Subject"
-                    value={emailData.subject}
-                    onChange={handleChange}
-                    required
-                />
-                <textarea
-                    name="message"
-                    placeholder="Message"
-                    value={emailData.message}
-                    onChange={handleChange}
-                    required
-                />
-                <button type="submit">Send Email</button>
-            </form>
-            {responseMessage && <p>{responseMessage}</p>}
+          <input
+            type="email"
+            name="recipient"
+            placeholder="Recipient Email"
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
         </div>
-    );
-};
+        <div>
+          <input
+            type="text"
+            name="subject"
+            placeholder="Subject"
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          />
+        </div>
+        <div>
+          <textarea
+            name="message"
+            placeholder="Message"
+            onChange={handleChange}
+            required
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+            rows="6"
+          ></textarea>
+        </div>
+        <div>
+          <button
+            type="submit"
+            className="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg hover:bg-gradient-to-l hover:from-indigo-600 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            Send
+          </button>
+        </div>
+      </form>
+    </div>
+  );
+}
 
 export default EmailForm;
