@@ -6,7 +6,8 @@ import adminRoutes from "./routes/adminRoute.js";
 import checkAndCreateAdmin from "./utils/adminInitialSetup.js";
 import feedbackRoutes from "./routes/feedbackRoute.js";
 import cookieParser from "cookie-parser";
-import feedbackRoutes from "./routes/feedbackRoute.js";
+import path from "path";
+import { fileURLToPath } from "url";
 
 dotenv.config();
 const app = express();
@@ -20,12 +21,19 @@ app.use(
   })
 );
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads",express.static(path.join(__dirname, "/uploads")));
+console.log(path.join(__dirname, "/uploads"));
+
+
 app.use(cookieParser());
 app.use("/admin", adminRoutes);
 app.use("/feedback", feedbackRoutes);
 
 console.log(process.env.MONGO_URI);
 console.log("server is ready");
+console.log("Current Working Directory:", process.cwd());
 
 async function startServer() {
   await connectDB();
