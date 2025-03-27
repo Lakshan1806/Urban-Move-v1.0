@@ -19,12 +19,17 @@
   "homepage": "https://github.com/Lakshan1806/Software-Development-Project#readme",
   "description": "",
   "dependencies": {
+    "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
+    "connect-mongo": "^5.1.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "framer-motion": "^12.5.0",
     "jsonwebtoken": "^9.0.2",
+    "lucide-react": "^0.482.0",
     "mongoose": "^8.10.1",
     "multer": "^1.4.5-lts.1",
     "nodemailer": "^6.10.0"
