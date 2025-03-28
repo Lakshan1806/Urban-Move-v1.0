@@ -1,36 +1,21 @@
 import { useState, useRef } from "react";
+import axios from "axios";
 
 function CarDetailsForm() {
   const fileInputRef = useRef(null);
-  const [carName, setCarName] = useState("");
+  const [make, setMake] = useState("");
   const [about, setAbout] = useState("");
-  const [transmission, setTransmission] = useState("");
-  const [fuel, setFuel] = useState("");
+  const [model, setModel] = useState("");
+  const [year, setYear] = useState("");
   const [capacitySeats, setCapacitySeats] = useState("");
-  const [topSpeed, setTopSpeed] = useState("");
-  const [acceleration, setAcceleration] = useState("");
+  const [vin, setVin] = useState("");
+  const [licensePlate, setlicensePlate] = useState("");
   const [range, setRange] = useState("");
   const [price, setPrice] = useState("");
   const [unitsAvailable, setUnitsAvailable] = useState("");
-  const [imageUrl, setImageUrl] = useState(["default-image.png"]);
+  const [imageUrl, setImageUrl] = useState([]);
   const [tempImage, setTempImage] = useState(null);
 
-  const handleSubmit = () => {
-    const carData = {
-      carName,
-      about,
-      transmission,
-      fuel,
-      capacitySeats,
-      topSpeed,
-      acceleration,
-      range,
-      price,
-      unitsAvailable,
-    };
-
-    console.log("Car data:", carData);
-  };
   const handleImageClick = () => {
     fileInputRef.current.click();
   };
@@ -48,13 +33,47 @@ function CarDetailsForm() {
     }
   };
 
+  const handleSave = async (e) => {
+    const formData = new FormData();
+    formData.append("make", make);
+    formData.append("about", about);
+    formData.append("model", model);
+    formData.append("year", year);
+    formData.append("capacitySeats", capacitySeats);
+    formData.append("vin", vin);
+    formData.append("licensePlate", licensePlate);
+    formData.append("range", range);
+    formData.append("price", price);
+    formData.append("unitsAvailable", unitsAvailable);
+
+    console.log(tempImage); // Should show a FileList in the console.
+    console.log(tempImage.constructor.name); // Likely outputs "FileList"
+
+    if (tempImage) {
+      Array.from(tempImage).forEach((file) => {
+        formData.append("photos", file);
+      });
+    }
+
+    try {
+      const response = await axios.post("/admin/add_cars", formData);
+    } catch (error) {
+      console.error("Upload failed:", error);
+    }
+  };
+
   return (
     <div className="col-span-12 row-span-12 p-4 rounded-xl border border-black flex flex-col">
       <div>
-        <h2>Add / Edit Car Details</h2>
+        <h2>Add Car Details</h2>
         <div className="flex flex-row">
           {imageUrl.map((url, index) => (
-            <img key={index} src={url} alt={`Preview ${index}`} className="w-24 h-24 rounded-lg object-cover"/>
+            <img
+              key={index}
+              src={url}
+              alt={`Preview ${index}`}
+              className="w-24 h-24 rounded-lg object-cover"
+            />
           ))}
 
           <input
@@ -77,13 +96,13 @@ function CarDetailsForm() {
         </div>
 
         <div>
-          <label htmlFor="carName">Car Name:</label>
+          <label htmlFor="carName">Make:</label>
           <input
             type="text"
-            id="carName"
-            value={carName}
-            onChange={(e) => setCarName(e.target.value)}
-            placeholder="e.g. Audi A6"
+            id="make"
+            value={make}
+            onChange={(e) => setMake(e.target.value)}
+            placeholder="e.g. Audi"
           />
         </div>
 
@@ -98,24 +117,24 @@ function CarDetailsForm() {
         </div>
 
         <div>
-          <label htmlFor="transmission">Transmission:</label>
+          <label htmlFor="transmission">Model:</label>
           <input
             type="text"
-            id="transmission"
-            value={transmission}
-            onChange={(e) => setTransmission(e.target.value)}
-            placeholder="e.g. Automatic"
+            id="model"
+            value={model}
+            onChange={(e) => setModel(e.target.value)}
+            placeholder="A6"
           />
         </div>
 
         <div>
-          <label htmlFor="fuel">Fuel Type:</label>
+          <label htmlFor="fuel">Year:</label>
           <input
             type="text"
-            id="fuel"
-            value={fuel}
-            onChange={(e) => setFuel(e.target.value)}
-            placeholder="e.g. Gasoline"
+            id="year"
+            value={year}
+            onChange={(e) => setYear(e.target.value)}
+            placeholder=""
           />
         </div>
 
@@ -131,24 +150,24 @@ function CarDetailsForm() {
         </div>
 
         <div>
-          <label htmlFor="topSpeed">Top Speed (mph):</label>
+          <label htmlFor="topSpeed">VIN:</label>
           <input
             type="number"
-            id="topSpeed"
-            value={topSpeed}
-            onChange={(e) => setTopSpeed(e.target.value)}
-            placeholder="e.g. 120"
+            id="vin"
+            value={vin}
+            onChange={(e) => setVin(e.target.value)}
+            placeholder=""
           />
         </div>
 
         <div>
-          <label htmlFor="acceleration">Acceleration (0-60 mph):</label>
+          <label htmlFor="acceleration">License:</label>
           <input
             type="text"
-            id="acceleration"
-            value={acceleration}
-            onChange={(e) => setAcceleration(e.target.value)}
-            placeholder="e.g. 8.0 seconds"
+            id="licensePlate"
+            value={licensePlate}
+            onChange={(e) => setlicensePlate(e.target.value)}
+            placeholder=""
           />
         </div>
 
@@ -185,7 +204,15 @@ function CarDetailsForm() {
           />
         </div>
 
-        <button type="submit">Save Car</button>
+        <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
+          <button
+            type="button"
+            className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+            onClick={handleSave}
+          >
+            save
+          </button>
+        </div>
       </div>
     </div>
   );
