@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import generateRandomPassword from "../utils/passwordGenerator.js";
 import sendWelcomeMail from "../utils/mailer.js";
+import Car from "../models/car.model.js";
 
 const adminController = {
   login: async (req, res) => {
@@ -87,12 +88,20 @@ const adminController = {
         }
       });
     }
-    const admin = await Admin.find().select({
+    const admins = await Admin.find().select({
       name: 1,
       username: 1,
       email: 1,
+      photo: 1,
     });
-    res.json(admin);
+    admins.map((admin) => {
+      if (admin.photo) {
+        admin.photo = admin.photo
+          .replace(/\\/g, "/")
+          .replace("backend/uploads", "/uploads");
+      }
+    });
+    res.json(admins);
   },
 
   accountInfo: async (req, res) => {
@@ -164,15 +173,44 @@ const adminController = {
     try {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-      if (req.file && req.file.path) {
-        console.log("Uploaded file:", req.file);
+      console.log(req.body);
+      const filePaths = [];
+      if (req.files && req.files.length > 0) {
+        req.files.map((file) => filePaths.push(file.path));
+        console.log("Uploaded file:", req.files);
       }
+
+      const newCar = new Car({ ...req.body, images: filePaths });
+      await newCar.save();
 
       res.status(200).json({ message: "upadate successful" });
     } catch (error) {
       console.log(error);
       return res.status(403).json({ error: "Token verification failed" });
     }
+  },
+
+  getAllCars: async (req, res) => {
+    const { token } = req.cookies;
+    if (token) {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
+        if (err) {
+          return res.status(403).json({ error: "Token verification failed" });
+        }
+      });
+    }
+    const cars = await Car.find().select({
+      createdAt: 0,
+      updatedAt: 0,
+    });
+    cars.map((car) => {
+      if (car.images) {
+        car.images = car.images.map((image) =>
+          image.replace(/\\/g, "/").replace("backend/uploads", "/uploads")
+        );
+      }
+    });
+    res.json(cars);
   },
 };
 

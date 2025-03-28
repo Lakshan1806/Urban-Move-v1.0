@@ -15,10 +15,11 @@ adminRoutes.post(
 );
 adminRoutes.post(
   "/add_cars",
-  carUpload.array("photo"),
+  carUpload.array("photos"),
   adminController.addCars
 );
 adminRoutes.get("/get_all_admin", adminController.getAllAdmin);
+adminRoutes.get("/get_all_cars", adminController.getAllCars);
 adminRoutes.get("/profile", adminController.profile);
 adminRoutes.get("/account_info", adminController.accountInfo);
 
