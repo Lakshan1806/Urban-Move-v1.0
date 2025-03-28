@@ -3,21 +3,30 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon backend/server.js"
+    "dev": "nodemon backend/server.js",
+    "start": "node backend/server.js",
+    "test": "jest"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Lakshan1806/Software-Development-Project.git"
   },
   "type": "module",
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "cab-booking",
+    "nodejs",
+    "express",
+    "mongodb",
+    "jwt",
+    "authentication"
+  ],
+  "author": "Your Name",
   "license": "ISC",
   "bugs": {
     "url": "https://github.com/Lakshan1806/Software-Development-Project/issues"
   },
   "homepage": "https://github.com/Lakshan1806/Software-Development-Project#readme",
-  "description": "",
+  "description": "A cab booking system with user authentication, ride management, and real-time tracking.",
   "dependencies": {
     "axios": "^1.8.4",
     "bcrypt": "^5.1.1",
@@ -31,6 +40,8 @@
     "nodemailer": "^6.10.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.9"
+    "nodemon": "^3.1.9",
+    "eslint": "^8.56.0",
+    "prettier": "^3.2.5"
   }
 }
