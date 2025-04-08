@@ -14,7 +14,7 @@ const carSchema = new mongoose.Schema(
     mileage: { type: Number },
     color: { type: String },
     price: { type: Number },
-    status: { type: String, enum: ["new", "used", "certified pre-owned"] },
+    status: { type: String, enum: ["Booked", "Available"] },
     features: [{ type: String }],
     images: [{ type: String }],
     description: { type: String },
