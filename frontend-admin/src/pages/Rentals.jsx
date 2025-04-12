@@ -1,15 +1,22 @@
 import { useState } from "react";
 import AvailableCars from "../components/Rentals/AvailableCars";
 import CarDetails from "../components/Rentals/CarDetails";
-import { useNavigate } from "react-router-dom";
+import AddCars from "../components/Rentals/AddCars";
 
 function Rentals() {
   const [carDetails, setCarDetails] = useState(null);
-  const navigate = useNavigate();
+  const [editMode, setEditMode] = useState(false);
 
   const handleButtonClick = () => {
-    navigate("/dashboard/add_Vehicle");
+    setEditMode(true);
   };
+  let component = null;
+  if (!editMode) {
+    component = <AvailableCars onCarSelect={setCarDetails} />;
+  } else {
+    component = <AddCars onSaveForm={setEditMode}/>;
+  }
+
   return (
     <div className="flex flex-col w-full">
       <div className="flex flex-row justify-between">
@@ -27,7 +34,9 @@ function Rentals() {
         </div>
       </div>
       <div className="grid grid-cols-12 grid-rows-12 gap-3 h-svh">
-        <AvailableCars onCarSelect={setCarDetails} />
+        <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+          {component}
+        </div>
         <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
           <CarDetails car={carDetails} />
         </div>

@@ -14,12 +14,16 @@ adminRoutes.post(
   adminController.updateDetails
 );
 adminRoutes.post(
-  "/add_cars",
+  "/add_car_model",
   carUpload.array("photos"),
-  adminController.addCars
+  adminController.addCarModel
 );
+adminRoutes.post("/add_unit", adminController.addCarUnit);
+adminRoutes.post("/update_car_model",carUpload.none(), adminController.updateCarModel);
+adminRoutes.post("/update_car_unit", adminController.updateCarUnit);
 adminRoutes.get("/get_all_admin", adminController.getAllAdmin);
-adminRoutes.get("/get_all_cars", adminController.getAllCars);
+adminRoutes.get("/get_all_car_models", adminController.getAllCarModels);
+adminRoutes.get("/get_all_car_units", adminController.getAllCarUnits);
 adminRoutes.get("/profile", adminController.profile);
 adminRoutes.get("/account_info", adminController.accountInfo);
 

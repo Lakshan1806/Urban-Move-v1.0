@@ -3,7 +3,8 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import generateRandomPassword from "../utils/passwordGenerator.js";
 import sendWelcomeMail from "../utils/mailer.js";
-import Car from "../models/car.model.js";
+import CarModel from "../models/carModel.model.js";
+import CarInstance from "../models/carInstance.model.js";
 
 const adminController = {
   login: async (req, res) => {
@@ -164,7 +165,7 @@ const adminController = {
     }
   },
 
-  addCars: async (req, res) => {
+  addCarModel: async (req, res) => {
     const { token } = req.cookies;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
@@ -180,8 +181,8 @@ const adminController = {
         console.log("Uploaded file:", req.files);
       }
 
-      const newCar = new Car({ ...req.body, images: filePaths });
-      await newCar.save();
+      const newCarModel = new CarModel({ ...req.body, images: filePaths });
+      await newCarModel.save();
 
       res.status(200).json({ message: "upadate successful" });
     } catch (error) {
@@ -190,7 +191,28 @@ const adminController = {
     }
   },
 
-  getAllCars: async (req, res) => {
+  addCarUnit: async (req, res) => {
+    const { token } = req.cookies;
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+
+    try {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+      console.log(req.body);
+
+      const newCarUnit = new CarInstance(req.body);
+      await newCarUnit.save();
+
+      res.status(200).json({ message: "upadate successful" });
+    } catch (error) {
+      console.log(error);
+      return res.status(403).json({ error: "Token verification failed" });
+    }
+  },
+
+  getAllCarModels: async (req, res) => {
     const { token } = req.cookies;
     if (token) {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
@@ -199,7 +221,7 @@ const adminController = {
         }
       });
     }
-    const cars = await Car.find().select({
+    const cars = await CarModel.find().select({
       createdAt: 0,
       updatedAt: 0,
     });
@@ -211,6 +233,104 @@ const adminController = {
       }
     });
     res.json(cars);
+  },
+
+  getAllCarUnits: async (req, res) => {
+    const { token } = req.cookies;
+    const { id } = req.query;
+
+    if (token) {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
+        if (err) {
+          return res.status(403).json({ error: "Token verification failed" });
+        }
+      });
+    }
+    const units = await CarInstance.find({ carID: id }).select({
+      createdAt: 0,
+      updatedAt: 0,
+    });
+
+    res.json(units);
+  },
+
+  updateCarModel: async (req, res) => {
+    const { token } = req.cookies;
+    console.log(req.body);
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+    try {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      const {
+        _id,
+        make,
+        model,
+        year,
+        engine,
+        transmission,
+        bodyStyle,
+        fuelType,
+        mileage,
+        price,
+        seat,
+        speed,
+        description,
+      } = req.body;
+      const carModel = await CarModel.findByIdAndUpdate(_id, {
+        $set: {
+          make,
+          model,
+          year,
+          engine,
+          transmission,
+          bodyStyle,
+          fuelType,
+          mileage,
+          price,
+          seat,
+          speed,
+          description,
+        },
+      });
+
+      res.status(200).json({ message: "upadate successful" });
+    } catch (error) {
+      console.log(error);
+      return res.status(403).json({ error: "Token verification failed" });
+    }
+  },
+  updateCarUnit: async (req, res) => {
+    const { token } = req.cookies;
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+    try {
+      const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      console.log(user);
+      const { _id } = user;
+      const { name, username, email, phone } = req.body;
+      if (req.file && req.file.path) {
+        const admin = await Admin.findByIdAndUpdate(_id, {
+          $set: { photo: req.file.path },
+        });
+        console.log("Uploaded file:", req.file);
+      }
+
+      const admin = await Admin.findByIdAndUpdate(_id, {
+        $set: {
+          name,
+          username,
+          email,
+          phone,
+        },
+      });
+
+      res.status(200).json({ message: "upadate successful" });
+    } catch (error) {
+      console.log(error);
+      return res.status(403).json({ error: "Token verification failed" });
+    }
   },
 };
 

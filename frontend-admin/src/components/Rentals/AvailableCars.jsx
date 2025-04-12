@@ -6,7 +6,7 @@ function AvailableCars({ onCarSelect }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/admin/get_all_cars");
+        const response = await axios.get("/admin/get_all_car_models");
         console.log("res :", response);
         setCar(response.data);
       } catch (error) {
@@ -20,7 +20,7 @@ function AvailableCars({ onCarSelect }) {
   }, []);
 
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div >
       {car.map((cars) => {
         console.log("data :", cars);
         console.log("data :", cars.images);
