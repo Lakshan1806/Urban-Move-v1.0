@@ -4,6 +4,7 @@ import { PiSeatbelt, PiPath, PiSpeedometer } from "react-icons/pi";
 import { BsFuelPump } from "react-icons/bs";
 import { RiSteering2Line } from "react-icons/ri";
 import AddUnit from "./AddUnit";
+import UnitDetails from "./UnitDetails";
 import axios from "axios";
 
 function CarDetails({ car }) {
@@ -28,13 +29,10 @@ function CarDetails({ car }) {
   const [imageUrl, setImageUrl] = useState([]);
   const [tempImage, setTempImage] = useState(null);
   const [description, setDescription] = useState("");
-  const [vin, setVin] = useState("");
-  const [licensePlate, setLicensePlate] = useState("");
-  const [color, setColor] = useState("");
 
   useEffect(() => {
     if (car && car.images && car.images.length > 0) {
-      setCarImage(car.images[0]);
+      setCarImage(car.keyImage);
     }
   }, [car]);
 
@@ -54,14 +52,6 @@ function CarDetails({ car }) {
       setDescription(car.description);
     }
   }, [car, isEditable]);
-  
-  useEffect(() => {
-    if (unit && isEditableUnit) {
-      setVin(unit.vin);
-      setLicensePlate(unit.licensePlate);
-      setColor(unit.color);
-    }
-  }, [unit, isEditableUnit]);
 
   useEffect(() => {
     if (!car) return;
@@ -70,7 +60,9 @@ function CarDetails({ car }) {
         const response = await axios.get("/admin/get_all_car_units", {
           params: { id: car._id },
         });
-        setUnit(response.data);
+        if (!isEditableUnit) {
+          setUnit(response.data);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -79,7 +71,7 @@ function CarDetails({ car }) {
     fetchData();
     const intervalId = setInterval(fetchData, 10000);
     return () => clearInterval(intervalId);
-  }, [car]);
+  }, [car, isEditableUnit]);
 
   useEffect(() => {
     setAvailableUnit(unit.length);
@@ -106,9 +98,7 @@ function CarDetails({ car }) {
   const onEdit = () => {
     setIsEditable(true);
   };
-  const onEditUnit = () => {
-    setIsEditableUnit(true);
-  };
+
   const onSave = async () => {
     const formData = new FormData();
     formData.append("make", make);
@@ -132,18 +122,13 @@ function CarDetails({ car }) {
     }
     setIsEditable(false);
   };
-  const onSaveUnit = () => {
-    setIsEditableUnit(false);
-  };
+
   const onCancel = () => {
     setIsEditable(false);
   };
-  const onCancelUnit = () => {
-    setIsEditableUnit(false);
-  };
 
   return (
-    <div className="flex flex-col gap-5 overflow-auto">
+    <div className="flex flex-col gap-5 overflow-auto h-full">
       <div className="flex flex-col  gap-5">
         <div className=" border-black">
           <img src={carImage} className="rounded-lg" />
@@ -289,99 +274,11 @@ function CarDetails({ car }) {
       <div>
         {unit.map((unit) => {
           return (
-            <div
+            <UnitDetails
               key={unit._id}
-              className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4"
-            >
-              <div className="flex flex-col w-1/2">
-                {isEditableUnit ? (
-                  <>
-                    <div>
-                      <label htmlFor="vin">VIN:</label>
-                      <input
-                        type="text"
-                        id="vin"
-                        value={vin}
-                        onChange={(e) => setVin(e.target.value)}
-                        required
-                        placeholder="Enter VIN"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="licensePlate">License Plate:</label>
-                      <input
-                        type="text"
-                        id="licensePlate"
-                        value={licensePlate}
-                        onChange={(e) => setLicensePlate(e.target.value)}
-                        required
-                        placeholder="Enter License Plate"
-                      />
-                    </div>
-
-                    <div>
-                      <label htmlFor="color">Color:</label>
-                      <input
-                        type="text"
-                        id="color"
-                        value={color}
-                        onChange={(e) => setColor(e.target.value)}
-                        placeholder="Enter car color"
-                      />
-                    </div>
-                  </>
-                ) : (
-                  <>
-                    <h3 className="text-sm font-bold">{unit.vin}</h3>
-                    <h3 className="text-xl font-bold">{unit.licensePlate}</h3>
-                    <h3 className="text-xl font-bold">{unit.color}</h3>
-                  </>
-                )}
-              </div>
-              {isEditableUnit ? (
-                <>
-                  <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
-                    <button
-                      type="button"
-                      className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-                      onClick={onSaveUnit}
-                    >
-                      Save
-                    </button>
-                  </div>
-                  <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
-                    <button
-                      type="button"
-                      className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-                      onClick={onCancelUnit}
-                    >
-                      Cancel
-                    </button>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
-                    <button
-                      type="button"
-                      className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-                    >
-                      Delete
-                    </button>
-                  </div>
-                  <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
-                    <button
-                      type="button"
-                      className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-                      onClick={onEditUnit}
-                    >
-                      Edit
-                    </button>
-                  </div>
-                </>
-              )}
-            </div>
+              unit={unit}
+              onEdit={setIsEditableUnit}
+            />
           );
         })}
       </div>

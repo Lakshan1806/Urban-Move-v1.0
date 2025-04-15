@@ -3,6 +3,7 @@ import axios from "axios";
 
 function AddCars({ onSaveForm }) {
   const fileInputRef = useRef(null);
+  const keyImageInputRef = useRef(null);
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
@@ -14,13 +15,19 @@ function AddCars({ onSaveForm }) {
   const [price, setPrice] = useState("");
   const [seat, setSeat] = useState("");
   const [speed, setSpeed] = useState("");
+  const [description, setDescription] = useState("");
   const [features, setFeatures] = useState([]);
   const [imageUrl, setImageUrl] = useState([]);
   const [tempImage, setTempImage] = useState(null);
-  const [description, setDescription] = useState("");
+  const [keyImageUrl, setKeyImageUrl] = useState();
+  const [keyTempImage, setKeyTempImage] = useState(null);
 
   const handleImageClick = () => {
     fileInputRef.current.click();
+  };
+
+  const handleKeyImageClick = () => {
+    keyImageInputRef.current.click();
   };
 
   const handleFileChange = async (e) => {
@@ -33,6 +40,17 @@ function AddCars({ onSaveForm }) {
       );
       setImageUrl(previewUrls);
       setTempImage(files);
+    }
+  };
+
+  const handleKeyFileChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    } else {
+      const previewUrl = URL.createObjectURL(file);
+      setKeyImageUrl(previewUrl);
+      setKeyTempImage(file);
     }
   };
 
@@ -58,6 +76,9 @@ function AddCars({ onSaveForm }) {
         formData.append("photos", file);
       });
     }
+    if (keyTempImage) {
+      formData.append("keyImage", keyTempImage);
+    }
 
     try {
       const response = await axios.post("/admin/add_car_model", formData);
@@ -66,11 +87,34 @@ function AddCars({ onSaveForm }) {
     }
   };
   return (
-    <div className="flex flex-col justify-between h-svh">
+    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
       <div className="flex flex-col">
         <div>
           <h2>Add Car Details</h2>
+          <img
+            src={keyImageUrl}
+            alt={"preview"}
+            className="w-24 h-24 rounded-lg object-cover"
+          />
+
           <div className="flex flex-row">
+            <input
+              type="file"
+              ref={keyImageInputRef}
+              style={{ display: "none" }}
+              onChange={handleKeyFileChange}
+            />
+
+            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+              <button
+                type="button"
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                onClick={handleKeyImageClick}
+              >
+                Upload Key photo
+              </button>
+            </div>
+
             {imageUrl.map((url, index) => (
               <img
                 key={index}
