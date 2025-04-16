@@ -1,5 +1,10 @@
 import nodemailer from "nodemailer";
 import dotenv from "dotenv";
+import {
+	PASSWORD_RESET_REQUEST_TEMPLATE,
+	PASSWORD_RESET_SUCCESS_TEMPLATE,
+	
+} from "./emailTemplates.js";
 
 dotenv.config({
   path: "C:/Users/USER/Videos/Software-Development-Project/.env",
@@ -30,5 +35,38 @@ async function sendEmail(email, subject, text) {
     throw error;
   }
 }
+async function sendPasswordResetEmail(email, resetURL){
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: email,
+    subject: "Password Reset",
+    html: PASSWORD_RESET_REQUEST_TEMPLATE.replace("{resetURL}", resetURL),
+  };
 
-export default sendEmail;
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending password reset email:", error.message);
+    throw error;
+  }
+}
+
+async function sendResetSuccessEmail(email) {
+  const mailOptions = {
+    from: process.env.SMTP_USER,
+    to: email,
+    subject: "Password Reset Successful",
+    html: PASSWORD_RESET_SUCCESS_TEMPLATE,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+  } catch (error) {
+    console.error("Error sending password reset success email:", error.message);
+    throw error;
+  }
+	
+	}
+
+
+export default {sendEmail, sendPasswordResetEmail, sendResetSuccessEmail};
