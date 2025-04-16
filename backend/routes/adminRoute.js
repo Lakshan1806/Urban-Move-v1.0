@@ -5,26 +5,30 @@ import carUpload from "../middlewares/carsMulter.js";
 
 const adminRoutes = express.Router();
 
-adminRoutes.post("/login", adminController.login);
-adminRoutes.post("/change_password", adminController.changePassword);
-adminRoutes.post("/add_admin", adminController.addAdmin);
+adminRoutes.post("/login", adminController.auth.login);
+adminRoutes.post("/change_password", adminController.account.changePassword);
+adminRoutes.post("/add_admin", adminController.account.addAdmin);
 adminRoutes.post(
   "/update_details",
   adminUpload.single("photo"),
-  adminController.updateDetails
+  adminController.account.updateDetails
 );
 adminRoutes.post(
   "/add_car_model",
-  carUpload.array("photos"),
-  adminController.addCarModel
+  carUpload.fields([
+    { name: 'keyImage', maxCount: 1 },
+    { name: 'photos', maxCount: 10 }
+  ]),
+  adminController.car.addCarModel
 );
-adminRoutes.post("/add_unit", adminController.addCarUnit);
-adminRoutes.post("/update_car_model",carUpload.none(), adminController.updateCarModel);
-adminRoutes.post("/update_car_unit", adminController.updateCarUnit);
-adminRoutes.get("/get_all_admin", adminController.getAllAdmin);
-adminRoutes.get("/get_all_car_models", adminController.getAllCarModels);
-adminRoutes.get("/get_all_car_units", adminController.getAllCarUnits);
-adminRoutes.get("/profile", adminController.profile);
-adminRoutes.get("/account_info", adminController.accountInfo);
+adminRoutes.post("/add_unit", adminController.car.addCarUnit);
+adminRoutes.post("/update_car_model",carUpload.none(), adminController.car.updateCarModel);
+adminRoutes.post("/update_car_unit", adminController.car.updateCarUnit);
+adminRoutes.get("/get_all_admin", adminController.account.getAllAdmin);
+adminRoutes.get("/profile", adminController.auth.profile);
+adminRoutes.get("/account_info", adminController.account.accountInfo);
+adminRoutes.get("/get_all_car_models", adminController.car.getAllCarModels);
+adminRoutes.get("/get_all_car_units", adminController.car.getAllCarUnits);
+
 
 export default adminRoutes;

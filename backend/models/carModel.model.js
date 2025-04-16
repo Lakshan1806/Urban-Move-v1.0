@@ -21,6 +21,7 @@ const carModelSchema = new mongoose.Schema(
       type: [String],
       required: true,
     },
+    keyImage: { type: String, required: true },
     description: { type: String, required: true },
     createdAt: { type: Date },
     updatedAt: { type: Date },

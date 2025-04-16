@@ -20,7 +20,7 @@ function CarTypes() {
 
   return (
     <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
-      <h3 className="text-sm font-bold fixed">Car Types</h3>
+      <h3 className="text-sm font-bold sticky top-0">Car Types</h3>
       {car.map((cars) => {
         return (
           <div
