@@ -12,7 +12,6 @@ import session from "express-session";
 import authRouter from "./routes/authRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 
-
 dotenv.config();
 
 if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
@@ -29,13 +28,12 @@ app.use(
   })
 );
 
-app.use('/auth/', authRouter); 
+app.use("/auth/", authRouter);
 
 app.use((err, req, res, next) => {
   console.error(err);
-  res.status(500).json({ success: false, message: 'Internal Server Error' });
+  res.status(500).json({ success: false, message: "Internal Server Error" });
 });
-
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -66,16 +64,14 @@ app.use(
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-app.use("/uploads",express.static(path.join(__dirname, "/uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 console.log(path.join(__dirname, "/uploads"));
-
 
 app.use(cookieParser());
 app.use("/admin", adminRoutes);
 app.use("/feedback", feedbackRoutes);
 
 app.use(express.urlencoded({ extended: false }));
-
 
 console.log(process.env.MONGO_URI);
 console.log("server is ready");

@@ -150,11 +150,11 @@ const Register = () => {
         );
         resetEmailTimer();
         setStep(6); 
-
+        
         setTimeout(() => {
           register(formData);
-          navigate("/");
-        }, 3000);
+          navigate("/login");
+        }, 3000); 
       }
     } catch (err) {
       setError(

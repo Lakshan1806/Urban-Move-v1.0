@@ -6,7 +6,7 @@ import { FaUser, FaBell, FaSignOutAlt } from "react-icons/fa";
 
 function NavBar() {
   
-  const { isAuthenticated, logout, user } = useContext(AuthContext);
+  const { isAuthenticated, logout} = useContext(AuthContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
 
   const navItems = [
