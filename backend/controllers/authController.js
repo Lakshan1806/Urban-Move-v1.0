@@ -12,101 +12,152 @@ import clearTempUserSession from "../utils/clearTempUserSession.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
+
 dotenv.config();
 const userController = {
   register: async (req, res) => {
+    if (!req.session)
+      return res.status(500).json({ message: "Session is not initialized" });
 
-    if (!req.session) return res.status(500).json({ message: "Session is not initialized" });
-    
     if (!req.session.tempUser) req.session.tempUser = {};
-    
+
     try {
-      const { username, password, phoneNumber, otp: phoneOTP, email, emailOTP } = req.body;
+      const {
+        username,
+        password,
+        phoneNumber,
+        otp: phoneOTP,
+        email,
+        emailOTP,
+      } = req.body;
       let userSession = req.session.tempUser || {};
-  
+
       if (!userSession.username && !userSession.password) {
         if (!username || !password) {
           return res.status(400).json({ message: "Username and Password are required" });
         }
-  
+
         if (await checkExistingUser("username", username, userModel)) {
           return res.status(400).json({ message: "Username already exists" });
         }
-  
+
         const hashedPassword = await hashPassword(password);
         req.session.tempUser = { username, password: hashedPassword };
-        return saveSession(req.session, res, "Step 1 complete. Please enter your phone number.");
-       
+        return saveSession( req.session,res,"Please enter your phone number.");
       }
-  
+
       if (userSession.username && !userSession.phoneNumber) {
-        if (!phoneNumber) return res.status(400).json({ message: "Phone number is required" });
-           
+        if (!phoneNumber)
+          return res.status(400).json({ message: "Phone number is required" });
+        function validatePhoneNumber(phoneNumber) {
+          const phoneRegex = /^(0|94|\+94)?(7[0-9])([0-9]{7})$/;
+          return phoneRegex.test(phoneNumber);
+        }
+
+        if (!validatePhoneNumber(phoneNumber)) {
+          return res.status(400).json({ message: "Invalid phone number format" });
+        }
+
         if (await checkExistingUser("phone", phoneNumber, userModel)) {
           return res.status(400).json({ message: "Phone number already exists" });
         }
-  
+
         await sendOtp({ body: { type: "phone", phone: phoneNumber } }, res);
-  
+
         req.session.tempUser.phoneNumber = phoneNumber;
-        return saveSession(req.session, res, "OTP sent to phone. Please verify.");
-        
+        return saveSession(req.session, res, "OTP sent to phone. Please verify."
+        );
       }
-  
-      if (userSession.username && userSession.phoneNumber && !userSession.phoneVerified) {
-        if (!phoneOTP) return res.status(400).json({ message: "Phone OTP is required" });
-        
-        if (!(await validateOtp("phone", userSession.phoneNumber, phoneOTP, otpModel))) {
+
+      if (
+        userSession.username &&
+        userSession.phoneNumber &&
+        !userSession.phoneVerified
+      ) {
+        if (!phoneOTP)
+          return res.status(400).json({ message: "Phone OTP is required" });
+
+        if (
+          !(await validateOtp(
+            "phone",
+            userSession.phoneNumber,
+            phoneOTP,
+            otpModel
+          ))
+        ) {
           return res.status(400).json({ message: "Invalid or expired phone OTP" });
         }
-  
+
         userSession.phoneVerified = true;
-       return saveSession(req.session, res, "Phone number verified. Please enter your email address.");
-        
+        return saveSession( req.session, res,"Phone number verified. Please enter your email address.");
       }
-  
-      if (userSession.username && userSession.phoneVerified && !userSession.email) {
-        if (!email) return res.status(400).json({ message: "Email address is required" });
-        
+
+      if (
+        userSession.username &&
+        userSession.phoneVerified &&
+        !userSession.email
+      ) {
+        if (!email)
+          return res.status(400).json({ message: "Email address is required" });
+
         if (await checkExistingUser("email", email, userModel)) {
           return res.status(400).json({ message: "Email already exists" });
         }
-       
+
         await sendOtp({ body: { type: "email", email } }, res);
         req.session.tempUser.email = email;
-        return saveSession(req.session, res, "OTP sent to email. Please verify.");
-        
+        return saveSession(req.session, res,"OTP sent to email. Please verify.");
       }
-  
-      if (userSession.username && userSession.phoneVerified && userSession.email && !userSession.emailVerified) {
+
+      if (
+        userSession.username &&
+        userSession.phoneVerified &&
+        userSession.email &&
+        !userSession.emailVerified
+      ) {
         if (!emailOTP) {
           return res.status(400).json({ message: "Email OTP is required" });
         }
-  
-        if (!(await validateOtp("email", userSession.email, emailOTP, otpModel))) {
+
+        if (
+          !(await validateOtp("email", userSession.email, emailOTP, otpModel))
+        ) {
           return res.status(400).json({ message: "Invalid or expired email OTP" });
         }
-  
+
         userSession.emailVerified = true;
-  
+
         const newUser = await userModel.create({
           username: userSession.username,
           password: userSession.password,
           phone: userSession.phoneNumber,
           email: userSession.email,
         });
-  
+
         const token = generateJwtToken(newUser._id, newUser.username);
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 3600000,
+        });
         clearTempUserSession(req.session);
-  
+
         try {
           await nodemailer.sendEmail(newUser.email, "Welcome to the Cab Booking System", "Registration successful");
         } catch (error) {
           return res.status(500).json({ message: "Failed to send welcome email", error: error.message });
         }
-        return res.status(201).json({ message: "Registration successful!", token });
+        return res.status(201).json({ message: "Registration successful!" ,
+          user: {
+            _id: newUser._id,
+            username: newUser.username,
+            email: newUser.email,
+            phone: newUser.phone
+          }
+        });
       }
-  
+
       return res.status(400).json({ message: "Unexpected state of registration process." });
     } catch (error) {
       return res.status(500).json({ message: "Server error", error: error.message });
@@ -369,5 +420,7 @@ const userController = {
       return res.status(500).json({message: "Failed to resend OTP", error: error.message});
     }
   },
+
+  
 };
 export default userController;
