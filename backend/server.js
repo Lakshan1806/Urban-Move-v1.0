@@ -27,14 +27,6 @@ app.use(
     origin: "http://localhost:5173",
   })
 );
-
-app.use("/auth/", authRouter);
-
-app.use((err, req, res, next) => {
-  console.error(err);
-  res.status(500).json({ success: false, message: "Internal Server Error" });
-});
-
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
@@ -50,6 +42,15 @@ app.use(
     },
   })
 );
+
+app.use("/auth/", authRouter);
+
+app.use((err, req, res, next) => {
+  console.error(err);
+  res.status(500).json({ success: false, message: "Internal Server Error" });
+});
+
+
 
 app.get("/", (req, res) => {
   res.send("Server is ready");
