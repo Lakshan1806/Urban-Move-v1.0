@@ -5,12 +5,16 @@ const userSchema = new mongoose.Schema(
   {
     username: {
       type: String,
-      required: true,
+      required: function () {
+        return !this.googleId; 
+      },
       unique: true,
     },
     password: {
       type: String,
-      required: true,
+      required:function () {
+        return !this.googleId; // Only require password if not a Google user
+      },
     },
     phone: {
       type: String,
