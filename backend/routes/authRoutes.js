@@ -1,10 +1,10 @@
 import express from "express";
 import userController from "../controllers/authController.js";
 import userAuth from "../middleware/userAuth.js";
-import { OAuth2Client } from "google-auth-library";
-import userModel from "../models/usermodel.js";
+//import { OAuth2Client } from "google-auth-library";
+//import userModel from "../models/usermodel.js";
 
-const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+//const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const router = express.Router();
 router.post("/register", userController.register);
@@ -16,7 +16,7 @@ router.post("/forgot-password", userController.forgotPassword);
 router.post('/resend-otp', userController.resendOTP);
 router.post("/reset-password/:token", userController.resetPassword);
 
-router.post('/google/callback', async (req, res) => {
+/* router.post('/google/callback', async (req, res) => {
     console.log("Request Body:", req.body); // Debug incoming payload
     const { token } = req.body;
   
@@ -54,6 +54,6 @@ router.post('/google/callback', async (req, res) => {
         console.error("Error Verifying Token:", error);
               res.status(401).json({ message: 'Invalid Token' });
     }
-  });
+  }); */
 
 export default router;
