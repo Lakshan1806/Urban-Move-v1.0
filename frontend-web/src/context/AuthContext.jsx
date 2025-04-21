@@ -12,7 +12,6 @@ const AuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
-  const set = new Set();
 
   // Check if user is authenticated on mount
   useEffect(() => {
@@ -23,10 +22,8 @@ const AuthProvider = ({ children }) => {
         if (response.data.success) {
           setUser(response.data.user);
           setIsAuthenticated(true);
-        } else {
-          setUser(null);
-          setIsAuthenticated(false);
-        }
+        } 
+        
       } catch (error) {
         console.error("Auth check failed:", error);
         setUser(null);
@@ -35,6 +32,8 @@ const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
+    const token = document.cookie.includes('token=');
+    if (token) checkAuth();
   }, []);
 
   // Register function
@@ -44,16 +43,17 @@ const AuthProvider = ({ children }) => {
       const response = await API.post("/auth/register", formData);
 
       if (response.status === 201) {
+
         setUser(response.data.user);
         setIsAuthenticated(true);
-        navigate("/");
+        navigate("/login");
       }
 
       return response.data;
     } catch (error) {
       console.error("Registration failed:", error);
-      
-    }
+      throw error;
+    } 
   };
 
   // OTP login function

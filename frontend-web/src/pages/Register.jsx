@@ -11,7 +11,7 @@ import OtpInput from "../components/otp-input";
 import success from "../signup_photos/success.svg";
 import useCountdown from "../components/hooks/useCountdown";
 import { toast } from 'react-toastify';
-
+//import GoogleLoginButton from "../components/GoogleLogin";
 
 const Register = () => {
   const { register } = useContext(AuthContext);
@@ -150,11 +150,11 @@ const Register = () => {
         );
         resetEmailTimer();
         setStep(6); 
-
+        
         setTimeout(() => {
           register(formData);
-          navigate("/");
-        }, 3000);
+          navigate("/login");
+        }, 3000); 
       }
     } catch (err) {
       setError(
@@ -219,7 +219,8 @@ const Register = () => {
                   SIGN UP
                 </button>
               </div>
-
+             
+        
               <img src={imgl} alt="Divider" className="w-full h-auto" />
 
               <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
