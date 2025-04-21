@@ -1,4 +1,4 @@
-const passport = require('passport');
+/* const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
 const User = require('../models/User'); // Update with the correct path to your User model
 
@@ -31,3 +31,4 @@ passport.deserializeUser(async (id, done) => {
   const user = await User.findById(id);
   done(null, user);
 });
+ */

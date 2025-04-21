@@ -10,7 +10,7 @@ import OtpInput from "../components/otp-input";
 import Line1 from "../signup_photos/liner1.svg";
 import useCountdown from "../components/hooks/useCountdown";
 import { toast } from "react-toastify";
-import GoogleLoginButton from "../components/GoogleLogin";
+//import GoogleLoginButton from "../components/GoogleLogin";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -153,7 +153,7 @@ const Login = () => {
                   SIGN IN
                 </button>
               </div>
-              <GoogleLoginButton /> 
+             
               <img src={imgl} alt="Divider" className="w-full h-auto" />
 
               <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
