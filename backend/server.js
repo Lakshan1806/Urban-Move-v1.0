@@ -1,5 +1,5 @@
 import express from "express";
-import dotenv, { config } from "dotenv";
+import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import cors from "cors";
 import adminRoutes from "./routes/adminRoute.js";
@@ -89,8 +89,10 @@ app.use("/api/admin", adminRoutes);
 async function startServer() {
   await connectDB();
   await checkAndCreateAdmin();
-  app.listen(5000, () => {
+  
+  httpServer.listen(5000, () => {
     console.log("Server started at http://localhost:5000");
+    console.log("WebSocket server ready for communication");
   });
 }
 
