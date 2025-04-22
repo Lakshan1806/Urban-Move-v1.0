@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext ,useEffect } from "react";
 import { Link } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Logo from "../assets/Urban_Move_Colour.svg";
@@ -6,8 +6,12 @@ import { FaUser, FaBell, FaSignOutAlt } from "react-icons/fa";
 
 function NavBar() {
   
-  const { isAuthenticated, logout} = useContext(AuthContext);
+  const { isAuthenticated, logout, user } = useContext(AuthContext);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    console.log("Navbar detected authentication change:", isAuthenticated, user);
+  }, [isAuthenticated, user]);
 
   const navItems = [
     { path: "/", label: "Home" },

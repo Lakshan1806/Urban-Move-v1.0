@@ -49,12 +49,10 @@ const userController = {
       if (userSession.username && !userSession.phoneNumber) {
         if (!phoneNumber)
           return res.status(400).json({ message: "Phone number is required" });
-        function validatePhoneNumber(phoneNumber) {
+        
           const phoneRegex = /^(0|94|\+94)?(7[0-9])([0-9]{7})$/;
-          return phoneRegex.test(phoneNumber);
-        }
-
-        if (!validatePhoneNumber(phoneNumber)) {
+          
+        if (!phoneRegex.test(phoneNumber)) {
           return res.status(400).json({ message: "Invalid phone number format" });
         }
 
@@ -135,6 +133,19 @@ const userController = {
         });
 
         const token = generateJwtToken(newUser._id, newUser.username);
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 3600000,
+        });
+        req.session.user = {
+          _id: newUser._id,
+          username: newUser.username,
+          email: newUser.email,
+          phone: newUser.phone,
+        };
+        
         clearTempUserSession(req.session);
 
         try {
@@ -143,13 +154,7 @@ const userController = {
           return res.status(500).json({ message: "Failed to send welcome email", error: error.message });
         }
         return res.status(201).json({ message: "Registration successful!" ,
-          user: {
-            _id: newUser._id,
-            username: newUser.username,
-            email: newUser.email,
-            phone: newUser.phone
-          }
-        });
+          user: req.session.user });
       }
 
       return res.status(400).json({ message: "Unexpected state of registration process." });

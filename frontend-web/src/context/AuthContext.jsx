@@ -22,7 +22,12 @@ const AuthProvider = ({ children }) => {
         if (response.data.success) {
           setUser(response.data.user);
           setIsAuthenticated(true);
+          
         } 
+        else {
+          setUser(null);
+          setIsAuthenticated(false);
+        }
         
       } catch (error) {
         console.error("Auth check failed:", error);
@@ -30,15 +35,16 @@ const AuthProvider = ({ children }) => {
         setIsAuthenticated(false);
       }
     };
-
-    checkAuth();
-    const token = document.cookie.includes('token=');
-    if (token) checkAuth();
+     checkAuth();
+  
   }, []);
 
   // Register function
   const register = async (formData) => {
     setLoading(true);
+    setError(null);
+    setMessage("");
+    console.log("🔹 Sending registration data:", formData); // Debugging
     try {
       const response = await API.post("/auth/register", formData);
 
@@ -46,13 +52,16 @@ const AuthProvider = ({ children }) => {
 
         setUser(response.data.user);
         setIsAuthenticated(true);
-        navigate("/login");
+        navigate("/");
       }
-
+      else {
+        setMessage(response.data.message);
+      }
       return response.data;
     } catch (error) {
       console.error("Registration failed:", error);
-      throw error;
+      setError(error.response?.data?.message || "Registration failed. Please try again.");    } finally {
+      setLoading(false);
     } 
   };
 
