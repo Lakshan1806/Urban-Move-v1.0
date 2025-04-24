@@ -2,16 +2,16 @@ import React, { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import imgc from "../signup_photos/signupcustomer.svg"; // Signup background image
+import imgc from "../signup_photos/signupcustomer.svg";
 import { Link } from "react-router-dom";
-import imgl from "../signup_photos/linervector.svg"; // Divider line image
+import imgl from "../signup_photos/linervector.svg";
 import arrow from "../signup_photos/arrowvector.svg";
 import Line1 from "../signup_photos/liner1.svg";
 import OtpInput from "../components/otp-input";
 import success from "../signup_photos/success.svg";
 import useCountdown from "../components/hooks/useCountdown";
 import { toast } from "react-toastify";
-//import GoogleLoginButton from "../components/GoogleLogin";
+import GoogleLoginButton from "../components/GoogleLogin";
 
 const Register = () => {
   const { register } = useContext(AuthContext);
@@ -56,7 +56,7 @@ const Register = () => {
       if (response.data.message.includes("sent to phone")) {
         toast.success("New OTP sent to your phone");
         startPhoneTimer();
-        // For development only - show OTP in console
+
         console.log("New Phone OTP:", response.data.otp);
       } else {
         throw new Error(response.data.message || "Failed to resend OTP");
@@ -80,7 +80,7 @@ const Register = () => {
       if (response.data.message.includes("sent to email")) {
         toast.success("New OTP sent to your email");
         startEmailTimer();
-        // For development only - show OTP in console
+
         console.log("New Email OTP:", response.data.otp);
       } else {
         throw new Error(response.data.message || "Failed to resend OTP");
@@ -219,7 +219,7 @@ const Register = () => {
               </div>
 
               <img src={imgl} alt="Divider" className="w-full h-auto" />
-
+              <GoogleLoginButton />
               <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
                 <Link to="/signin">Already have an account? Sign in</Link>
               </p>
