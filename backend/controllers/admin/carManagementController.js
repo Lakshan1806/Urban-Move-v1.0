@@ -1,5 +1,5 @@
-import CarModel from "../models/carModel.model.js";
-import CarInstance from "../models/carInstance.model.js";
+import CarModel from "../../models/carModel.model.js";
+import CarInstance from "../../models/carInstance.model.js";
 import jwt from "jsonwebtoken";
 
 const carManagementController = {

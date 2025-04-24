@@ -1,5 +1,5 @@
 import express from "express";
-import adminController from "../controllers/adminController.js";
+import adminController from "../controllers/admin/adminController.js";
 import adminUpload from "../middlewares/adminMulter.js";
 import carUpload from "../middlewares/carsMulter.js";
 
@@ -21,8 +21,8 @@ adminRoutes.post(
   ]),
   adminController.car.addCarModel
 );
-adminRoutes.post("/add_unit", adminController.car.addCarUnit);
 adminRoutes.post("/update_car_model",carUpload.none(), adminController.car.updateCarModel);
+adminRoutes.post("/add_unit", adminController.car.addCarUnit);
 adminRoutes.post("/update_car_unit", adminController.car.updateCarUnit);
 adminRoutes.get("/get_all_admin", adminController.account.getAllAdmin);
 adminRoutes.get("/profile", adminController.auth.profile);

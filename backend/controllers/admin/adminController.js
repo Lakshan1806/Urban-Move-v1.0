@@ -8,4 +8,4 @@ const adminController = {
   car: carManagementController,
 };
 
-export default adminController;
+export default adminController; 
