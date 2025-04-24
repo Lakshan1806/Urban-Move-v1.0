@@ -10,8 +10,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
 import authRouter from "./routes/authRoutes.js";
-import userRouter from "./routes/userRoutes.js";
-
+import passport from "passport";
+import "./config/passport.js";
 dotenv.config();
 
 if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
@@ -27,9 +27,7 @@ app.use(
     origin: "http://localhost:5173",
   })
 );
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
-app.use(cookieParser());
+
 app.use(
   session({
     secret: process.env.SESSION_SECRET,
@@ -42,6 +40,12 @@ app.use(
     },
   })
 );
+app.use(passport.initialize());
+app.use(passport.session());
+
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 
 app.use("/auth/", authRouter);
 
@@ -49,8 +53,6 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ success: false, message: "Internal Server Error" });
 });
-
-
 
 app.get("/", (req, res) => {
   res.send("Server is ready");
@@ -79,7 +81,6 @@ console.log("server is ready");
 console.log("Current Working Directory:", process.cwd());
 
 app.use("/api/auth", authRouter);
-app.use("/api/user", userRouter);
 app.use("/api/admin", adminRoutes);
 
 async function startServer() {

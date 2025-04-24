@@ -1,36 +1,16 @@
-/* import React from 'react';
-import { GoogleLogin } from '@react-oauth/google';
+import imgg from "../signup_photos/googlelogo.svg"; 
 
-const GoogleLoginButton = () => {
-  const handleSuccess = (credentialResponse) => {
-    console.log('Google Credential Response:', credentialResponse);
-    // Send credentialResponse to the backend
-    fetch("http://localhost:5000/auth/google/callback", { // Fixed the quote
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token: credentialResponse.credential })
-    }).then((res) => {
-        if (!res.ok) throw new Error("Failed to authenticate with Google");
-        return res.json();
-      })
-      .then((data) => {
-        console.log("Server Response:", data);
-        // Handle success (e.g., save user data, redirect)
-      })
-      .catch((err) => console.error("Error:", err));
-  };
-
-  const handleError = () => {
-    console.error('Google Login Failed');
+export default function GoogleLoginButton() {
+  const handleClick = () => {
+    window.location.href = "http://localhost:5000/api/auth/google";
   };
 
   return (
-    <GoogleLogin
-      onSuccess={handleSuccess}
-      onError={handleError}
-    />
+    <button
+      onClick={handleClick}
+      className="bg-white w-full p-2 border rounded border-[#FFD12E] text-center mt-3 cursor-pointer" >
+      <img src={imgg} alt="Google" className="inline-block mr-2" />
+      Sign in with Google
+    </button>
   );
-};
-
-export default GoogleLoginButton;
- */
+}

@@ -1,42 +1,45 @@
 import React, { createContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import API from "../api"; 
+import API from "../api";
 
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [loading, setLoading] = useState(false); 
-  const [message, setMessage] = useState(""); 
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState("");
   const [error, setError] = useState(null);
 
   const navigate = useNavigate();
 
   // Check if user is authenticated on mount
-  useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const response = await API.get("/auth/is-auth");
 
-        if (response.data.success) {
-          setUser(response.data.user);
-          setIsAuthenticated(true);
-          
-        } 
-        else {
-          setUser(null);
-          setIsAuthenticated(false);
-        }
-        
-      } catch (error) {
-        console.error("Auth check failed:", error);
+  const checkAuth = async () => {
+    try {
+      const response = await API.get("/auth/is-auth");
+
+      if (response.data.success) {
+        setUser(response.data.user);
+        setIsAuthenticated(true);
+      } else {
         setUser(null);
         setIsAuthenticated(false);
       }
-    };
-     checkAuth();
-  
+    } catch (error) {
+      console.error("Auth check failed:", error);
+      setUser(null);
+      setIsAuthenticated(false);
+    }
+  };
+  useEffect(() => {
+    checkAuth();
+
+    // Handle Google auth redirect
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get("google_auth")) {
+      checkAuth();
+    }
   }, []);
 
   // Register function
@@ -44,25 +47,27 @@ const AuthProvider = ({ children }) => {
     setLoading(true);
     setError(null);
     setMessage("");
-    console.log("🔹 Sending registration data:", formData); // Debugging
+    console.log("Sending registration data:", formData);
     try {
       const response = await API.post("/auth/register", formData);
 
       if (response.status === 201) {
-
         setUser(response.data.user);
         setIsAuthenticated(true);
         navigate("/");
-      }
-      else {
+      } else {
         setMessage(response.data.message);
       }
       return response.data;
     } catch (error) {
       console.error("Registration failed:", error);
-      setError(error.response?.data?.message || "Registration failed. Please try again.");    } finally {
+      setError(
+        error.response?.data?.message ||
+          "Registration failed. Please try again."
+      );
+    } finally {
       setLoading(false);
-    } 
+    }
   };
 
   // OTP login function
@@ -133,6 +138,26 @@ const AuthProvider = ({ children }) => {
       setError("Failed to reset password");
     }
   };
+  const loginWithGoogle = () => {
+    window.open("http://localhost:5000/auth/google?redirect=true", "_self"); 
+  };
+  const getProfile = async () => {
+    setLoading(true);
+    try {
+      const response = await API.get("/auth/profile");
+      if (response.data) {
+        setUser(response.data);
+        setIsAuthenticated(true);
+        return response.data;
+      }
+    } catch (error) {
+      setIsAuthenticated(false);
+      console.error("Failed to fetch profile:", error);
+      throw error;
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const value = {
     user,
@@ -144,6 +169,8 @@ const AuthProvider = ({ children }) => {
     forgotPassword,
     resendOtp,
     resetPassword,
+    loginWithGoogle,
+    getProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
