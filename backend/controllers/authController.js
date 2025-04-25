@@ -159,6 +159,7 @@ const userController = {
           password: userSession.password,
           phone: userSession.phoneNumber,
           email: userSession.email,
+          isAccountVerified: true,
         });
 
         const token = generateJwtToken(newUser._id, newUser.username);
