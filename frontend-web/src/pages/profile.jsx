@@ -6,7 +6,6 @@ import API from "../api";
 const Profile = () => {
   const { isAuthenticated, user, logout } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -23,8 +22,6 @@ const Profile = () => {
       } catch (err) {
         setError(err.response?.data?.message || "Failed to load profile");
         console.error("Profile error:", err);
-      } finally {
-        setLoading(false);
       }
     };
 
@@ -33,10 +30,6 @@ const Profile = () => {
 
   if (!isAuthenticated) {
     return null;
-  }
-
-  if (loading) {
-    return <div className="text-center py-8">Loading profile...</div>;
   }
 
   if (error) {

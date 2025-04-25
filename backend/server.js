@@ -11,6 +11,7 @@ import { fileURLToPath } from "url";
 import session from "express-session";
 import authRouter from "./routes/authRoutes.js";
 import passport from "passport";
+import MongoStore from "connect-mongo";
 import "./config/passport.js";
 dotenv.config();
 
@@ -36,8 +37,13 @@ app.use(
     cookie: {
       secure: process.env.NODE_ENV === "production",
       httpOnly: true,
+      sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
+    store: MongoStore.create({ // Add session store
+      mongoUrl: process.env.MONGO_URI,
+      collectionName: 'sessions'
+    })
   })
 );
 app.use(passport.initialize());

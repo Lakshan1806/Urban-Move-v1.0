@@ -2,8 +2,7 @@ import express from "express";
 import userController from "../controllers/authController.js";
 import userAuth from "../middlewares/userAuth.js";
 import passport from "passport";
-import jwt from "jsonwebtoken";
-
+import generateJwtToken from "../utils/generateJWTToken.js";
 const router = express.Router();
 router.post("/register", userController.register);
 router.post("/login", userController.login);
@@ -17,27 +16,28 @@ router.post("/reset-password/:token", userController.resetPassword);
 
 router.get(
   "/google",
-  passport.authenticate("google", { scope: ["profile", "email"] })
+  passport.authenticate("google", {
+    scope: ["profile", "email"],
+    session: false,
+  })
 );
 
 router.get(
   "/google/callback",
   passport.authenticate("google", {
     session: false,
-    failureRedirect: "/login",
-    failureMessage: true,
+    failureRedirect: `${process.env.FRONTEND_URL}/login?error=google_auth_failed`,
   }),
   (req, res) => {
-    const token = jwt.sign({ id: req.user._id }, process.env.JWT_SECRET, {
-      expiresIn: "7d",
+    const token = generateJwtToken(req.user._id, req.user.username);
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 3600000,
     });
-    res
-      .cookie("token", token, {
-        httpOnly: true,
-        secure: process.env.NODE_ENV === "production",
-        sameSite: "lax",
-      })
-      .redirect("http://localhost:5173");
+    res.redirect(`${process.env.FRONTEND_URL}`);
   }
 );
 
