@@ -511,8 +511,27 @@ const userController = {
     try {
       const user = await userModel
         .findById(req.body.userId)
-        .select("-password -__v");
-      return res.json(user);
+        .select("-password -__v -resetPasswordToken -resetPasswordExpiresAt -verificationToken -verificationTokenExpiresAt");
+        if (!user) {
+          return res.status(404).json({ message: "User not found" });
+        }
+        const userData = user.authMethod === 'google' ? 
+        {
+          _id: user._id,
+          name: user.name,
+          email: user.email,
+          avatar: user.avatar,
+          authMethod: user.authMethod
+        } : 
+        {
+          _id: user._id,
+          username: user.username,
+          email: user.email,
+          phone: user.phone,
+          authMethod: user.authMethod
+        };
+
+      return res.json(userData);
     } catch (error) {
       return res.status(500).json({ message: "Server error" });
     }

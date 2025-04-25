@@ -1,6 +1,7 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 import userModel from "../models/usermodel.js";
+import logger from "../utils/logger.js";
 
 passport.use(
   new GoogleStrategy(
@@ -8,26 +9,32 @@ passport.use(
       clientID: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       callbackURL: "http://localhost:5000/auth/google/callback",
+      passReqToCallback: true,
     },
-    async (accessToken, refreshToken, profile, done) => {
-      const { id, displayName, emails, photos } = profile;
-      const email = emails[0].value;
-      const avatar = photos[0].value;
+    async (req, accessToken, refreshToken, profile, done) => {
+     try {
+      const email = profile.emails[0].value;
       let user = await userModel.findOne({
-        $or: [{ googleId: id }, { email }],
+        $or: [{ googleId: profile.id }, { email }],
       });
       if (!user) {
         user = await userModel.create({
-          googleId: id,
-          name: displayName,
+          googleId: profile.id,
+          username: profile.displayName,
           email,
-          avatar,
+          avatar: profile.photos[0]?.value,
           authMethod: "google",
           isAccountVerified: true,
+          createdAt: new Date(),
         });
+        logger.info(`New google user created: ${user.email}`);
       }
       done(null, user);
+    } catch (error) {
+      logger.error(`Error in Google strategy: ${error.message}`);
+      done(error, null);
     }
+  }
   )
 );
 
