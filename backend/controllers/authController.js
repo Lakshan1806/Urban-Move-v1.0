@@ -15,22 +15,26 @@ import crypto from "crypto";
 dotenv.config();
 const userController = {
   register: async (req, res) => {
-    if (!req.session)
+    if (!req.session) {
       return res.status(500).json({ message: "Session is not initialized" });
+    }
 
-    if (!req.session.tempUser) req.session.tempUser = {};
+    const {
+      username,
+      password,
+      phoneNumber,
+      otp: phoneOTP,
+      email,
+      emailOTP,
+    } = req.body;
+
+    if (username && password) {
+      req.session.tempUser = {};
+    }
+
+    let userSession = req.session.tempUser || {};
 
     try {
-      const {
-        username,
-        password,
-        phoneNumber,
-        otp: phoneOTP,
-        email,
-        emailOTP,
-      } = req.body;
-      let userSession = req.session.tempUser || {};
-
       if (!userSession.username && !userSession.password) {
         if (!username || !password) {
           return res
@@ -83,14 +87,14 @@ const userController = {
         if (!phoneOTP)
           return res.status(400).json({ message: "Phone OTP is required" });
 
-        if (
-          !(await validateOtp(
-            "phone",
-            userSession.phoneNumber,
-            phoneOTP,
-            otpModel
-          ))
-        ) {
+        const isValidPhoneOtp = await validateOtp(
+          "phone",
+          userSession.phoneNumber,
+          phoneOTP,
+          otpModel
+        );
+
+        if (!isValidPhoneOtp) {
           return res
             .status(400)
             .json({ message: "Invalid or expired phone OTP" });
@@ -135,9 +139,14 @@ const userController = {
           return res.status(400).json({ message: "Email OTP is required" });
         }
 
-        if (
-          !(await validateOtp("email", userSession.email, emailOTP, otpModel))
-        ) {
+        const isValidEmailOtp = await validateOtp(
+          "email",
+          userSession.email,
+          emailOTP,
+          otpModel
+        );
+
+        if (!isValidEmailOtp) {
           return res
             .status(400)
             .json({ message: "Invalid or expired email OTP" });
@@ -159,6 +168,7 @@ const userController = {
           sameSite: "strict",
           maxAge: 3600000,
         });
+
         req.session.user = {
           _id: newUser._id,
           username: newUser.username,
@@ -175,28 +185,26 @@ const userController = {
             "Registration successful"
           );
         } catch (error) {
-          return res
-            .status(500)
-            .json({
-              message: "Failed to send welcome email",
-              error: error.message,
-            });
-        }
-        return res
-          .status(201)
-          .json({
-            message: "Registration successful!",
-            user: req.session.user,
+          return res.status(500).json({
+            message: "Failed to send welcome email",
+            error: error.message,
           });
+        }
+
+        return res.status(201).json({
+          message: "Registration successful!",
+          user: req.session.user,
+        });
       }
 
-      return res
-        .status(400)
-        .json({ message: "Unexpected state of registration process." });
+      return res.status(400).json({
+        message: "Unexpected state of registration process.",
+      });
     } catch (error) {
-      return res
-        .status(500)
-        .json({ message: "Server error", error: error.message });
+      return res.status(500).json({
+        message: "Server error",
+        error: error.message,
+      });
     }
   },
 
@@ -205,14 +213,12 @@ const userController = {
       return res.status(500).json({ message: "Session is not initialized" });
     }
 
-    if (!req.session.tempUser) {
+    const { username, password, otp: phoneOTP } = req.body;
+    if (username && password) {
       req.session.tempUser = {};
     }
-
+    let userSession = req.session.tempUser || {};
     try {
-      const { username, password, otp: phoneOTP } = req.body;
-      let userSession = req.session.tempUser || {};
-
       if (!userSession.username && !userSession.password) {
         if (!username || !password) {
           return res
@@ -257,11 +263,9 @@ const userController = {
 
         req.session.tempUser.phoneNumber = phoneNumber;
         await req.session.save();
-        return res
-          .status(200)
-          .json({
-            message: "OTP sent to your phone. Please verify to continue.",
-          });
+        return res.status(200).json({
+          message: "OTP sent to your phone. Please verify to continue.",
+        });
       }
 
       if (
@@ -350,10 +354,14 @@ const userController = {
   isAuthenticated: async (req, res) => {
     try {
       if (req.body.userId) {
-        const user = await userModel.findById(req.body.userId).select("-password -__v");
+        const user = await userModel
+          .findById(req.body.userId)
+          .select("-password -__v");
         return res.json({ success: true, user });
       } else {
-        return res.status(401).json({ success: false, message: "Not authenticated" });
+        return res
+          .status(401)
+          .json({ success: false, message: "Not authenticated" });
       }
     } catch (error) {
       return res.status(500).json({ success: false, message: "Server error" });
@@ -385,19 +393,15 @@ const userController = {
           `${process.env.CLIENT_URL}/reset-password/${resetToken}`
         );
       } catch (error) {
-        return res
-          .status(500)
-          .json({
-            message: "Failed to send Reset email",
-            error: error.message,
-          });
-      }
-      res
-        .status(200)
-        .json({
-          success: true,
-          message: "Password reset link sent to your email",
+        return res.status(500).json({
+          message: "Failed to send Reset email",
+          error: error.message,
         });
+      }
+      res.status(200).json({
+        success: true,
+        message: "Password reset link sent to your email",
+      });
     } catch (error) {
       res.status(400).json({ success: false, message: error.message });
     }
@@ -504,7 +508,9 @@ const userController = {
   },
   getUserProfile: async (req, res) => {
     try {
-      const user = await userModel.findById(req.body.userId).select("-password -__v");
+      const user = await userModel
+        .findById(req.body.userId)
+        .select("-password -__v");
       return res.json(user);
     } catch (error) {
       return res.status(500).json({ message: "Server error" });
