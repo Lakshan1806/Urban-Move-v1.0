@@ -1,22 +1,36 @@
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 import myImage from "../assets/rent.image.1.png";
 import myImage2 from "../assets/rent.image.2.png";
 import myImage3 from "../assets/rent.image.3.png";
 import myImage4 from "../assets/rent.image.4.png";
-import slide1 from "../assets/rent.slide.1.png";
-import slide2 from "../assets/rent.slide.2.png";
-import slide3 from "../assets/rent.slide.3.png";
-import review1 from "../assets/rent.review.1.png";
-import review2 from "../assets/rent.review.2.png";
-import review3 from "../assets/rent.review.3.png";
-import review4 from "../assets/rent.review.4.png";
-import review5 from "../assets/rent.review.5.png";
-import review6 from "../assets/rent.review.6.png";
 import { Link } from "react-router-dom";
 import axios from 'axios';
-import CarSelection from "./CarSelection.jsx"; // Adjust the path if necessary
+import CarSelection from "./CarSelection.jsx"; 
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext"
 
+
+function ConditionalButton({ text }) {
+  const { user } = useAuth(); // assuming `user` is null when not logged in
+  const navigate = useNavigate();
+
+  const handleClick = () => {
+    if (user) {
+      navigate("/feedback");
+    } else {
+      navigate("/signin");
+    }
+  };
+
+  return (
+    <button
+      onClick={handleClick}
+      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
+    >
+      {text}
+    </button>
+  );
+}
 
 
 
@@ -29,7 +43,7 @@ function Rent() {
       <div className="flex justify-center gap-4 mt-4">
         <Button text="Renting Options" link="/rent-options" />
         <Button text="Car Options" link="/car-options" />
-        <Button text="Reviews" link="/feedback" />
+        <ConditionalButton text="Reviews" />
       </div>
       <div className="flex flex-col items-center md:flex-row md:justify-between mt-10">
         <Image1 />
@@ -40,9 +54,8 @@ function Rent() {
         <Image src={myImage3} />
         <Image src={myImage4} />
       </div>
-      <AutoSlideshow />
-      <Review />
       <RentNowForm/>
+      <Slideshow/>
     </div>
   );
 }
@@ -227,25 +240,6 @@ function  RentNowForm ()   {
   );
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 function Button({ text, link }) {
   return (
     <Link to={link} className="inline-block">
@@ -275,12 +269,6 @@ function Text1() {
   );
 }
 
-
-
-
-
-
-
 function Image({ src }) {
   return (
     <div className="w-1/3 flex justify-center">
@@ -289,47 +277,40 @@ function Image({ src }) {
   );
 }
 
-function AutoSlideshow() {
-  const images = [slide1, slide2, slide3];
-  const [currentIndex, setCurrentIndex] = useState(0);
+
+
+function Slideshow  ()  {
+  const [images, setImages] = useState([]);
+  const [current, setCurrent] = useState(0);
+
+  useEffect(() => {
+    axios.get("http://localhost:5000/api/images")
+      .then(res => setImages(res.data))
+      .catch(err => console.error(err));
+  }, []);
 
   useEffect(() => {
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 3000); 
+      setCurrent(prev => (prev + 1) % images.length);
+    }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [images]);
+
+  if (!images.length) return <div>Loading slideshow...</div>;
 
   return (
-    <div className="relative w-full max-w-4x2 mx-auto overflow-hidden mt-20">
-      <div className="relative w-full h-200">
-        {images.map((image, index) => (
-          <img key={index} src={image} alt={`Slide ${index + 1}`} className={`absolute inset-0 w-full h-full object-cover rounded-lg transition-opacity duration-700 ${index === currentIndex ? "opacity-100" : "opacity-0"}`} />
-        ))}
-      </div>
-    </div>                                      
-  );
-}
-
-function Review() {
-  const images = [review1, review2, review3, review4, review5, review6];
-
-  return (
-    <div className="relative h-100 flex items-center overflow-hidden mt-12">
-      {images.map((image, index) => (
-        <motion.div
-          key={index}
-          className="absolute"
-          initial={{ x: "-100%" }}
-          animate={{ x: "100vw" }}
-          transition={{ duration: 15, ease: "linear", repeat: Infinity, delay: index * 6 }}
-        >
-          <img src={image} alt={`Review ${index + 1}`} className="w-auto h-auto max-w-full max-h-96" />
-        </motion.div>
-      ))}
+    <div className="w-full h-[400px] flex justify-center items-center bg-gray-200 rounded-xl overflow-hidden shadow-md">
+      <img
+        src={images[current]}
+        alt="slideshow"
+        className="w-full h-full object-cover transition-all duration-500"
+      />
     </div>
   );
-}
+};
+
+
+
 
 export default Rent;
  
