@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { GiGearStickPattern } from "react-icons/gi";
 import { PiSeatbelt, PiPath, PiSpeedometer } from "react-icons/pi";
 import { BsFuelPump } from "react-icons/bs";
@@ -7,8 +7,13 @@ import AddUnit from "./AddUnit";
 import UnitDetails from "./UnitDetails";
 import axios from "axios";
 
-function CarDetails({ car }) {
+function CarDetails({ car, onUpdate }) {
+  const fileInputRef = useRef();
   const [carImage, setCarImage] = useState(null);
+
+  const [editingImagePath, setEditingImagePath] = useState(null);
+  const [editingKeyImagePath, setEditingKeyImagePath] = useState(null);
+  const [addImagePath, setAddImagePath] = useState(null);
   const [addUnit, setAddUnit] = useState(false);
   const [unit, setUnit] = useState([]);
   const [isEditable, setIsEditable] = useState(false);
@@ -99,6 +104,58 @@ function CarDetails({ car }) {
     setIsEditable(true);
   };
 
+  const handleKeyEditImage = (keyImagePath) => {
+    setEditingKeyImagePath(keyImagePath);
+    fileInputRef.current.click();
+  };
+
+  const handleEditImage = (imagePath) => {
+    setEditingImagePath(imagePath);
+    fileInputRef.current.click();
+  };
+  const handleAddImage = (newImagePath) => {
+    setAddImagePath(newImagePath);
+    fileInputRef.current.click();
+  };
+
+  const handleDeleteImage = async (imagePath) => {
+    const response = await axios.delete("/admin/delete_car_image", {
+      data: {
+        carId: car._id,
+        imagePath,
+      },
+    });
+    console.log("Deleted:", response.data);
+  };
+  const onImageSelected = async (e) => {
+    const file = e.target.files[0];
+    if (file == null) {
+      return;
+    }
+    const formData = new FormData();
+    if (editingImagePath) {
+      formData.append("image", file);
+      formData.append("imagePath", editingImagePath);
+    }
+    if (editingKeyImagePath) {
+      formData.append("keyImage", file);
+    }
+    if (addImagePath) {
+      formData.append("newImage", file);
+    }
+    formData.append("carId", car._id);
+
+    try {
+      await axios.patch("/admin/update_car_image", formData);
+    } catch (err) {
+      console.error("Image update failed:", err);
+    } finally {
+      setEditingImagePath(null);
+      setEditingKeyImagePath(null);
+      setAddImagePath(null);
+    }
+  };
+
   const onSave = async () => {
     const formData = new FormData();
     formData.append("make", make);
@@ -116,10 +173,14 @@ function CarDetails({ car }) {
     formData.append("_id", car._id);
 
     try {
-      const response = await axios.post("/admin/update_car_model", formData);
+      const {
+        data: { updatedCar },
+      } = await axios.post("/admin/update_car_model", formData);
+      onUpdate(updatedCar);
     } catch (error) {
       console.error("Upload failed:", error);
     }
+
     setIsEditable(false);
   };
 
@@ -129,18 +190,53 @@ function CarDetails({ car }) {
 
   return (
     <div className="flex flex-col gap-5 overflow-auto h-full">
-      <div className="flex flex-col  gap-5">
-        <div className=" border-black">
-          <img src={carImage} className="rounded-lg" />
+      <div className="flex flex-col gap-5">
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={onImageSelected}
+        />
+        <div className="relative group">
+          <img src={carImage} className="w-full rounded-lg" />
+          {isEditable && (
+            <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
+              <button
+                onClick={() => handleKeyEditImage(car.keyImage)}
+                className="bg-white rounded-full p-1"
+              >
+                ✏️
+              </button>
+            </div>
+          )}
         </div>
-        <div className="flex flex-row  overflow-auto gap-5 justify-center">
+        <div className="flex flex-row overflow-auto gap-5 justify-start">
+          {console.log(car.images)}
           {car.images.map((image, index) => (
-            <img
-              src={image}
-              key={index}
-              onClick={() => setCarImage(image)}
-              className="w-50 h-full rounded-lg object-cover"
-            />
+            <div className="flex-none relative group" key={index}>
+              <img
+                src={image}
+                onClick={() => setCarImage(image)}
+                className="w-50 rounded-lg object-cover"
+              />
+              {isEditable && (
+                <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
+                  <button
+                    onClick={() => handleEditImage(image)}
+                    className="bg-white rounded-full p-1"
+                  >
+                    ✏️
+                  </button>
+                  <button
+                    onClick={() => handleDeleteImage(image)}
+                    className="bg-white rounded-full p-1"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       </div>
@@ -209,6 +305,23 @@ function CarDetails({ car }) {
                   <button
                     type="button"
                     className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    onClick={handleAddImage}
+                  >
+                    Add Image
+                  </button>
+                </div>
+                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+                  <button
+                    type="button"
+                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  >
+                    Delete
+                  </button>
+                </div>
+                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+                  <button
+                    type="button"
+                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
                     onClick={onSave}
                   >
                     Save
@@ -233,14 +346,6 @@ function CarDetails({ car }) {
                     onClick={onEdit}
                   >
                     Edit
-                  </button>
-                </div>
-                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
-                  <button
-                    type="button"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-                  >
-                    Delete
                   </button>
                 </div>
                 <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">

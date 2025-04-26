@@ -68,8 +68,8 @@ function AddCars({ onSaveForm }) {
     formData.append("seat", seat);
     formData.append("speed", speed);
     formData.append("description", description);
-    console.log(tempImage); // Should show a FileList in the console.
-    console.log(tempImage.constructor.name); // Likely outputs "FileList"
+    console.log(tempImage); 
+    console.log(tempImage.constructor.name); 
 
     if (tempImage) {
       Array.from(tempImage).forEach((file) => {

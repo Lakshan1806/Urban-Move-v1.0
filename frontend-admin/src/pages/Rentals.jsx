@@ -2,6 +2,7 @@ import { useState } from "react";
 import AvailableCars from "../components/Rentals/AvailableCars";
 import CarDetails from "../components/Rentals/CarDetails";
 import AddCars from "../components/Rentals/AddCars";
+import CurrentActivity from "../components/Rentals/CurrentActivity";
 
 function Rentals() {
   const [carDetails, setCarDetails] = useState(null);
@@ -24,11 +25,10 @@ function Rentals() {
         </h1>
       </div>
       <div className="grid grid-cols-12 grid-rows-12 gap-3 flex-1 min-h-0">
-        
-          {component}
-      
+        {component}
+
         <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
-          <CarDetails car={carDetails} />
+          <CarDetails car={carDetails} onUpdate={setCarDetails} />
         </div>
       </div>
     </div>
