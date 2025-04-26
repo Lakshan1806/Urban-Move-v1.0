@@ -13,6 +13,9 @@ import authRouter from "./routes/authRoutes.js";
 import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
+import fs from "fs";
+
+const PORT = 5000;
 dotenv.config();
 
 if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
@@ -71,11 +74,6 @@ app.use(
   })
 );
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
-console.log(path.join(__dirname, "/uploads"));
-
 app.use(cookieParser());
 app.use("/admin", adminRoutes);
 app.use("/feedback", feedbackRoutes);
@@ -96,5 +94,9 @@ async function startServer() {
     console.log("Server started at http://localhost:5000");
   });
 }
+
+
+
+
 
 startServer();
