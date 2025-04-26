@@ -34,6 +34,8 @@ const userController = {
 
     let userSession = req.session.tempUser || {};
 
+const adminAuthController = {
+  login: async (req, res) => {
     try {
       if (!userSession.username && !userSession.password) {
         if (!username || !password) {
@@ -537,4 +539,5 @@ const userController = {
     }
   },
 };
-export default userController;
+
+export default adminAuthController;
