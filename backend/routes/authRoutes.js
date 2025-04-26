@@ -16,6 +16,10 @@ router.post("/reset-password/:token", userController.resetPassword);
 
 router.get(
   "/google",
+  (req, res, next) => {
+    req.session.googleAuthIntent = req.query.intent || "login";
+    next();
+  },
   passport.authenticate("google", {
     scope: ["profile", "email"],
     session: false,
@@ -28,17 +32,44 @@ router.get(
     session: false,
     failureRedirect: `${process.env.FRONTEND_URL}/login?error=google_auth_failed`,
   }),
-  (req, res) => {
-    const token = generateJwtToken(req.user._id, req.user.username);
+  async (req, res) => {
+    try {
+      const user = req.user;
 
-    res.cookie("token", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 3600000,
-    });
-    res.redirect(`${process.env.FRONTEND_URL}`);
+      if (user.isAccountVerified) {
+        const token = generateJwtToken(user._id, user.username);
+
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 3600000,
+        });
+
+        return res.redirect(`${process.env.FRONTEND_URL}`);
+      }
+
+      req.session.tempUser = {
+        googleId: user.googleId,
+        email: user.email,
+        username: user.username,
+        avatar: user.avatar,
+        authMethod: "google",
+      };
+
+      req.session.save();
+
+      res.redirect(
+        `${process.env.FRONTEND_URL}/verify-phone?authMethod=google`
+      );
+    } catch (error) {
+      res.redirect(
+        `${process.env.FRONTEND_URL}/login?error=google_auth_failed`
+      );
+    }
   }
 );
+
+router.post("/google/verify-phone", userController.verifyGooglePhone);
 
 export default router;

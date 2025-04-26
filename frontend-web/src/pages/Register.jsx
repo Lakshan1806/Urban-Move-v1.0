@@ -219,7 +219,7 @@ const Register = () => {
               </div>
 
               <img src={imgl} alt="Divider" className="w-full h-auto" />
-              <GoogleLoginButton />
+              <GoogleLoginButton intent="signup" />
               <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
                 <Link to="/signin">Already have an account? Sign in</Link>
               </p>

@@ -545,5 +545,126 @@ const userController = {
       return res.status(500).json({ message: "Server error" });
     }
   },
+
+  verifyGooglePhone: async (req, res) => {
+    try {
+      if (!req.session.tempUser || !req.session.tempUser.googleId) {
+        return res.status(400).json({
+          success: false,
+          message: "Google signup session expired",
+        });
+      }
+
+      const { phoneNumber, otp } = req.body;
+
+      if (!phoneNumber && !otp) {
+        return res.status(400).json({
+          success: false,
+          message: "Phone number or OTP is required",
+        });
+      }
+
+      if (phoneNumber && !otp) {
+        const phoneRegex = /^(0|94|\+94)?(7[0-9])([0-9]{7})$/;
+        if (!phoneRegex.test(phoneNumber)) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid phone number format",
+          });
+        }
+
+        const existingUser = await userModel.findOne({ phone: phoneNumber });
+        if (existingUser) {
+          return res.status(400).json({
+            success: false,
+            message: "Phone number already exists",
+          });
+        }
+
+        req.session.tempUser.phoneNumber = phoneNumber;
+        await req.session.save();
+
+        await sendOtp(
+          { body: { type: "phone", phone: phoneNumber } },
+          {
+            status: () => ({ json: () => {} }),
+          }
+        );
+
+        return res.status(200).json({
+          success: true,
+          message: "OTP sent to phone",
+        });
+      }
+
+      if (otp) {
+        if (!req.session.tempUser.phoneNumber) {
+          return res.status(400).json({
+            success: false,
+            message: "Phone number not found in session",
+          });
+        }
+
+        const isValidOtp = await validateOtp(
+          "phone",
+          req.session.tempUser.phoneNumber,
+          otp,
+          otpModel
+        );
+
+        if (!isValidOtp) {
+          return res.status(400).json({
+            success: false,
+            message: "Invalid or expired OTP",
+          });
+        }
+
+        const updatedUser = await userModel.findOneAndUpdate(
+          { googleId: req.session.tempUser.googleId },
+          {
+            phone: req.session.tempUser.phoneNumber,
+            isAccountVerified: true,
+          },
+          { new: true }
+        );
+
+        const token = generateJwtToken(updatedUser._id, updatedUser.username);
+
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 3600000,
+        });
+
+        delete req.session.tempUser;
+        await req.session.save();
+
+        return res.status(200).json({
+          success: true,
+          message: "Phone verification successful",
+          user: {
+            _id: updatedUser._id,
+            username: updatedUser.username,
+            email: updatedUser.email,
+            phone: updatedUser.phone,
+            authMethod: updatedUser.authMethod,
+          },
+        });
+      }
+
+      return res.status(400).json({
+        success: false,
+        message: "Invalid request",
+      });
+    } catch (error) {
+      console.error("Google phone verification error:", error);
+      return res.status(500).json({
+        success: false,
+        message: "Server error",
+        error: error.message,
+      });
+    }
+  },
 };
 export default userController;

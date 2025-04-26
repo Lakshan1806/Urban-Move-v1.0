@@ -42,10 +42,10 @@ app.use(
       sameSite: "strict",
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
-    store: MongoStore.create({ // Add session store
+    store: MongoStore.create({
       mongoUrl: process.env.MONGO_URI,
-      collectionName: 'sessions'
-    })
+      collectionName: "sessions",
+    }),
   })
 );
 app.use(passport.initialize());
@@ -73,12 +73,6 @@ console.log(path.join(__dirname, "/uploads"));
 
 
 app.use(express.json());
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
 
 app.use(cookieParser());
 app.use("/admin", adminRoutes);

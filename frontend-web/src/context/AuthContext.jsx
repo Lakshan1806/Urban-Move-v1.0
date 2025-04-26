@@ -140,14 +140,18 @@ const AuthProvider = ({ children }) => {
       setError("Failed to reset password");
     }
   };
-  const loginWithGoogle = () => {
+  const loginWithGoogle = useCallback((intent = "login") => {
     try {
-      window.open("http://localhost:5000/auth/google?redirect=true", "_self");
+      window.open(
+        `http://localhost:5000/auth/google?intent=${intent}`,
+        "_self"
+      );
     } catch (error) {
       setError("Failed to initiate Google login");
       console.error("Google login error:", error);
     }
-  };
+  }, []);
+
   const getProfile = useCallback(async () => {
     try {
       const response = await API.get("/auth/profile");
