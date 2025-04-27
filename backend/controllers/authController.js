@@ -214,12 +214,14 @@ const userController = {
       return res.status(500).json({ message: "Session is not initialized" });
     }
 
-    const { username, password, otp: phoneOTP } = req.body;
+    const { username, password, phone: phoneNumber, otp: phoneOTP } = req.body;
     if (username && password) {
       req.session.tempUser = {};
     }
     let userSession = req.session.tempUser || {};
+
     try {
+      // STAGE 1: Verify username and password
       if (!userSession.username && !userSession.password) {
         if (!username || !password) {
           return res
@@ -234,6 +236,7 @@ const userController = {
             authMethod: user?.authMethod || "none",
           });
         }
+
         if (!user || !bcrypt.compare(password, user.password)) {
           if (user) {
             const isMatch = bcrypt.compare(password, user.password);
@@ -252,34 +255,62 @@ const userController = {
           });
         }
 
-        req.session.tempUser = { username, password };
-        const phoneNumber = user.phone;
+        req.session.tempUser = { username, password, userId: user._id };
+        await req.session.save();
+
+        return res.status(200).json({
+          message:
+            "Username and password verified. Please provide your phone number.",
+          nextStep: "provide_phone",
+        });
+      }
+
+      // STAGE 2: Verify phone number matches user's record
+      if (userSession.username && !userSession.phoneNumber) {
         if (!phoneNumber) {
+          return res.status(400).json({ message: "Phone number is required" });
+        }
+        const phoneRegex = /^(0|94|\+94)?(7[0-9])([0-9]{7})$/;
+
+        if (!phoneRegex.test(phoneNumber)) {
           return res
             .status(400)
-            .json({ message: "Phone number not found for the user" });
+            .json({ message: "Invalid phone number format" });
         }
 
-        try {
-          await sendOtp({ body: { type: "phone", phone: phoneNumber } }, res);
-        } catch (error) {
-          return res
-            .status(500)
-            .json({ message: "Failed to send OTP", error: error.message });
+        const user = await userModel.findById(userSession.userId);
+        if (!user) {
+          clearTempUserSession(req.session);
+          return res.status(404).json({ message: "User not found" });
+        }
+
+        if (user.phone !== phoneNumber) {
+          return res.status(400).json({
+            message: "Phone number does not match our records",
+            hint: "Please enter the phone number associated with this account",
+          });
         }
 
         req.session.tempUser.phoneNumber = phoneNumber;
         await req.session.save();
+
+        try {
+          await sendOtp({ body: { type: "phone", phone: phoneNumber } }, res);
+        } catch (error) {
+          return res.status(500).json({
+            message: "Failed to send OTP",
+            error: error.message,
+          });
+        }
+
         return res.status(200).json({
           message: "OTP sent to your phone. Please verify to continue.",
+          nextStep: "verify_otp",
         });
       }
 
-      if (
-        userSession.username &&
-        userSession.phoneNumber &&
-        !userSession.phoneVerified
-      ) {
+      // STAGE 3: Verify OTP
+      if (userSession.phoneNumber && !userSession.phoneVerified) {
         if (!phoneOTP) {
           return res.status(400).json({ message: "Phone OTP is required" });
         }
@@ -299,9 +330,7 @@ const userController = {
         req.session.tempUser.phoneVerified = true;
         await req.session.save();
 
-        const user = await userModel.findOne({
-          username: userSession.username,
-        });
+        const user = await userModel.findById(userSession.userId);
         const token = generateJwtToken(user._id, user.username);
 
         res.cookie("token", token, {
@@ -325,10 +354,7 @@ const userController = {
         .json({ message: "Invalid request or process step." });
     } catch (error) {
       const errorMessage =
-        error && error.message
-          ? error.message
-          : "An unexpected server error occurred";
-
+        error?.message || "An unexpected server error occurred";
       if (!res.headersSent) {
         return res.status(500).json({ message: errorMessage });
       }
