@@ -541,32 +541,19 @@ const userController = {
   },
   getUserProfile: async (req, res) => {
     try {
-      const user = await userModel
-        .findById(req.body.userId)
-        .select(
-          "-password -__v -resetPasswordToken -resetPasswordExpiresAt -verificationToken -verificationTokenExpiresAt"
-        );
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-      const userData =
-        user.authMethod === "google"
-          ? {
-              _id: user._id,
-              name: user.name,
-              email: user.email,
-              avatar: user.avatar,
-              authMethod: user.authMethod,
-            }
-          : {
-              _id: user._id,
-              username: user.username,
-              email: user.email,
-              phone: user.phone,
-              authMethod: user.authMethod,
-            };
+      const user = await userModel.findById(req.body.userId).select({
+        fullname: 1,
+        username: 1,
+        email: 1,
+        phone: 1,
+        photo: 1,
+      });
 
-      return res.json(userData);
+      user.photo = user.photo
+        .replace(/\\/g, "/")
+        .replace("backend/uploads", "/uploads");
+
+      res.json(user);
     } catch (error) {
       return res.status(500).json({ message: "Server error" });
     }
@@ -690,6 +677,87 @@ const userController = {
         message: "Server error",
         error: error.message,
       });
+    }
+  },
+
+  updateProfile: async (req, res) => {
+    try {
+      const { username, email, phone, userId, fullname } = req.body;
+
+      if (!username || !email || !phone) {
+        return res
+          .status(400)
+          .json({ message: "Username, email, and phone are required" });
+      }
+      if (req.file && req.file.path) {
+        const user = await userModel.findByIdAndUpdate(req.body.userId, {
+          $set: { photo: req.file.path },
+        });
+        console.log("Uploaded file:", req.file);
+      }
+
+      const updatedUser = await userModel.findByIdAndUpdate(userId, {
+        $set: {
+          fullname,
+          username,
+          email,
+          phone,
+        },
+      });
+
+      res.status(200).json({ message: "update successful" });
+    } catch (error) {
+      console.error("Update profile error:", error);
+      return res.status(500).json({ message: "Server error" });
+    }
+  },
+  changePassword: async (req, res) => {
+    try {
+      const { currentPassword, newPassword, confirmPassword, userId } =
+        req.body;
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "All password fields are required",
+        });
+      }
+
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({
+          success: false,
+          message: "New password and confirm password do not match",
+        });
+      }
+
+      const user = await userModel.findById(userId).select("+password");
+
+      if (!user) {
+        return res.status(404).json({ message: "User not found" });
+      }
+
+      // Verify current password
+
+      const isMatch = await bcrypt.compare(currentPassword, user.password);
+      if (!isMatch) {
+        return res
+          .status(400)
+          .json({ message: "current password is icorrect" });
+      }
+
+      // Update password
+      user.password = newPassword;
+      await user.save();
+
+      await nodemailer.passwordchangeSuccessEmail(user.email);
+
+      return res.json({
+        success: true,
+        message: "Password updated successfully",
+      });
+    } catch (error) {
+      console.error("Password change error:", error);
+      return res.status(500).json({ message: "Server error" });
     }
   },
 };

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import {
 	PASSWORD_RESET_REQUEST_TEMPLATE,
 	PASSWORD_RESET_SUCCESS_TEMPLATE,
-	
+	PASSWORD_CHANGE_SUCCESS_TEMPLATE,
 } from "./emailTemplates.js";
 
 dotenv.config({
@@ -68,5 +68,22 @@ async function sendResetSuccessEmail(email) {
 	
 	}
 
+  async function passwordchangeSuccessEmail(email) {
+    const mailOptions = {
+      from: process.env.SMTP_USER,
+      to: email,
+      subject: "Password Change Successful",
+      html: PASSWORD_CHANGE_SUCCESS_TEMPLATE,
+    };
+  
+    try {
+      await transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.error("Error sending password change success email:", error.message);
+      throw error;
+    }
+    
+    }
 
-export default {sendEmail, sendPasswordResetEmail, sendResetSuccessEmail};
+
+export default {sendEmail, sendPasswordResetEmail, sendResetSuccessEmail , passwordchangeSuccessEmail};

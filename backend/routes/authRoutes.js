@@ -13,6 +13,8 @@ router.get("/is-auth", userAuth, userController.isAuthenticated);
 router.post("/forgot-password", userController.forgotPassword);
 router.post("/resend-otp", userController.resendOTP);
 router.post("/reset-password/:token", userController.resetPassword);
+router.put("/updateprofile", userAuth, userController.updateProfile);
+router.put("/profile/password", userAuth, userController.changePassword);
 
 router.get(
   "/google",

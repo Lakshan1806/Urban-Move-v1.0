@@ -63,3 +63,51 @@ export const PASSWORD_RESET_REQUEST_TEMPLATE = `
 </body>
 </html>
 `;
+export const PASSWORD_CHANGE_SUCCESS_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Password Changed Successfully</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #2196F3, #0b7dda); padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">Password Changed Successfully</h1>
+  </div>
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p>Hello,</p>
+    <p>This is to confirm that your account password was successfully updated on ${new Date().toLocaleString()}.</p>
+    
+    <div style="text-align: center; margin: 30px 0;">
+      <div style="background-color: #2196F3; color: white; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; display: inline-block; font-size: 30px;">
+        ✓
+      </div>
+    </div>
+    
+    <p style="font-weight: bold;">Security Tips:</p>
+    <ul style="margin-top: 0;">
+      <li>Never share your password with anyone</li>
+      <li>Change your password regularly</li>
+      <li>Use a combination of letters, numbers and special characters</li>
+    </ul>
+    
+    <p>If you didn't make this change or believe your account may have been compromised, please:</p>
+    <ol>
+      <li>Reset your password immediately</li>
+      <li>Contact our support team at <a href="mailto:support@urbanmove.com">support@urbanmove.com</a></li>
+    </ol>
+    
+    <p>For your security, this email was sent to all registered email addresses associated with your account.</p>
+    
+    <p>Best regards,<br>The UrbanMove Team</p>
+  </div>
+  
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message. Please do not reply directly to this email.</p>
+    <p>© ${new Date().getFullYear()} UrbanMove. All rights reserved.</p>
+  </div>
+</body>
+</html>
+`;
+

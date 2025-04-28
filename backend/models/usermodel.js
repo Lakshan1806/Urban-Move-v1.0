@@ -3,6 +3,7 @@ import bcrypt from "bcrypt";
 
 const userSchema = new mongoose.Schema(
   {
+    fullname: { type: String },
     username: {
       type: String,
       required: function () {
@@ -24,9 +25,10 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    photo: { type: String, default: "" },
+    age: { type: Number },
     googleId: { type: String, unique: true, sparse: true },
     isAccountVerified: { type: Boolean, default: false },
-    name: { type: String },
     avatar: { type: String },
     authMethod: { type: String, enum: ["local", "google"], default: "local" },
     resetPasswordToken: String,
@@ -50,5 +52,9 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
+userSchema.methods.comparePassword = async function (candidatePassword) {
+  if (!this.password) return false; // For Google auth users without password
+  return await bcrypt.compare(candidatePassword, this.password);
+};
 const userModel = mongoose.model("User", userSchema);
 export default userModel;

@@ -36,9 +36,8 @@ const Login = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/resend-otp",
-        { phone: formData.phone },
-        { withCredentials: true }
+        "/auth/resend-otp",
+        { phone: formData.phone }
       );
 
       if (response.data.message.includes("sent to phone")) {
@@ -65,21 +64,19 @@ const Login = () => {
     try {
       if (step === 1) {
         await axios.post(
-          "http://localhost:5000/api/auth/login",
+          "/auth/login",
           {
             username: formData.username,
-            password: formData.password,
-          },
-          { withCredentials: true }
+            password: formData.password
+          }
         );
         setStep(2);
       } else if (step === 2) {
         await axios.post(
-          "http://localhost:5000/api/auth/login",
+          "/auth/login",
           {
-            phone: formData.phone,
-          },
-          { withCredentials: true }
+            phone: formData.phone
+          }
         );
         startPhoneTimer();
         setStep(3);

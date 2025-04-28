@@ -27,9 +27,9 @@ const GooglePhoneVerification = () => {
     setError("");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/google/verify-phone",
-        { phoneNumber },
-        { withCredentials: true }
+        "/auth/google/verify-phone",
+        { phoneNumber }
+        
       );
 
       if (response.data.success) {
@@ -49,9 +49,8 @@ const GooglePhoneVerification = () => {
     setError("");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/google/verify-phone",
-        { phoneNumber, otp },
-        { withCredentials: true }
+        "/auth/google/verify-phone",
+        { phoneNumber, otp }
       );
 
       if (response.data.success) {
@@ -72,9 +71,8 @@ const GooglePhoneVerification = () => {
     setError("");
     try {
       const response = await axios.post(
-        "http://localhost:5000/api/auth/resend-otp",
-        { phone: phoneNumber },
-        { withCredentials: true }
+        "/auth/resend-otp",
+        { phone: phoneNumber }
       );
 
       if (response.data.message.includes("sent to phone")) {
