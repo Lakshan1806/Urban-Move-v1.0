@@ -4,14 +4,13 @@ import myImage2 from "../assets/rent.image.2.png";
 import myImage3 from "../assets/rent.image.3.png";
 import myImage4 from "../assets/rent.image.4.png";
 import { Link } from "react-router-dom";
-import axios from 'axios';
-import CarSelection from "./CarSelection.jsx"; 
+import axios from "axios";
+import CarSelection from "./CarSelection.jsx";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext"
-
+import { useAuth } from "../context/AuthContext";
 
 function ConditionalButton({ text }) {
-  const { user } = useAuth(); // assuming `user` is null when not logged in
+  const { user } = useAuth();
   const navigate = useNavigate();
 
   const handleClick = () => {
@@ -32,10 +31,6 @@ function ConditionalButton({ text }) {
   );
 }
 
-
-
-
-
 function Rent() {
   return (
     <div className="p-4">
@@ -54,92 +49,105 @@ function Rent() {
         <Image src={myImage3} />
         <Image src={myImage4} />
       </div>
-      <RentNowForm/>
-      <Slideshow/>
+      <RentNowForm />
+      <Slideshow />
+      <AvailableCars/>
     </div>
   );
 }
 
-
-
-function  RentNowForm ()   {
+function RentNowForm() {
   // List of available cities
   const availableCities = [
     "New York",
     "Los Angeles",
     "Chicago",
     "Miami",
-    "San Francisco"
+    "San Francisco",
   ];
-  
+
   const [formData, setFormData] = useState({
-    pickupLocation: '',
-    dropoffLocation: '',
-    pickupTime: '',
-    dropoffTime: ''
+    pickupLocation: "",
+    dropoffLocation: "",
+    pickupTime: "",
+    dropoffTime: "",
   });
-  
-  const [message, setMessage] = useState('');
+
+  const [message, setMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [availableCars, setAvailableCars] = useState([]);
   const [searchParams, setSearchParams] = useState(null);
   const [showCarSelection, setShowCarSelection] = useState(false);
-  
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: value
+      [name]: value,
     });
-    
+
     // If we were showing cars and the user changes any form data,
     // hide the car selection until they search again
     if (showCarSelection) {
       setShowCarSelection(false);
     }
   };
-  
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setMessage('');
-    
+    setMessage("");
+
     try {
       // Search for available cars
-      const response = await axios.get('http://localhost:5000/api/cars/available', {
-        params: formData
-      });
-      
+      const response = await axios.get(
+        "http://localhost:5000/api/cars/available",
+        {
+          params: formData,
+        }
+      );
+
       setAvailableCars(response.data.data.cars);
       setSearchParams(response.data.data);
       setShowCarSelection(true);
-      
+
       // If no cars are available, show a message
       if (response.data.data.cars.length === 0) {
-        setMessage('No cars available for the selected time and location. Please try different dates or locations.');
+        setMessage(
+          "No cars available for the selected time and location. Please try different dates or locations."
+        );
       }
     } catch (error) {
-      setMessage(error.response?.data?.message || 'Error searching for available cars');
+      setMessage(
+        error.response?.data?.message || "Error searching for available cars"
+      );
       setShowCarSelection(false);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 mb-6">
-        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">Rent Now</h2>
-        
+        <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
+          Rent Now
+        </h2>
+
         {message && (
-          <div className={`p-3 mb-4 rounded ${message.includes('Error') || message.includes('No cars') ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-700'}`}>
+          <div
+            className={`p-3 mb-4 rounded ${message.includes("Error") || message.includes("No cars") ? "bg-red-100 text-red-700" : "bg-green-100 text-green-700"}`}
+          >
             {message}
           </div>
         )}
-        
+
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="pickupLocation" className="block text-gray-700 font-medium mb-2">
+            <label
+              htmlFor="pickupLocation"
+              className="block text-gray-700 font-medium mb-2"
+            >
               Pickup Location
             </label>
             <select
@@ -158,9 +166,12 @@ function  RentNowForm ()   {
               ))}
             </select>
           </div>
-          
+
           <div className="mb-4">
-            <label htmlFor="dropoffLocation" className="block text-gray-700 font-medium mb-2">
+            <label
+              htmlFor="dropoffLocation"
+              className="block text-gray-700 font-medium mb-2"
+            >
               Drop-off Location
             </label>
             <select
@@ -179,9 +190,12 @@ function  RentNowForm ()   {
               ))}
             </select>
           </div>
-          
+
           <div className="mb-4">
-            <label htmlFor="pickupTime" className="block text-gray-700 font-medium mb-2">
+            <label
+              htmlFor="pickupTime"
+              className="block text-gray-700 font-medium mb-2"
+            >
               Pickup Time
             </label>
             <input
@@ -194,9 +208,12 @@ function  RentNowForm ()   {
               required
             />
           </div>
-          
+
           <div className="mb-6">
-            <label htmlFor="dropoffTime" className="block text-gray-700 font-medium mb-2">
+            <label
+              htmlFor="dropoffTime"
+              className="block text-gray-700 font-medium mb-2"
+            >
               Drop-off Time
             </label>
             <input
@@ -209,30 +226,30 @@ function  RentNowForm ()   {
               required
             />
           </div>
-          
+
           <button
             type="submit"
             disabled={isLoading}
             className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors disabled:opacity-50"
           >
-            {isLoading ? 'Searching...' : 'Find Available Cars'}
+            {isLoading ? "Searching..." : "Find Available Cars"}
           </button>
         </form>
       </div>
-      
+
       {showCarSelection && (
-        <CarSelection 
-          cars={availableCars} 
+        <CarSelection
+          cars={availableCars}
           searchParams={searchParams}
           onBookingComplete={() => {
             setShowCarSelection(false);
             setFormData({
-              pickupLocation: '',
-              dropoffLocation: '',
-              pickupTime: '',
-              dropoffTime: ''
+              pickupLocation: "",
+              dropoffLocation: "",
+              pickupTime: "",
+              dropoffTime: "",
             });
-            setMessage('Booking completed successfully!');
+            setMessage("Booking completed successfully!");
           }}
         />
       )}
@@ -254,7 +271,11 @@ function Button({ text, link }) {
 function Image1() {
   return (
     <div className="w-full md:w-1/2 flex justify-center">
-      <img src={myImage} alt="Car Rental" className="w-full max-w-sm md:max-w-md lg:max-w-lg" />
+      <img
+        src={myImage}
+        alt="Car Rental"
+        className="w-full max-w-sm md:max-w-md lg:max-w-lg"
+      />
     </div>
   );
 }
@@ -263,7 +284,8 @@ function Text1() {
   return (
     <div className="text-center md:text-left md:w-1/2 p-4">
       <h1 className="text-2xl md:text-4xl font-bold">
-        Browse our fleet and pick the perfect car for a day, a week, or even a month.
+        Browse our fleet and pick the perfect car for a day, a week, or even a
+        month.
       </h1>
     </div>
   );
@@ -272,45 +294,128 @@ function Text1() {
 function Image({ src }) {
   return (
     <div className="w-1/3 flex justify-center">
-      <img src={src} alt="Rental Car" className="w-full max-w-xs md:max-w-sm lg:max-w-md" />
+      <img
+        src={src}
+        alt="Rental Car"
+        className="w-full max-w-xs md:max-w-sm lg:max-w-md"
+      />
     </div>
   );
 }
 
-
-
-function Slideshow  ()  {
+function Slideshow() {
   const [images, setImages] = useState([]);
   const [current, setCurrent] = useState(0);
 
   useEffect(() => {
-    axios.get("http://localhost:5000/api/images")
-      .then(res => setImages(res.data))
-      .catch(err => console.error(err));
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/user/slideshow_images");
+        console.log("image", response);
+        setImages(response.data);
+      } catch (error) {
+        console.log(Error);
+      }
+    };
+
+    fetchData();
   }, []);
 
+  const slideshowPath = [];
+  images.map((image) => slideshowPath.push(image.keyImage));
+  console.log(slideshowPath);
   useEffect(() => {
+    if (slideshowPath.length === 0) return;
     const interval = setInterval(() => {
-      setCurrent(prev => (prev + 1) % images.length);
+      setCurrent((prev) => (prev + 1) % slideshowPath.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [images]);
+  }, [slideshowPath]);
 
-  if (!images.length) return <div>Loading slideshow...</div>;
+  if (slideshowPath.length === 0) return <div>Loading slideshow...</div>;
 
   return (
     <div className="w-full h-[400px] flex justify-center items-center bg-gray-200 rounded-xl overflow-hidden shadow-md">
       <img
-        src={images[current]}
+        src={slideshowPath[current]}
         alt="slideshow"
         className="w-full h-full object-cover transition-all duration-500"
       />
     </div>
   );
-};
+}
 
+function AvailableCars() {
+  const [cars, setCars] = useState([]);
+  const [showCars, setShowCars] = useState(false);
 
+  const fetchCars = async () => {
+    try {
+      const response = await axios.get("/user/getAvailableCa");
+      setCars(response.data);
+      setShowCars(true);
+    } catch (error) {
+      console.error('Error fetching cars:', error);
+    }
+  };
+
+  return (
+    <div className="p-4">
+    <button 
+      onClick={fetchCars}
+      className="bg-blue-500 text-white p-2 rounded"
+    >
+      Show Available Cars
+    </button>
+
+    {showCars && (
+      <div className="mt-4">
+        {cars.length > 0 ? (
+          <ul className="space-y-2">
+            {cars.map((car) => (
+              <li key={car._id} className="border p-2 rounded shadow">
+                 {car.keyImage && (
+                    <img 
+                      src={car.keyImage} 
+                      alt={`${car.model} Main`} 
+                      className="w-full h-64 object-cover rounded mb-2"
+                    />
+                  )}
+                   <div className="grid grid-cols-2 gap-2 mt-2">
+                    {car.Images && car.Images.map((img, index) => (
+                      <img 
+                        key={index} 
+                        src={img} 
+                        alt={`${car.model} ${index + 1}`} 
+                        className="w-full h-32 object-cover rounded"
+                      />
+                    ))}
+                  </div>
+                <p><strong>Make:</strong> {car.make}</p>
+                <p><strong>Model:</strong> {car.model}</p>
+                <p><strong>Year:</strong> {car.year}</p>
+                <p><strong>Engine:</strong> {car.engine}</p>
+                <p><strong>Transmission:</strong> {car.transmission}</p>
+                <p><strong>Body Style:</strong> {car.bodyStyle}</p>
+                <p><strong>Fuel Type:</strong> {car.fuelType}</p>
+                <p><strong>Mileage:</strong> {car.mileage}</p>
+                <p><strong>Price:</strong> {car.price}</p>
+                <p><strong>Seat Capacity:</strong> {car.seat}</p>
+                <p><strong>Speed:</strong> {car.speed}</p>
+                <p><strong>Features:</strong> {car.features}</p>
+                
+
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p>No available cars found.</p>
+        )}
+      </div>
+    )}
+  </div>
+);
+}
 
 
 export default Rent;
- 
