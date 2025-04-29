@@ -8,7 +8,7 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
-import authRouter from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoute.js";
 import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
@@ -55,7 +55,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/auth/", authRouter);
+app.use("/auth", userRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
@@ -83,7 +83,7 @@ console.log(process.env.MONGO_URI);
 console.log("server is ready");
 console.log("Current Working Directory:", process.cwd());
 
-app.use("/api/auth", authRouter);
+//app.use("/api/auth", userRoutes);
 app.use("/api/admin", adminRoutes);
 
 async function startServer() {

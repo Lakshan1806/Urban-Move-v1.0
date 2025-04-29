@@ -1,19 +1,18 @@
 import dotenv from "dotenv";
-import hashPassword from "../utils/hashPassword.js";
-import generateJwtToken from "../utils/generateJWTToken.js";
-import checkExistingUser from "../utils/checkExistingUser.js";
-import validateOtp from "../utils/validateOtp.js";
-import saveSession from "../utils/saveSession.js";
-import sendOtp from "../utils/sendOtp.js";
-import userModel from "../models/usermodel.js";
-import otpModel from "../models/otpModels.js";
-import nodemailer from "../utils/nodemailer.js";
-import clearTempUserSession from "../utils/clearTempUserSession.js";
+import hashPassword from "../../utils/hashPassword.js";
+import generateJwtToken from "../../utils/generateJWTToken.js";
+import checkExistingUser from "../../utils/checkExistingUser.js";
+import validateOtp from "../../utils/validateOtp.js";
+import saveSession from "../../utils/saveSession.js";
+import sendOtp from "../../utils/sendOtp.js";
+import userModel from "../../models/usermodel.js";
+import otpModel from "../../models/otpModels.js";
+import nodemailer from "../../utils/nodemailer.js";
+import clearTempUserSession from "../../utils/clearTempUserSession.js";
 import bcrypt from "bcrypt";
-import crypto from "crypto";
 
 dotenv.config();
-const userController = {
+const userAuthController = {
   register: async (req, res) => {
     if (!req.session) {
       return res.status(500).json({ message: "Session is not initialized" });
@@ -383,108 +382,6 @@ const userController = {
         .json({ message: "Server error during logout", error: error.message });
     }
   },
-
-  isAuthenticated: async (req, res) => {
-    try {
-      if (req.body.userId) {
-        const user = await userModel
-          .findById(req.body.userId)
-          .select("-password -__v");
-        return res.json({ success: true, user });
-      } else {
-        return res
-          .status(401)
-          .json({ success: false, message: "Not authenticated" });
-      }
-    } catch (error) {
-      return res.status(500).json({ success: false, message: "Server error" });
-    }
-  },
-
-  forgotPassword: async (req, res) => {
-    const { email } = req.body;
-    try {
-      const user = await userModel.findOne({ email });
-
-      if (!user) {
-        return res
-          .status(400)
-          .json({ success: false, message: "User not found" });
-      }
-
-      const resetToken = crypto.randomBytes(20).toString("hex");
-      const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
-
-      user.resetPasswordToken = resetToken;
-      user.resetPasswordExpiresAt = resetTokenExpiresAt;
-
-      await user.save();
-
-      try {
-        await nodemailer.sendPasswordResetEmail(
-          user.email,
-          `${process.env.CLIENT_URL}/reset-password/${resetToken}`
-        );
-      } catch (error) {
-        return res.status(500).json({
-          message: "Failed to send Reset email",
-          error: error.message,
-        });
-      }
-      res.status(200).json({
-        success: true,
-        message: "Password reset link sent to your email",
-      });
-    } catch (error) {
-      res.status(400).json({ success: false, message: error.message });
-    }
-  },
-
-  resetPassword: async (req, res) => {
-    try {
-      const { token } = req.params;
-      const { password } = req.body;
-
-      const user = await userModel.findOne({
-        resetPasswordToken: token,
-        resetPasswordExpiresAt: { $gt: Date.now() },
-      });
-
-      if (!user) {
-        return res
-          .status(400)
-          .json({ success: false, message: "Invalid or expired reset token" });
-      }
-
-      const hashedPassword = await bcrypt.hash(password, 10);
-
-      const result = await userModel.updateOne(
-        { _id: user._id },
-        {
-          $set: {
-            password: hashedPassword,
-            resetPasswordToken: undefined,
-            resetPasswordExpiresAt: undefined,
-          },
-        }
-      );
-
-      if (result.modifiedCount === 0) {
-        throw new Error("Failed to update password");
-      }
-
-      const updatedUser = await userModel.findById(user._id);
-
-      await nodemailer.sendResetSuccessEmail(updatedUser.email);
-
-      res
-        .status(200)
-        .json({ success: true, message: "Password reset successful" });
-    } catch (error) {
-      res.status(500).json({ success: false, message: error.message });
-    }
-  },
-
   resendOTP: async (req, res) => {
     try {
       const { email, phone } = req.body;
@@ -539,26 +436,22 @@ const userController = {
         .json({ message: "Failed to resend OTP", error: error.message });
     }
   },
-  getUserProfile: async (req, res) => {
+  isAuthenticated: async (req, res) => {
     try {
-      const user = await userModel.findById(req.body.userId).select({
-        fullname: 1,
-        username: 1,
-        email: 1,
-        phone: 1,
-        photo: 1,
-      });
-
-      user.photo = user.photo
-        .replace(/\\/g, "/")
-        .replace("backend/uploads", "/uploads");
-
-      res.json(user);
+      if (req.body.userId) {
+        const user = await userModel
+          .findById(req.body.userId)
+          .select("-password -__v");
+        return res.json({ success: true, user });
+      } else {
+        return res
+          .status(401)
+          .json({ success: false, message: "Not authenticated" });
+      }
     } catch (error) {
-      return res.status(500).json({ message: "Server error" });
+      return res.status(500).json({ success: false, message: "Server error" });
     }
   },
-
   verifyGooglePhone: async (req, res) => {
     try {
       if (!req.session.tempUser || !req.session.tempUser.googleId) {
@@ -679,86 +572,5 @@ const userController = {
       });
     }
   },
-
-  updateProfile: async (req, res) => {
-    try {
-      const { username, email, phone, userId, fullname } = req.body;
-
-      if (!username || !email || !phone) {
-        return res
-          .status(400)
-          .json({ message: "Username, email, and phone are required" });
-      }
-      if (req.file && req.file.path) {
-        const user = await userModel.findByIdAndUpdate(req.body.userId, {
-          $set: { photo: req.file.path },
-        });
-        console.log("Uploaded file:", req.file);
-      }
-
-      const updatedUser = await userModel.findByIdAndUpdate(userId, {
-        $set: {
-          fullname,
-          username,
-          email,
-          phone,
-        },
-      });
-
-      res.status(200).json({ message: "update successful" });
-    } catch (error) {
-      console.error("Update profile error:", error);
-      return res.status(500).json({ message: "Server error" });
-    }
-  },
-  changePassword: async (req, res) => {
-    try {
-      const { currentPassword, newPassword, confirmPassword, userId } =
-        req.body;
-
-      if (!currentPassword || !newPassword || !confirmPassword) {
-        return res.status(400).json({
-          success: false,
-          message: "All password fields are required",
-        });
-      }
-
-      if (newPassword !== confirmPassword) {
-        return res.status(400).json({
-          success: false,
-          message: "New password and confirm password do not match",
-        });
-      }
-
-      const user = await userModel.findById(userId).select("+password");
-
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
-      // Verify current password
-
-      const isMatch = await bcrypt.compare(currentPassword, user.password);
-      if (!isMatch) {
-        return res
-          .status(400)
-          .json({ message: "current password is icorrect" });
-      }
-
-      // Update password
-      user.password = newPassword;
-      await user.save();
-
-      await nodemailer.passwordchangeSuccessEmail(user.email);
-
-      return res.json({
-        success: true,
-        message: "Password updated successfully",
-      });
-    } catch (error) {
-      console.error("Password change error:", error);
-      return res.status(500).json({ message: "Server error" });
-    }
-  },
 };
-export default userController;
+export default userAuthController;
