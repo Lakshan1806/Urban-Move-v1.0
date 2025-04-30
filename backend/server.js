@@ -4,7 +4,6 @@ import { connectDB } from "./config/db.js";
 import cors from "cors";
 import adminRoutes from "./routes/adminRoute.js";
 import checkAndCreateAdmin from "./utils/adminInitialSetup.js";
-import feedbackRoutes from "./routes/feedbackRoute.js";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -13,6 +12,9 @@ import authRouter from "./routes/authRoutes.js";
 import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
+import fs from "fs";
+
+const PORT = 5000;
 dotenv.config();
 
 if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
@@ -63,6 +65,13 @@ app.use((err, req, res, next) => {
 app.get("/", (req, res) => {
   res.send("Server is ready");
 });
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+console.log(path.join(__dirname, "/uploads"));
+
+
 app.use(express.json());
 app.use(
   cors({
@@ -71,16 +80,10 @@ app.use(
   })
 );
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
-console.log(path.join(__dirname, "/uploads"));
-
 app.use(cookieParser());
 app.use("/admin", adminRoutes);
-app.use("/feedback", feedbackRoutes);
-
-app.use(express.urlencoded({ extended: false }));
+app.use("/user", userRoutes);
+//app.use ("/cars", carRoutes);
 
 console.log(process.env.MONGO_URI);
 console.log("server is ready");
