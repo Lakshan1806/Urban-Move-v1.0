@@ -12,6 +12,9 @@ const userProfileController = {
         email: 1,
         phone: 1,
         photo: 1,
+        age: 1,
+        address: 1,
+        nicNumber: 1,
       });
 
       user.photo = user.photo
@@ -25,9 +28,9 @@ const userProfileController = {
   },
   updateProfile: async (req, res) => {
     try {
-      const { username, email, phone, userId, fullname } = req.body;
+      const { username, email, phone, userId, fullname, nicNumber, address, age } = req.body;
 
-      if (!username || !email || !phone) {
+      if (!username || !email || !phone ) {
         return res
           .status(400)
           .json({ message: "Username, email, and phone are required" });
@@ -45,6 +48,9 @@ const userProfileController = {
           username,
           email,
           phone,
+          address,
+          nicNumber,
+          age,
         },
       });
 

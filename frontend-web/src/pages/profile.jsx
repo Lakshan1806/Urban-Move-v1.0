@@ -15,6 +15,9 @@ const Profile = () => {
     email: "",
     phone: "",
     fullname: "",
+    nicNumber: "",
+    address: "",
+    age: "",
   });
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -36,6 +39,9 @@ const Profile = () => {
           email: response.data.email || "",
           phone: response.data.phone || "",
           fullname: response.data.fullname || "",
+          nicNumber: response.data.nicNumber || "",
+          address: response.data.address || "",
+          age: response.data.age || "", 
         });
         setImageUrl(response.data.photo);
       } catch (err) {
@@ -149,7 +155,7 @@ const Profile = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-gray-900 text-white rounded-lg shadow-lg mt-8">
+    <div className="max-w-md mx-auto p-4 bg-white-900 text-black rounded-lg shadow-lg mt-8">
       <h1 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-transparent">
         Your Profile
       </h1>
@@ -182,7 +188,7 @@ const Profile = () => {
       {!isChangingPassword ? (
         <div className="space-y-4">
           <div className="flex justify-between border-b border-gray-700 pb-2">
-            <span className="font-semibold">fullName:</span>
+            <span className="font-semibold">Fullname:</span>
             {isEditing ? (
               <input
                 type="text"
@@ -237,6 +243,48 @@ const Profile = () => {
               />
             ) : (
               <span>{profile?.phone || user?.phone}</span>
+            )}
+          </div>
+          <div className="flex justify-between border-b border-gray-700 pb-2">
+            <span className="font-semibold">NIC Number:</span>
+            {isEditing ? (
+              <input
+                type="text"
+                name="nicNumber"
+                value={formData.nicNumber || ""}
+                onChange={handleChange}
+                className="bg-gray-800 text-white px-2 rounded"
+              />
+            ) : (
+              <span>{profile?.nicNumber || user?.nicNumber}</span>
+            )}
+          </div>
+          <div className="flex justify-between border-b border-gray-700 pb-2">
+            <span className="font-semibold">Age:</span>
+            {isEditing ? (
+              <input
+                type="text"
+                name="age"
+                value={formData.age || ""}
+                onChange={handleChange}
+                className="bg-gray-800 text-white px-2 rounded"
+              />
+            ) : (
+              <span>{profile?.age || user?.age}</span>
+            )}
+          </div>
+          <div className="flex justify-between border-b border-gray-700 pb-2">
+            <span className="font-semibold">Address:</span>
+            {isEditing ? (
+              <input
+                type="text"
+                name="address"
+                value={formData.address || ""}
+                onChange={handleChange}
+                className="bg-gray-800 text-white px-2 rounded"
+              />
+            ) : (
+              <span>{profile?.address || user?.address}</span>
             )}
           </div>
         </div>
