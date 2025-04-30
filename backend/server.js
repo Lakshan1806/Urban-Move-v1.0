@@ -65,6 +65,13 @@ app.use((err, req, res, next) => {
 app.get("/", (req, res) => {
   res.send("Server is ready");
 });
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+console.log(path.join(__dirname, "/uploads"));
+
+
 app.use(express.json());
 app.use(
   cors({
@@ -76,6 +83,7 @@ app.use(
 app.use(cookieParser());
 app.use("/admin", adminRoutes);
 app.use("/user", userRoutes);
+//app.use ("/cars", carRoutes);
 
 console.log(process.env.MONGO_URI);
 console.log("server is ready");
@@ -91,9 +99,5 @@ async function startServer() {
     console.log("Server started at http://localhost:5000");
   });
 }
-
-
-
-
 
 startServer();

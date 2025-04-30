@@ -6,55 +6,77 @@ import myImage4 from "../assets/rent.image.4.png";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import CarSelection from "./CarSelection.jsx";
-import { useNavigate } from "react-router-dom";
-import { useAuth } from "../context/AuthContext";
 
-function ConditionalButton({ text }) {
-  const { user } = useAuth();
-  const navigate = useNavigate();
 
-  const handleClick = () => {
-    if (user) {
-      navigate("/feedback");
-    } else {
-      navigate("/signin");
-    }
+
+function Rent() {
+  const [showForm, setShowForm] = useState(false);
+
+  const handleShowForm = () => {
+    setShowForm(true);
+    document.body.style.overflow = 'auto'; // prevent scroll
+  };
+
+  const handleCloseForm = () => {
+    setShowForm(false);
+    document.body.style.overflow = 'auto'; // re-enable scroll
   };
 
   return (
-    <button
-      onClick={handleClick}
-      className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition"
-    >
-      {text}
-    </button>
-  );
-}
-
-function Rent() {
-  return (
-    <div className="p-4">
+    <div className="p-4 relative">
       <h1 className="text-2xl font-bold text-center">RENT</h1>
-      <div className="flex justify-center gap-4 mt-4">
-        <Button text="Renting Options" link="/rent-options" />
-        <Button text="Car Options" link="/car-options" />
-        <ConditionalButton text="Reviews" />
-      </div>
+
       <div className="flex flex-col items-center md:flex-row md:justify-between mt-10">
         <Image1 />
         <Text1 />
       </div>
-      <div className="flex justify-center gap-6 mt-12">
+
+      {!showForm && (
+        <div className="flex justify-center mt-6">
+          <button
+            onClick={handleShowForm}
+            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
+          >
+            Rent Now
+          </button>
+        </div>
+      )}
+
+      {/* Image grid */}
+      <div className="flex justify-center gap-12 mt-12">
         <Image src={myImage2} />
         <Image src={myImage3} />
         <Image src={myImage4} />
       </div>
-      <RentNowForm />
+
       <Slideshow />
-      <AvailableCars/>
+
+      {/* Modal and Overlay */}
+      {showForm && (
+        <>
+          {/* Blurred background overlay */}
+          <div className="fixed inset-0  backdrop-blur"></div>
+
+          {/* Popup modal */}
+          <div className="fixed inset-0 flex items-center justify-center z-50 p-4">
+            <div className="relative w-full max-w-xl">
+              {/* Close button */}
+              <button
+                onClick={handleCloseForm}
+                className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 text-xl font-bold z-10"
+              >
+                &times;
+              </button>
+
+              <RentNowForm onClose={handleCloseForm} />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   );
 }
+
 
 function RentNowForm() {
   // List of available cities
@@ -128,7 +150,7 @@ function RentNowForm() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center p-4">
+    <div className="min-h-screen  flex flex-col items-center p-4">
       <div className="max-w-md w-full bg-white rounded-lg shadow-lg p-6 mb-6">
         <h2 className="text-2xl font-bold text-center text-gray-800 mb-6">
           Rent Now
@@ -238,35 +260,26 @@ function RentNowForm() {
       </div>
 
       {showCarSelection && (
-        <CarSelection
-          cars={availableCars}
-          searchParams={searchParams}
-          onBookingComplete={() => {
-            setShowCarSelection(false);
-            setFormData({
-              pickupLocation: "",
-              dropoffLocation: "",
-              pickupTime: "",
-              dropoffTime: "",
-            });
-            setMessage("Booking completed successfully!");
-          }}
-        />
-      )}
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+    {availableCars.map((car, index) => (
+      <div key={index} className="border rounded shadow p-4">
+        <img src={car.imageUrl} alt={car.model} className="w-full h-40 object-cover mb-2" />
+        <h3 className="text-lg font-bold">{car.brand} {car.model}</h3>
+        <p>Seats: {car.seats}</p>
+        <button
+          className="mt-2 bg-green-600 text-white px-4 py-2 rounded"
+          onClick={() => handleBooking(carInstances[index]._id)}
+        >
+          Book Now
+        </button>
+      </div>
+    ))}
+  </div>
+)}
     </div>
   );
 }
 
-function Button({ text, link }) {
-  return (
-    <Link to={link} className="inline-block">
-      <button className="bg-transparent font-bold text-black p-2 rounded relative overflow-hidden group">
-        {text}
-        <span className="absolute bottom-0 left-0 w-full h-1 bg-gradient-to-r from-yellow-200 to-orange-500 scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></span>
-      </button>
-    </Link>
-  );
-}
 
 function Image1() {
   return (
@@ -290,7 +303,6 @@ function Text1() {
     </div>
   );
 }
-
 function Image({ src }) {
   return (
     <div className="w-1/3 flex justify-center">
@@ -335,7 +347,7 @@ function Slideshow() {
   if (slideshowPath.length === 0) return <div>Loading slideshow...</div>;
 
   return (
-    <div className="w-full h-[400px] flex justify-center items-center bg-gray-200 rounded-xl overflow-hidden shadow-md">
+    <div className="w-full h-full flex justify-center items-center bg-gray-200 rounded-xl overflow-hidden shadow-md gap-12 mt-12">
       <img
         src={slideshowPath[current]}
         alt="slideshow"
@@ -345,77 +357,6 @@ function Slideshow() {
   );
 }
 
-function AvailableCars() {
-  const [cars, setCars] = useState([]);
-  const [showCars, setShowCars] = useState(false);
-
-  const fetchCars = async () => {
-    try {
-      const response = await axios.get("/user/getAvailableCa");
-      setCars(response.data);
-      setShowCars(true);
-    } catch (error) {
-      console.error('Error fetching cars:', error);
-    }
-  };
-
-  return (
-    <div className="p-4">
-    <button 
-      onClick={fetchCars}
-      className="bg-blue-500 text-white p-2 rounded"
-    >
-      Show Available Cars
-    </button>
-
-    {showCars && (
-      <div className="mt-4">
-        {cars.length > 0 ? (
-          <ul className="space-y-2">
-            {cars.map((car) => (
-              <li key={car._id} className="border p-2 rounded shadow">
-                 {car.keyImage && (
-                    <img 
-                      src={car.keyImage} 
-                      alt={`${car.model} Main`} 
-                      className="w-full h-64 object-cover rounded mb-2"
-                    />
-                  )}
-                   <div className="grid grid-cols-2 gap-2 mt-2">
-                    {car.Images && car.Images.map((img, index) => (
-                      <img 
-                        key={index} 
-                        src={img} 
-                        alt={`${car.model} ${index + 1}`} 
-                        className="w-full h-32 object-cover rounded"
-                      />
-                    ))}
-                  </div>
-                <p><strong>Make:</strong> {car.make}</p>
-                <p><strong>Model:</strong> {car.model}</p>
-                <p><strong>Year:</strong> {car.year}</p>
-                <p><strong>Engine:</strong> {car.engine}</p>
-                <p><strong>Transmission:</strong> {car.transmission}</p>
-                <p><strong>Body Style:</strong> {car.bodyStyle}</p>
-                <p><strong>Fuel Type:</strong> {car.fuelType}</p>
-                <p><strong>Mileage:</strong> {car.mileage}</p>
-                <p><strong>Price:</strong> {car.price}</p>
-                <p><strong>Seat Capacity:</strong> {car.seat}</p>
-                <p><strong>Speed:</strong> {car.speed}</p>
-                <p><strong>Features:</strong> {car.features}</p>
-                
-
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No available cars found.</p>
-        )}
-      </div>
-    )}
-  </div>
-);
-}
 
 
 export default Rent;
