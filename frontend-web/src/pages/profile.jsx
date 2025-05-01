@@ -9,6 +9,7 @@ import ImageUploader from "../components/ImageUploder.jsx";
 import PhoneVerification from "../components/phoneVerification.jsx";
 import EmailVerification from "../components/EmailVerification";
 import useOtpVerification from "../components/hooks/useOtpVerification";
+import DeleteAccountModal from "../components/DeleteAccountModel.jsx";
 
 const Profile = () => {
   const { isAuthenticated, user, logout, updateProfile } =
@@ -24,6 +25,8 @@ const Profile = () => {
     field: null,
     value: "",
   });
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+
   const navigate = useNavigate();
 
   const {
@@ -264,22 +267,17 @@ const Profile = () => {
     }
   };
 
+  const handleDeleteSuccess = async () => {
+    await logout();
+    navigate("/");
+  };
+
   if (!isAuthenticated) return null;
 
-  return (
-    <div className="max-w-md mx-auto p-4 bg-white-900 text-black rounded-lg shadow-lg mt-8">
-      <h1 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-transparent">
-        Your Profile
-      </h1>
-
-      <ImageUploader
-        initialImage={profile?.photo}
-        onImageChange={handleImageUpload}
-        className="mb-6"
-      />
-
-      {isVerifying ? (
-        verificationType === "phone" ? (
+  if (isVerifying) {
+    return (
+      <div className="flex flex-col items-center justify-center  py-40 ">
+        {verificationType === "phone" ? (
           <PhoneVerification
             title="Verify your new Phone Number"
             description={`We sent a code to ${pendingVerification.value}`}
@@ -311,8 +309,30 @@ const Profile = () => {
             error={emailError}
             onOtpSubmit={setEmailOtp}
           />
-        )
-      ) : !isChangingPassword ? (
+        )}
+        <button
+          onClick={handleCancel}
+          className="mt-8 px-6 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+        >
+          Cancel Verification
+        </button>
+      </div>
+    );
+  }
+
+  return (
+    <div className="max-w-md mx-auto p-4 bg-white-900 text-black rounded-lg shadow-lg mt-8">
+      <h1 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-transparent">
+        Your Profile
+      </h1>
+
+      <ImageUploader
+        initialImage={profile?.photo}
+        onImageChange={handleImageUpload}
+        className="mb-6"
+      />
+
+      {!isChangingPassword ? (
         <div className="space-y-4">
           <EditableField
             label="Fullname"
@@ -440,25 +460,39 @@ const Profile = () => {
           <>
             <button
               onClick={handleEdit}
-              className="py-2 px-4 bg-gradient-to-r from-[#FF7C1D] to-[#FFD12E] text-black font-bold rounded-lg hover:opacity-90 transition"
+              className="py-2 px-4 bg-gradient-to-r from-[#FF7C1D] to-[#FFD12E] text-black font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
             >
               Edit Profile
             </button>
             <button
               onClick={() => setIsChangingPassword(true)}
-              className="py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:opacity-90 transition"
+              className="py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
             >
               Change Password
             </button>
+
+            <button
+              onClick={() => setShowDeleteModal(true)}
+              className="py-2 px-4 bg-red-600 text-white font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
+            >
+              Delete Account
+            </button>
             <button
               onClick={logout}
-              className="py-2 px-4 bg-red-600 text-white font-bold rounded-lg hover:opacity-90 transition"
+              className="py-2 px-4 bg-red-600 text-white font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
             >
               Logout
             </button>
           </>
         )}
       </div>
+      {showDeleteModal && (
+        <DeleteAccountModal
+          userId={user?._id}
+          onClose={() => setShowDeleteModal(false)}
+          onSuccess={handleDeleteSuccess}
+        />
+      )}
     </div>
   );
 };

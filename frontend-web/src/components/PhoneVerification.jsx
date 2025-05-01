@@ -1,4 +1,3 @@
-// components/PhoneVerification.jsx
 import React from "react";
 import OtpInput from "./otp-input";
 import Line1 from "../signup_photos/liner1.svg";
@@ -20,7 +19,7 @@ const PhoneVerification = ({
   continueButtonText = "continue",
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
+    <div className="flex flex-col items-center justify-center gap-[25px] w-auto ">
       <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
         {title}
       </h1>

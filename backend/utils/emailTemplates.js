@@ -110,4 +110,40 @@ export const PASSWORD_CHANGE_SUCCESS_TEMPLATE = `
 </body>
 </html>
 `;
+export const ACCOUNT_DELETION_TEMPLATE = `
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Deletion Confirmation</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: linear-gradient(to right, #FF7C1D, #FFD12E); padding: 20px; text-align: center;">
+    <h1 style="color: white; margin: 0;">Account Deletion Confirmation</h1>
+  </div>
+  <div style="background-color: #f9f9f9; padding: 20px; border-radius: 0 0 5px 5px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);">
+    <p>Hello,</p>
+    <p>We're writing to confirm that your account has been successfully deleted from our system.</p>
+    <div style="text-align: center; margin: 30px 0;">
+      <div style="background-color: #FF7C1D; color: white; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; display: inline-block; font-size: 30px;">
+        !
+      </div>
+    </div>
+    <p>Here's what you should know:</p>
+    <ul>
+      <li>All personal data has been archived according to our data retention policy</li>
+      <li>You won't be able to reactivate this account</li>
+      <li>Any active subscriptions have been canceled</li>
+    </ul>
+    <p>If you didn't request this deletion or have any concerns, please contact our support team immediately at <a href="mailto:support@urbanmove.com">support@urbanmove.com</a>.</p>
+    <p>We're sorry to see you go and hope you'll consider us again in the future.</p>
+    <p>Best regards,<br>The UrbanMove Team</p>
+  </div>
+  <div style="text-align: center; margin-top: 20px; color: #888; font-size: 0.8em;">
+    <p>This is an automated message, please do not reply to this email.</p>
+  </div>
+</body>
+</html>
+`;
 

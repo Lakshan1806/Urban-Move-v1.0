@@ -1,5 +1,7 @@
 import dotenv from "dotenv";
 import userModel from "../../models/usermodel.js";
+import ArchivedUser from "../../models/archivedUser.model.js";
+import nodemailer from "../../utils/nodemailer.js";
 
 dotenv.config();
 
@@ -78,6 +80,36 @@ const userProfileController = {
     } catch (error) {
       console.error("Update profile error:", error);
       return res.status(500).json({ message: "Server error" });
+    }
+  },
+  deleteAccount: async (req, res) => {
+    try {
+      const { reason, userId } = req.body;
+
+      const user = await userModel.findById(userId);
+      if (!user) return res.status(404).json({ message: "User not found" });
+
+      const archivedUser = new ArchivedUser({
+        originalId: user._id,
+        ...user.toObject(),
+        reasonForDeletion: reason || "No reason provided",
+        deletedAt: new Date(),
+      });
+      await archivedUser.save();
+      await nodemailer.deleteAccountEmail(user.email);
+
+      await userModel.findByIdAndDelete(userId);
+
+      res.clearCookie("token");
+
+      res
+        .status(200)
+        .json({ success: true, message: "Account deleted successfully" });
+    } catch (error) {
+      res.status(500).json({
+        message: "Account deletion failed",
+        error: error.message,
+      });
     }
   },
 };
