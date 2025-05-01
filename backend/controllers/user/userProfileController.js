@@ -28,13 +28,33 @@ const userProfileController = {
   },
   updateProfile: async (req, res) => {
     try {
-      const { username, email, phone, userId, fullname, nicNumber, address, age } = req.body;
+      const {
+        username,
+        email,
+        phone,
+        userId,
+        fullname,
+        nicNumber,
+        address,
+        age,
+      } = req.body;
 
-      if (!username || !email || !phone ) {
+      console.log("Update profile request body:", req.body);
+
+      if (!userId) {
+        return res.status(400).json({ message: "User ID is required" });
+      }
+
+      if (!username || !email || !phone) {
         return res
           .status(400)
           .json({ message: "Username, email, and phone are required" });
       }
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      if (!emailRegex.test(email)) {
+        return res.status(400).json({ message: "Invalid email format" });
+      }
+
       if (req.file && req.file.path) {
         const user = await userModel.findByIdAndUpdate(req.body.userId, {
           $set: { photo: req.file.path },
@@ -59,6 +79,6 @@ const userProfileController = {
       console.error("Update profile error:", error);
       return res.status(500).json({ message: "Server error" });
     }
-  }
+  },
 };
 export default userProfileController;

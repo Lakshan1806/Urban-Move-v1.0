@@ -8,7 +8,6 @@ import React, {
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-
 const AuthContext = createContext();
 
 const AuthProvider = ({ children }) => {
@@ -19,8 +18,6 @@ const AuthProvider = ({ children }) => {
 
   const navigate = useNavigate();
 
-  // Check if user is authenticated on mount
-
   const checkAuth = useCallback(async () => {
     try {
       const response = await axios.get("/auth/is-auth");
@@ -28,14 +25,17 @@ const AuthProvider = ({ children }) => {
       if (response.data.success) {
         setUser(response.data.user);
         setIsAuthenticated(true);
+        return true;
       } else {
         setUser(null);
         setIsAuthenticated(false);
+        return false;
       }
     } catch (error) {
       console.error("Auth check failed:", error);
       setUser(null);
       setIsAuthenticated(false);
+      return false;
     }
   }, []);
 
@@ -167,6 +167,19 @@ const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
+  const updateProfile = async (updatedData) => {
+    try {
+      const response = await axios.put("/auth/updateprofile", {
+        ...updatedData,
+        userId: user?._id,
+      });
+      setUser((prev) => ({ ...prev, ...response.data }));
+      return response.data;
+    } catch (error) {
+      console.error("Update profile error:", error.response?.data);
+      throw error;
+    }
+  };
 
   const value = {
     user,
@@ -180,6 +193,7 @@ const AuthProvider = ({ children }) => {
     loginWithGoogle,
     getProfile,
     checkAuth,
+    updateProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
