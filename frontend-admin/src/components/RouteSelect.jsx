@@ -12,7 +12,7 @@ import Administration from "../pages/Administration";
 function RouteSelect() {
   return (
     <div>
-      <main className="h-dvh py-[25px] px-[50px]">
+      <main className="h-dvh py-[25px] px-[50px] overflow-hidden">
         <Routes>
           <Route index element={<Home />} />
           <Route path="rides" element={<Rides />} />

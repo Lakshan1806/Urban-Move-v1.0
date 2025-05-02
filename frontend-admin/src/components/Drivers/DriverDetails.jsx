@@ -1,12 +1,12 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-function CustomerDetails() {
+function DriverDetails() {
   const [user, setUser] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("/admin/get_all_user");
+        const response = await axios.get("/admin/get_all_driver");
         console.log(response);
         setUser(response.data);
       } catch (error) {
@@ -51,4 +51,4 @@ function CustomerDetails() {
   );
 }
 
-export default CustomerDetails;
+export default DriverDetails;

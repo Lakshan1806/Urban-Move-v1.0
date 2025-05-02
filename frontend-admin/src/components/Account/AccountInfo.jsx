@@ -1,5 +1,10 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
+//import { FaRegUserCircle } from "react-icons/fa";
+import { PiUserGear } from "react-icons/pi";
+import { RiAccountCircleFill } from "react-icons/ri";
+import { MdEmail } from "react-icons/md";
+import { FaPhone } from "react-icons/fa6";
 
 function AccountInfo() {
   const fileInputRef = useRef(null);
@@ -7,8 +12,9 @@ function AccountInfo() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [imageUrl, setImageUrl] = useState("default-image.png");
+  const [imageUrl, setImageUrl] = useState(null);
   const [tempImage, setTempImage] = useState(null);
+  const [isEditable, setIsEditable] = useState(false);
 
   console.log(imageUrl);
   useEffect(() => {
@@ -31,6 +37,14 @@ function AccountInfo() {
 
   const handleImageClick = () => {
     fileInputRef.current.click();
+  };
+
+  const onCancel = () => {
+    setIsEditable(false);
+  };
+
+  const onEdit = () => {
+    setIsEditable(true);
   };
 
   const handleFileChange = async (e) => {
@@ -59,98 +73,166 @@ function AccountInfo() {
     } catch (error) {
       console.error("Upload failed:", error);
     }
+    setIsEditable(false);
   };
 
   return (
     <div className="col-span-12 row-span-12 p-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col">
-      <div className="flex flex-row">
+      <div className="flex flex-row justify-center items-center gap-5">
         <img
           src={imageUrl}
           alt="Profile"
-          className="w-24 h-24 rounded-full object-cover"
+          className="w-60 h-60 rounded-full object-cover"
         />
         <input
           type="file"
           ref={fileInputRef}
-          style={{ display: "none" }}
+          className="hidden"
           onChange={handleFileChange}
         />
 
-        <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+        <div className="button-wrapper">
           <button
             type="button"
-            className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+            className="button-primary"
             onClick={handleImageClick}
           >
             Upload new photo
           </button>
         </div>
       </div>
-      <div>
+      <p>Personal info</p>
+      <div className="flex flex-col">
+        <div className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4">
+          <div>
+            <RiAccountCircleFill className="w-[30px] h-[30px]" />
+            {isEditable ? (
+              <div className="flex flex-col w-[300px]">
+                <label htmlFor="fullname">Full Name</label>
+                <input
+                  type="text"
+                  id="fullname"
+                  name="fullname"
+                  onChange={(e) => {
+                    setName(e.target.value);
+                  }}
+                  value={name}
+                />
+              </div>
+            ) : (
+              <div className="w-[300px]">
+                <p>Full Name :</p>
+                <p>{name}</p>
+              </div>
+            )}
+          </div>
+          <div>
+            <PiUserGear className="w-[30px] h-[30px]" />
+            {isEditable ? (
+              <div className="flex flex-col w-[300px]">
+                <label htmlFor="username">Username</label>
+                <input
+                  type="text"
+                  id="username"
+                  name="username"
+                  onChange={(e) => {
+                    setUsername(e.target.value);
+                  }}
+                  value={username}
+                />
+              </div>
+            ) : (
+              <div className="w-[300px]">
+                <p>Username : </p>
+                <p>{username}</p>
+              </div>
+            )}
+          </div>
+          <div>
+            <MdEmail className="w-[30px] h-[30px]" />
+            {isEditable ? (
+              <div className="flex flex-col w-[300px]">
+                <label htmlFor="email">Email</label>
+                <input
+                  type="text"
+                  id="email"
+                  name="email"
+                  onChange={(e) => {
+                    setEmail(e.target.value);
+                  }}
+                  value={email}
+                />
+              </div>
+            ) : (
+              <div className="w-[300px]">
+                <p>Email :</p>
+                <p>{email}</p>
+              </div>
+            )}
+          </div>
+          <div>
+            <FaPhone className="w-[30px] h-[30px]" />
+            {isEditable ? (
+              <div className="flex flex-col w-[300px]">
+                <label htmlFor="phone">Phone</label>
+                <input
+                  type="text"
+                  id="phone"
+                  name="phone"
+                  onChange={(e) => {
+                    setPhone(e.target.value);
+                  }}
+                  value={phone}
+                />
+              </div>
+            ) : (
+              <div className="w-[300px]">
+                <p>Phone :</p>
+                <p>{phone}</p>
+              </div>
+            )}
+          </div>
+        </div>
         <div className="flex flex-row">
-          <p>Personal info</p>
-        </div>
-        <div>
-          <div className="flex flex-col w-[300px]">
-            <label htmlFor="fullname">Full Name</label>
-            <input
-              type="text"
-              id="fullname"
-              name="fullname"
-              onChange={(e) => {
-                setName(e.target.value);
-              }}
-              value={name}
-            />
-          </div>
-          <div className="flex flex-col w-[300px]">
-            <label htmlFor="username">Username</label>
-            <input
-              type="text"
-              id="username"
-              name="username"
-              onChange={(e) => {
-                setUsername(e.target.value);
-              }}
-              value={username}
-            />
-          </div>
-          <div className="flex flex-col w-[300px]">
-            <label htmlFor="email">Email</label>
-            <input
-              type="text"
-              id="email"
-              name="email"
-              onChange={(e) => {
-                setEmail(e.target.value);
-              }}
-              value={email}
-            />
-          </div>
-          <div className="flex flex-col w-[300px]">
-            <label htmlFor="phone">Phone</label>
-            <input
-              type="text"
-              id="phone"
-              name="phone"
-              onChange={(e) => {
-                setPhone(e.target.value);
-              }}
-              value={phone}
-            />
-          </div>
-        </div>
-        <div>
-          <button>Password</button>
-        </div>
-        <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-          <button
-            type="button"
-            className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-            onClick={handleSave}
-          >
-            save
-          </button>
+          {isEditable ? (
+            <>
+              <div className="button-wrapper">
+                <button
+                  type="button"
+                  className="button-primary"
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+              </div>
+              <div className="button-wrapper">
+                <button
+                  type="button"
+                  className="button-primary"
+                  onClick={onCancel}
+                >
+                  Cancel
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="button-wrapper w-1/4 ">
+                <button
+                  type="button"
+                  className="button-primary"
+                  onClick={onEdit}
+                >
+                  Edit
+                </button>
+              </div>
+              <div className="button-wrapper w-1/4">
+                <button type="button" className="button-primary">
+                  Change Password
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </div>
