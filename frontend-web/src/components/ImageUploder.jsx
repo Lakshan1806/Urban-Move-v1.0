@@ -5,7 +5,7 @@ const ImageUploader = ({
   onImageChange,
   className = "",
   buttonClassName = "",
-  imageClassName = "w-24 h-24 rounded-full object-cover",
+  imageClassName = "w-40 h-40 rounded-full object-cover",
 }) => {
   const fileInputRef = useRef(null);
   const [imageUrl, setImageUrl] = useState(initialImage);
@@ -41,7 +41,7 @@ const ImageUploader = ({
         accept="image/*"
       />
 
-      <div className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] ${buttonClassName}`}>
+      <div className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] ${buttonClassName}`}>
         <button
           type="button"
           className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"

@@ -321,82 +321,132 @@ const Profile = () => {
   }
 
   return (
-    <div className="max-w-md mx-auto p-4 bg-white-900 text-black rounded-lg shadow-lg mt-8">
-      <h1 className="text-2xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-transparent">
-        Your Profile
-      </h1>
+    <div className="max-w-4xl mx-auto p-4 bg-white-900 text-black rounded-lg shadow-lg mt-8">
+      <div className="flex  items-center mb-6">
+        <h1 className="[-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px] flex-none">
+          Account
+        </h1>
+      </div>
 
-      <ImageUploader
-        initialImage={profile?.photo}
-        onImageChange={handleImageUpload}
-        className="mb-6"
-      />
+      <div className="flex items-center justify-center mb-6">
+        <ImageUploader
+          initialImage={profile?.photo}
+          onImageChange={handleImageUpload}
+        />
+      </div>
 
       {!isChangingPassword ? (
-        <div className="space-y-4">
-          <EditableField
-            label="Fullname"
-            name="fullname"
-            value={formData.fullname}
-            onChange={handleChange}
-            isEditing={isEditing}
-          />
-          <EditableField
-            label="Username"
-            name="username"
-            value={formData.username}
-            onChange={handleChange}
-            isEditing={isEditing}
-          />
-          <EditableField
-            label="Email"
-            name="email"
-            value={formData.email}
-            onChange={(e) =>
-              setFormData({ ...formData, email: e.target.value })
-            }
-            isEditing={isEditing}
-            type="email"
-            needsVerification={isEditing && formData.email !== profile?.email}
-            onVerify={() => handleVerifyClick("email")}
-            isVerifying={isVerifying && verificationType === "email"}
-          />
-          <EditableField
-            label="Phone"
-            name="phone"
-            value={formData.phone}
-            onChange={(e) =>
-              setFormData({ ...formData, phone: e.target.value })
-            }
-            isEditing={isEditing}
-            type="tel"
-            needsVerification={isEditing && formData.phone !== profile?.phone}
-            onVerify={() => handleVerifyClick("phone")}
-            isVerifying={isVerifying && verificationType === "phone"}
-          />
-          <EditableField
-            label="NIC Number"
-            name="nicNumber"
-            value={formData.nicNumber}
-            onChange={handleChange}
-            isEditing={isEditing}
-          />
-          <EditableField
-            label="Age"
-            name="age"
-            value={formData.age}
-            onChange={handleChange}
-            isEditing={isEditing}
-            type="number"
-          />
-          <EditableField
-            label="Address"
-            name="address"
-            value={formData.address}
-            onChange={handleChange}
-            isEditing={isEditing}
-          />
-        </div>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Full Name :
+                </label>
+                <EditableField
+                  name="fullname"
+                  value={formData.fullname}
+                  onChange={handleChange}
+                  isEditing={isEditing}
+                  className="mt-1 pb-0 block w-full border-gray-300 rounded-md shadow-sm"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Username :
+                </label>
+                <EditableField
+                  label="Username"
+                  name="username"
+                  value={formData.username}
+                  onChange={handleChange}
+                  isEditing={isEditing}
+                />
+              </div>
+              <div className="space-y-4">
+                <label className="block text-sm font-medium text-gray-700">
+                  Email :
+                </label>
+                <EditableField
+                  label="Email"
+                  name="email"
+                  value={formData.email}
+                  onChange={(e) =>
+                    setFormData({ ...formData, email: e.target.value })
+                  }
+                  isEditing={isEditing}
+                  type="email"
+                  needsVerification={
+                    isEditing && formData.email !== profile?.email
+                  }
+                  onVerify={() => handleVerifyClick("email")}
+                  isVerifying={isVerifying && verificationType === "email"}
+                />
+              </div>
+            </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Phone :
+                </label>
+                <EditableField
+                  name="phone"
+                  value={formData.phone}
+                  onChange={(e) =>
+                    setFormData({ ...formData, phone: e.target.value })
+                  }
+                  isEditing={isEditing}
+                  type="tel"
+                  needsVerification={
+                    isEditing && formData.phone !== profile?.phone
+                  }
+                  onVerify={() => handleVerifyClick("phone")}
+                  isVerifying={isVerifying && verificationType === "phone"}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  NIC Number :
+                </label>
+                <EditableField
+                  name="nicNumber"
+                  value={formData.nicNumber}
+                  onChange={handleChange}
+                  isEditing={isEditing}
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700">
+                  Age:
+                </label>
+                <EditableField
+                  name="age"
+                  value={formData.age}
+                  onChange={handleChange}
+                  isEditing={isEditing}
+                  type="number"
+                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+                />
+              </div>
+            </div>
+          </div>
+          <div className="mt-4">
+            <label className="block text-sm font-medium text-gray-700">
+              Address :
+            </label>
+            <EditableField
+              name="address"
+              value={formData.address}
+              onChange={handleChange}
+              isEditing={isEditing}
+              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
+            />
+          </div>
+        </>
       ) : (
         <div className="space-y-4">
           <div className="flex flex-col border-b border-gray-700 pb-2">
@@ -438,51 +488,65 @@ const Profile = () => {
         </div>
       )}
 
-      <div className="flex flex-col space-y-4 mt-6">
+      <div className="flex flex-row space-x-4 mt-6 justify-baseline">
         {isEditing || isChangingPassword || isVerifying ? (
           <>
             {!isVerifying && (
-              <button
-                onClick={isChangingPassword ? handlePasswordSave : handleSave}
-                className="py-2 px-4 bg-green-600 text-white font-bold rounded-lg hover:opacity-90 transition disabled:opacity-50 cursor-pointer"
-              >
-                Save
-              </button>
+              <div className="bg-black rounded-[30px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+                <button
+                  type="button"
+                  onClick={isChangingPassword ? handlePasswordSave : handleSave}
+                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                >
+                  save
+                </button>
+              </div>
             )}
-            <button
-              onClick={handleCancel}
-              className="py-2 px-4 bg-gray-600 text-white font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
+            <div
+              className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
             >
-              Cancel
-            </button>
+              <button
+                onClick={handleCancel}
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+              >
+                Cancel
+              </button>
+            </div>
+            {isEditing && !isChangingPassword && (
+            <div
+              className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
+            >        
+                  <button
+                onClick={() => setShowDeleteModal(true)}
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+              >
+                Delete Account
+              </button>
+            </div>
+             )}
           </>
         ) : (
           <>
-            <button
-              onClick={handleEdit}
-              className="py-2 px-4 bg-gradient-to-r from-[#FF7C1D] to-[#FFD12E] text-black font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
-            >
-              Edit Profile
-            </button>
-            <button
-              onClick={() => setIsChangingPassword(true)}
-              className="py-2 px-4 bg-blue-600 text-white font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
-            >
-              Change Password
-            </button>
+            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+              <button
+                type="button"
+                onClick={handleEdit}
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              >
+                Edit
+              </button>
+            </div>
+            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+              <button
+                type="button"
+                onClick={() => setIsChangingPassword(true)}
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              >
+                Change Password
+              </button>
+            </div>
 
-            <button
-              onClick={() => setShowDeleteModal(true)}
-              className="py-2 px-4 bg-red-600 text-white font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
-            >
-              Delete Account
-            </button>
-            <button
-              onClick={logout}
-              className="py-2 px-4 bg-red-600 text-white font-bold rounded-lg hover:opacity-90 transition cursor-pointer"
-            >
-              Logout
-            </button>
+           
           </>
         )}
       </div>
