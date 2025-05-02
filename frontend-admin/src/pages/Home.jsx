@@ -17,7 +17,7 @@ function Home() {
         <CarTypes />
         <RecentActivities />
       </div>
-    </div>
+    </div> 
   );
 }
 

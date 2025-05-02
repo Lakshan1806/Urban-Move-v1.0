@@ -1,13 +1,14 @@
-import axios from "axios";
 import { useState } from "react";
+
 
 function AddUnit({ onSaveForm, carID }) {
   const [vin, setVin] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [color, setColor] = useState("");
+  const [location, setLocation] = useState("");
 
   const handleSave = async () => {
-    const newCarData = { vin, licensePlate, color, carID };
+    const newCarData = { vin, licensePlate, color, location, carID };
     console.log("New Car Data:", newCarData);
     const response = await axios.post("/admin/add_unit", newCarData);
   };
@@ -46,6 +47,18 @@ function AddUnit({ onSaveForm, carID }) {
           value={color}
           onChange={(e) => setColor(e.target.value)}
           placeholder="Enter car color"
+        />
+      </div>
+
+      <div>
+        <label htmlFor="vin">Location:</label>
+        <input
+          type="text"
+          id="location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          required
+          placeholder="Enter Location"
         />
       </div>
 

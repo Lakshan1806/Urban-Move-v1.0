@@ -5,6 +5,7 @@ function UnitDetails({ unit, onEdit }) {
   const [vin, setVin] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [color, setColor] = useState("");
+  const [location, setLocation] = useState("");
   const [isEditableUnit, setIsEditableUnit] = useState(false);
 
   useEffect(() => {
@@ -12,6 +13,7 @@ function UnitDetails({ unit, onEdit }) {
       setVin(unit.vin);
       setLicensePlate(unit.licensePlate);
       setColor(unit.color);
+      setLocation(unit.location);
     }
   }, [unit, isEditableUnit]);
 
@@ -20,7 +22,7 @@ function UnitDetails({ unit, onEdit }) {
     onEdit(true);
   };
   const onSaveUnit = async () => {
-    const formData = { vin, licensePlate, color, _id: unit._id };
+    const formData = { vin, licensePlate, color,location, _id: unit._id };
 
     try {
       const response = await axios.post("/admin/update_car_unit", formData);
@@ -35,7 +37,7 @@ function UnitDetails({ unit, onEdit }) {
   };
 
   return (
-    <div className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4">
+    <div className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row items-center gap-4">
       <div className="flex flex-col w-1/2">
         {isEditableUnit ? (
           <>
@@ -73,30 +75,41 @@ function UnitDetails({ unit, onEdit }) {
                 placeholder="Enter car color"
               />
             </div>
+            <div>
+              <label htmlFor="color">Location:</label>
+              <input
+                type="text"
+                id="location"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                placeholder="Enter car location"
+              />
+            </div>
           </>
         ) : (
           <>
             <h3 className="text-sm font-bold">{unit.vin}</h3>
             <h3 className="text-xl font-bold">{unit.licensePlate}</h3>
             <h3 className="text-xl font-bold">{unit.color}</h3>
+            <h3 className="text-xl font-bold">{unit.location}</h3>
           </>
         )}
       </div>
       {isEditableUnit ? (
         <>
-          <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+          <div className="button-wrapper">
             <button
               type="button"
-              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              className="button-primary"
               onClick={onSaveUnit}
             >
               Save
             </button>
           </div>
-          <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+          <div className="button-wrapper">
             <button
               type="button"
-              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              className="button-primary"
               onClick={onCancelUnit}
             >
               Cancel
@@ -105,18 +118,18 @@ function UnitDetails({ unit, onEdit }) {
         </>
       ) : (
         <>
-          <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+          <div className="button-wrapper">
             <button
               type="button"
-              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              className="button-primary"
             >
               Delete
             </button>
           </div>
-          <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+          <div className="button-wrapper">
             <button
               type="button"
-              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              className="button-primary"
               onClick={onEditUnit}
             >
               Edit

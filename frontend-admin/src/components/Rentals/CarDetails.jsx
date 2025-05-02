@@ -10,9 +10,9 @@ import axios from "axios";
 function CarDetails({ car, onUpdate }) {
   const fileInputRef = useRef();
   const [carImage, setCarImage] = useState(null);
-
   const [editingImagePath, setEditingImagePath] = useState(null);
   const [editingKeyImagePath, setEditingKeyImagePath] = useState(null);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [addImagePath, setAddImagePath] = useState(null);
   const [addUnit, setAddUnit] = useState(false);
   const [unit, setUnit] = useState([]);
@@ -85,7 +85,11 @@ function CarDetails({ car, onUpdate }) {
   console.log("car:", car);
 
   if (!car) {
-    return <div>Select a Car</div>;
+    return (
+      <div className="flex justify-center items-center h-full text-xl font-bold">
+        Select a Car
+      </div>
+    );
   }
 
   let component = null;
@@ -126,6 +130,17 @@ function CarDetails({ car, onUpdate }) {
       },
     });
     console.log("Deleted:", response.data);
+  };
+
+  const handleDeleteCar = async () => {
+    const response = await axios.delete("/admin/delete_car_model", {
+      data: {
+        carId: car._id,
+      },
+    });
+    console.log("Deleted:", response.data);
+    setIsEditable(false);
+    onUpdate(null);
   };
   const onImageSelected = async (e) => {
     const file = e.target.files[0];
@@ -301,36 +316,37 @@ function CarDetails({ car, onUpdate }) {
           <div className="flex gap-2">
             {isEditable ? (
               <>
-                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+                <div className="button-wrapper">
                   <button
                     type="button"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary"
                     onClick={handleAddImage}
                   >
                     Add Image
                   </button>
                 </div>
-                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+                <div className="button-wrapper">
                   <button
                     type="button"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary"
+                    onClick={() => setShowConfirmDelete(true)}
                   >
                     Delete
                   </button>
                 </div>
-                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+                <div className="button-wrapper">
                   <button
                     type="button"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary"
                     onClick={onSave}
                   >
                     Save
                   </button>
                 </div>
-                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+                <div className="button-wrapper">
                   <button
                     type="button"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary"
                     onClick={onCancel}
                   >
                     Cancel
@@ -339,19 +355,19 @@ function CarDetails({ car, onUpdate }) {
               </>
             ) : (
               <>
-                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+                <div className="button-wrapper">
                   <button
                     type="button"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary"
                     onClick={onEdit}
                   >
                     Edit
                   </button>
                 </div>
-                <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+                <div className="button-wrapper">
                   <button
                     type="button"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary"
                     onClick={onAddUnit}
                   >
                     Add Unit
@@ -526,6 +542,34 @@ function CarDetails({ car, onUpdate }) {
         </div>
       </div>
       <div>car Features</div>
+      {showConfirmDelete && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+            <p className="mb-4">
+              Really delete this car? This cannot be undone.
+            </p>
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded"
+                onClick={() => setShowConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <div className="button-wrapper">
+                <button
+                  className="button-primary"
+                  onClick={() => {
+                    handleDeleteCar();
+                    setShowConfirmDelete(false);
+                  }}
+                >
+                  Yes, delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
