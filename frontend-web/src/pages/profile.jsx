@@ -60,6 +60,7 @@ const Profile = () => {
     saveProfile,
     changePassword,
     setFormData,
+    setPasswordForm,
   } = useProfileForm(profile);
 
   useEffect(() => {
@@ -234,6 +235,13 @@ const Profile = () => {
       setIsVerifying(false);
       setVerificationType(null);
       setPendingVerification({ field: null, value: "" });
+    } else if (isChangingPassword) {
+      setIsChangingPassword(false);
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
     } else {
       setIsEditing(false);
       setFormData({
@@ -276,7 +284,7 @@ const Profile = () => {
 
   if (isVerifying) {
     return (
-      <div className="flex flex-col items-center justify-center  py-40 ">
+      <div className="flex flex-col items-center justify-center py-40">
         {verificationType === "phone" ? (
           <PhoneVerification
             title="Verify your new Phone Number"
@@ -322,21 +330,21 @@ const Profile = () => {
 
   return (
     <div className="max-w-4xl mx-auto p-4 bg-white-900 text-black rounded-lg shadow-lg mt-8">
-      <div className="flex  items-center mb-6">
+      <div className="flex items-center mb-6">
         <h1 className="[-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px] flex-none">
           Account
         </h1>
       </div>
 
-      <div className="flex items-center justify-center mb-6">
-        <ImageUploader
-          initialImage={profile?.photo}
-          onImageChange={handleImageUpload}
-        />
-      </div>
-
       {!isChangingPassword ? (
         <>
+          <div className="flex items-center justify-center mb-6">
+            <ImageUploader
+              initialImage={profile?.photo}
+              onImageChange={handleImageUpload}
+            />
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
@@ -448,36 +456,45 @@ const Profile = () => {
           </div>
         </>
       ) : (
-        <div className="space-y-4">
-          <div className="flex flex-col border-b border-gray-700 pb-2">
-            <label className="font-semibold mb-1">Current Password:</label>
-            <input
-              type="password"
-              name="currentPassword"
-              value={passwordForm.currentPassword}
-              onChange={handlePasswordChange}
-              className="bg-gray-800 text-white px-2 py-1 rounded"
-            />
-          </div>
-          <div className="flex flex-col border-b border-gray-700 pb-2">
-            <label className="font-semibold mb-1">New Password:</label>
-            <input
-              type="password"
-              name="newPassword"
-              value={passwordForm.newPassword}
-              onChange={handlePasswordChange}
-              className="bg-gray-800 text-white px-2 py-1 rounded"
-            />
-          </div>
-          <div className="flex flex-col border-b border-gray-700 pb-2">
-            <label className="font-semibold mb-1">Confirm Password:</label>
-            <input
-              type="password"
-              name="confirmPassword"
-              value={passwordForm.confirmPassword}
-              onChange={handlePasswordChange}
-              className="bg-gray-800 text-white px-2 py-1 rounded"
-            />
+        <div className="space-y-6">
+          <h2 className="text-xl font-semibold mb-4">Change Password</h2>
+          <div className="space-y-4">
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Current Password:
+              </label>
+              <input
+                type="password"
+                name="currentPassword"
+                value={passwordForm.currentPassword}
+                onChange={handlePasswordChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                New Password:
+              </label>
+              <input
+                type="password"
+                name="newPassword"
+                value={passwordForm.newPassword}
+                onChange={handlePasswordChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+              />
+            </div>
+            <div className="flex flex-col">
+              <label className="text-sm font-medium text-gray-700 mb-1">
+                Confirm Password:
+              </label>
+              <input
+                type="password"
+                name="confirmPassword"
+                value={passwordForm.confirmPassword}
+                onChange={handlePasswordChange}
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+              />
+            </div>
           </div>
         </div>
       )}
@@ -513,17 +530,17 @@ const Profile = () => {
               </button>
             </div>
             {isEditing && !isChangingPassword && (
-            <div
-              className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
-            >        
-                  <button
-                onClick={() => setShowDeleteModal(true)}
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+              <div
+                className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
               >
-                Delete Account
-              </button>
-            </div>
-             )}
+                <button
+                  onClick={() => setShowDeleteModal(true)}
+                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                >
+                  Delete Account
+                </button>
+              </div>
+            )}
           </>
         ) : (
           <>
@@ -545,8 +562,6 @@ const Profile = () => {
                 Change Password
               </button>
             </div>
-
-           
           </>
         )}
       </div>
