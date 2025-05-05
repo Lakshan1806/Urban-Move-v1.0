@@ -1,5 +1,6 @@
 import CarModel from "../../models/carModel.model.js";
 import CarInstance from "../../models/carInstance.model.js";
+import RecentlyDeletedCar from "../../models/recentlyDeletedCar.model.js";
 import jwt from "jsonwebtoken";
 import fs from "fs/promises";
 import path from "path";
@@ -180,12 +181,13 @@ const carManagementController = {
     }
     try {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      const { _id, vin, licensePlate, color } = req.body;
+      const { _id, vin, licensePlate, color, location } = req.body;
       const carUnit = await CarInstance.findByIdAndUpdate(_id, {
         $set: {
           vin,
           licensePlate,
           color,
+          location,
         },
       });
 
@@ -334,6 +336,30 @@ const carManagementController = {
       console.log(error);
       return res.status(403).json({ error: "Token verification failed" });
     }
+  },
+
+  deleteCarModel: async (req, res) => {
+    const { token } = req.cookies;
+    const { carId } = req.body;
+
+    console.log(req.body);
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+    try {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      const deletedDoc = await CarModel.findByIdAndDelete(carId);
+      if (!deletedDoc) {
+        return res.status(404).json({ error: "Car not found" });
+      }
+
+      const docObject = deletedDoc.toObject();
+      await RecentlyDeletedCar.create(docObject);
+
+      return res
+        .status(200)
+        .json({ message: "Car deleted and moved to recently_deleted" });
+    } catch (error) {}
   },
 };
 
