@@ -2,7 +2,7 @@ import { useState } from "react";
 import AvailableCars from "../components/Rentals/AvailableCars";
 import CarDetails from "../components/Rentals/CarDetails";
 import AddCars from "../components/Rentals/AddCars";
-import CurrentActivity from "../components/Rentals/CurrentActivity";
+//import CurrentActivity from "../components/Rentals/CurrentActivity";
 
 function Rentals() {
   const [carDetails, setCarDetails] = useState(null);

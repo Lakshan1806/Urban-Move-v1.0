@@ -2,7 +2,6 @@ import { Route, Routes } from "react-router-dom";
 import Dashboard from "./components/Dashboard";
 import AuthContainer from "./components/AuthContainer";
 import axios from "axios";
-
 import ProtectedRoute from "./components/ProtectedRoute";
 
 axios.defaults.baseURL = "http://localhost:5000";

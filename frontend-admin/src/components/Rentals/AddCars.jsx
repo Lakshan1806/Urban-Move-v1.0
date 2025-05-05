@@ -68,8 +68,8 @@ function AddCars({ onSaveForm }) {
     formData.append("seat", seat);
     formData.append("speed", speed);
     formData.append("description", description);
-    console.log(tempImage); 
-    console.log(tempImage.constructor.name); 
+    console.log(tempImage);
+    console.log(tempImage.constructor.name);
 
     if (tempImage) {
       Array.from(tempImage).forEach((file) => {
@@ -91,56 +91,56 @@ function AddCars({ onSaveForm }) {
       <div className="flex flex-col">
         <div>
           <h2>Add Car Details</h2>
-          <img
-            src={keyImageUrl}
-            alt={"preview"}
-            className="w-24 h-24 rounded-lg object-cover"
-          />
-
-          <div className="flex flex-row">
-            <input
-              type="file"
-              ref={keyImageInputRef}
-              style={{ display: "none" }}
-              onChange={handleKeyFileChange}
+          <div className="flex flex-col gap-2">
+            <img
+              src={keyImageUrl}
+              alt={"preview"}
+              className="w-50 rounded-lg object-cover"
             />
-
-            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+            <div className="flex flex-row overflow-auto gap-2">
+              {imageUrl.map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`Preview ${index}`}
+                  className="w-50 rounded-lg object-cover"
+                />
+              ))}
+            </div>
+          </div>
+          <input
+            type="file"
+            ref={keyImageInputRef}
+            className="hidden"
+            onChange={handleKeyFileChange}
+          />
+          <input
+            type="file"
+            multiple
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <div className="flex flex-col gap-1">
+            <div className="button-wrapper">
               <button
                 type="button"
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                className="button-primary"
                 onClick={handleKeyImageClick}
               >
-                Upload Key photo
+                Upload Key Image
               </button>
             </div>
-
-            {imageUrl.map((url, index) => (
-              <img
-                key={index}
-                src={url}
-                alt={`Preview ${index}`}
-                className="w-24 h-24 rounded-lg object-cover"
-              />
-            ))}
-
-            <input
-              type="file"
-              multiple
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-
-            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+            <div className="button-wrapper">
               <button
                 type="button"
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                className="button-primary"
                 onClick={handleImageClick}
               >
-                Upload new photo
+                Upload Image
               </button>
             </div>
+            v
           </div>
 
           <div>
@@ -267,28 +267,29 @@ function AddCars({ onSaveForm }) {
               placeholder="Short description or highlights"
             />
           </div>
-
-          <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-            <button
-              type="button"
-              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-              onClick={handleSave}
-            >
-              save
-            </button>
+          <div className="flex flex-row items-center justify-center gap-5">
+            <div className="button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={handleSave}
+              >
+                Save
+              </button>
+            </div>
+            <div className="button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={() => {
+                  onSaveForm(false);
+                }}
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-        <button
-          type="button"
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-          onClick={() => {
-            onSaveForm(false);
-          }}
-        >
-          done
-        </button>
       </div>
     </div>
   );

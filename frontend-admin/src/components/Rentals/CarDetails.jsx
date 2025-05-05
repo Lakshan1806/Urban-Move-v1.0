@@ -200,7 +200,7 @@ function CarDetails({ car, onUpdate }) {
   };
 
   const onCancel = () => {
-    setIsEditable(false);
+    setIsEditable(false); 
   };
 
   return (

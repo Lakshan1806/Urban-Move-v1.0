@@ -5,7 +5,7 @@ export const UserContext = createContext({});
 
 export function UserContextProvider({ children }) {
   const [user, setUser] = useState(null);
-  
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function validateSession() {
@@ -15,16 +15,18 @@ export function UserContextProvider({ children }) {
         localStorage.setItem("userData", JSON.stringify(data));
         setUser(data);
       } catch (error) {
-        console.error("Session validation fail:", error);
+        console.error("Session validation failed:", error);
         localStorage.removeItem("userData");
         setUser(null);
+      } finally {
+        setLoading(false);
       }
     }
     validateSession();
   }, []);
 
   return (
-    <UserContext.Provider value={{ user, setUser }}>
+    <UserContext.Provider value={{ user, setUser, loading }}>
       {children}
     </UserContext.Provider>
   );

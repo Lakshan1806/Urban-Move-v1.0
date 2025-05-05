@@ -13,9 +13,10 @@ import { MdSupervisorAccount } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
 import { useContext } from "react";
+import Roles from "../context/roles";
 
 function Navbar() {
-  const { setUser } = useContext(UserContext);
+  const { setUser, user } = useContext(UserContext);
   const navigate = useNavigate();
   console.log("Navbar is rendering");
 
@@ -35,7 +36,12 @@ function Navbar() {
     { path: "/dashboard/financials", label: "Financials", icon: FinancialIcon },
     { path: "/dashboard/messages", label: "Messages", icon: MessageIcon },
     { path: "/dashboard/account", label: "Account", icon: AccountIcon },
-    { path: "/dashboard/settings", label: "Administration", icon: SettingIcon },
+    {
+      path: "/dashboard/settings",
+      label: "Administration",
+      icon: SettingIcon,
+      allowedRole: Roles.SUPER_ADMIN,
+    },
   ];
   const linkstyles =
     "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex gap-[10px]";
@@ -47,14 +53,19 @@ function Navbar() {
       </header>
 
       <div className="flex flex-col min-h-[500px] justify-between ">
-        {navItems.map((item) => {
-          return (
-            <Link to={item.path} key={item.path} className={linkstyles}>
-              <img src={item.icon} alt={item.label} />
-              {item.label}
-            </Link>
-          );
-        })}
+        {navItems
+          .filter(
+            (item) =>
+              !item.allowedRole || (user && user.role === item.allowedRole)
+          )
+          .map((item) => {
+            return (
+              <Link to={item.path} key={item.path} className={linkstyles}>
+                <img src={item.icon} alt={item.label} />
+                {item.label}
+              </Link>
+            );
+          })}
       </div>
 
       <div

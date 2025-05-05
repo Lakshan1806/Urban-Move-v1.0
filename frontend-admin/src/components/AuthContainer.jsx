@@ -1,7 +1,6 @@
 import { useContext } from "react";
 import { UserContext } from "../context/userContext";
 import SignIn from "../pages/SignIn";
-import Dashboard from "./Dashboard";
 import { Navigate } from "react-router-dom";
 
 function AuthContainer() {
