@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Chart } from "primereact/chart";
 
-function LineStylesGraph() {
+function CancelledRideStats() {
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
 
@@ -42,6 +42,7 @@ function LineStylesGraph() {
     };
     const options = {
       maintainAspectRatio: false,
+       
       
       plugins: {
         legend: {
@@ -86,4 +87,4 @@ function LineStylesGraph() {
   );
 }
 
-export default LineStylesGraph;
+export default CancelledRideStats;

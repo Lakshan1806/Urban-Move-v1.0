@@ -41,10 +41,10 @@ function AvailableCars({ onCarSelect, onAddCars }) {
             <div className="flex flex-col w-1/2">
               <h3 className="text-sm font-bold">{cars.make}</h3>
               <h3 className="text-xl font-bold">{cars.model}</h3>
-              <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+              <div className="button-wrapper">
                 <button
                   type="button"
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  className="button-primary"
                   onClick={() => onCarSelect(cars)}
                 >
                   Select
@@ -54,10 +54,10 @@ function AvailableCars({ onCarSelect, onAddCars }) {
           </div>
         );
       })}
-      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer sticky bottom-0">
+      <div className="button-wrapper sticky bottom-0">
         <button
           type="button"
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+          className="button-primary"
           onClick={handleButtonClick}
         >
           Add Cars

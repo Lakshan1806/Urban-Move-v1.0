@@ -1,5 +1,6 @@
 import AddPromotions from "../components/Rides/AddPromotions";
-import RideStats from "../components/Rides/RideStats";
+import CompletedRide from "../components/Rides/CompletedRide";
+import CancelledRide from "../components/Rides/CancelledRide";
 import RideTable from "../components/Rides/RideTable";
 
 function Rides() {
@@ -10,14 +11,13 @@ function Rides() {
           Rides
         </h1>
       </div>
-      <div className="grid gap-3 grid-cols-12 grid-rows-12 flex-1 min-h-0">
-        <RideStats/>
-        <RideStats/>
-        <RideTable/>
-        <AddPromotions/>
-        <RideTable/>
-        <RideTable/>
-        
+      <div className="grid gap-3 grid-cols-12 grid-rows-12 flex-1 min-h-0 overflow-auto">
+        <CompletedRide />
+        <CancelledRide />
+        <RideTable />
+        <AddPromotions />
+        <RideTable />
+        <RideTable />
       </div>
     </div>
   );

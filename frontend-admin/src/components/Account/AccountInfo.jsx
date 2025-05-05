@@ -77,7 +77,7 @@ function AccountInfo() {
   };
 
   return (
-    <div className="col-span-12 row-span-12 p-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col">
+    <div className="col-span-12 row-span-12 p-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col gap-10">
       <div className="flex flex-row justify-center items-center gap-5">
         <img
           src={imageUrl}
@@ -103,7 +103,7 @@ function AccountInfo() {
       </div>
       <p>Personal info</p>
       <div className="flex flex-col">
-        <div className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4">
+        <div className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4 justify-around">
           <div>
             <RiAccountCircleFill className="w-[30px] h-[30px]" />
             {isEditable ? (
@@ -193,47 +193,43 @@ function AccountInfo() {
             )}
           </div>
         </div>
-        <div className="flex flex-row">
-          {isEditable ? (
-            <>
-              <div className="button-wrapper">
-                <button
-                  type="button"
-                  className="button-primary"
-                  onClick={handleSave}
-                >
-                  Save
-                </button>
-              </div>
-              <div className="button-wrapper">
-                <button
-                  type="button"
-                  className="button-primary"
-                  onClick={onCancel}
-                >
-                  Cancel
-                </button>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="button-wrapper w-1/4 ">
-                <button
-                  type="button"
-                  className="button-primary"
-                  onClick={onEdit}
-                >
-                  Edit
-                </button>
-              </div>
-              <div className="button-wrapper w-1/4">
-                <button type="button" className="button-primary">
-                  Change Password
-                </button>
-              </div>
-            </>
-          )}
-        </div>
+      </div>
+      <div className="flex flex-row items-center justify-center gap-5">
+        {isEditable ? (
+          <>
+            <div className="button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={handleSave}
+              >
+                Save
+              </button>
+            </div>
+            <div className="button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={onCancel}
+              >
+                Cancel
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            <div className="button-wrapper w-1/4 ">
+              <button type="button" className="button-primary" onClick={onEdit}>
+                Edit
+              </button>
+            </div>
+            <div className="button-wrapper w-1/4">
+              <button type="button" className="button-primary">
+                Change Password
+              </button>
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

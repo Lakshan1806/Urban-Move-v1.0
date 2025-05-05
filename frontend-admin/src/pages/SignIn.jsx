@@ -74,11 +74,8 @@ function SignIn() {
               />
             </div>
 
-            <div className="bg-black rounded-[50px] max-w-[115px] flex justify-center px-[22px] py-[5px] text-[20px]">
-              <button
-                type="submit"
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-              >
+            <div className="button-wrapper">
+              <button type="submit" className="button-primary">
                 SIGN IN
               </button>
             </div>

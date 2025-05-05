@@ -37,6 +37,7 @@ function AdminList() {
               <h3 className="text-lg font-bold">{admin.name}</h3>
               <p>Username: {admin.username}</p>
               <p>Email: {admin.email}</p>
+              <p>Role: {admin.role}</p>
             </div>
           </div>
         );
