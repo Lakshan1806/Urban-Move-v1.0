@@ -2,13 +2,14 @@ import Admin from "../../models/admin.model.js";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const adminAuthController = {
+const adminAuthController = { 
   login: async (req, res) => {
     try {
       const { username, password } = req.body;
       const admin = await Admin.findOne({ username }).select({
         password: 1,
         username: 1,
+        role:1,
       });
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
@@ -18,7 +19,7 @@ const adminAuthController = {
         return res.status(401).json({ message: "Invalid credentials" });
       }
       if (isMatch) {
-        const payload = { _id: admin._id, username: admin.username };
+        const payload = { _id: admin._id, username: admin.username, role: admin.role };
         const token = jwt.sign(payload, process.env.ACCESS_TOKEN_SECRET);
 
         res.cookie("token", token);
@@ -44,4 +45,4 @@ const adminAuthController = {
     }
   },
 };
-export default adminAuthController;
+export default adminAuthController; 

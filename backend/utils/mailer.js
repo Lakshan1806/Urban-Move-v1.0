@@ -14,7 +14,7 @@ const transporter = nodemailer.createTransport({
 
 async function sendWelcomeEmail(email, temporaryPassword, username) {
   const mailOptions = {
-    from: " Urban Move Admin <yourusername@email.com>",
+    from: `Urban Move Admin <${process.env.SMTP_USERNAME}>`,
     to: email,
     subject: "Urban Move Admin Registration",
     text: ` Welcome!\n Your username is: ${username}\n Your temporary password is: ${temporaryPassword}\n Please log in and change your password immediately.`,

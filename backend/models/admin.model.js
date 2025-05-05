@@ -11,6 +11,10 @@ const adminSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   phone: { type: String, default: "" },
   photo: { type: String, default: "" },
+  role: {
+    type: String,
+    enum: ["Super Admin", "Admin"],
+  },
 });
 
 adminSchema.pre("save", async function () {

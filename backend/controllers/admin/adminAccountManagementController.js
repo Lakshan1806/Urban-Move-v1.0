@@ -50,8 +50,10 @@ const adminAccountManagementController = {
       username: 1,
       email: 1,
       photo: 1,
+      role: 1,
     });
     admins.map((admin) => {
+      //console.log(admin.photo)
       if (admin.photo) {
         admin.photo = admin.photo
           .replace(/\\/g, "/")
