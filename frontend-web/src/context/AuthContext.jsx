@@ -35,9 +35,12 @@ const AuthProvider = ({ children }) => {
       console.error("Auth check failed:", error);
       setUser(null);
       setIsAuthenticated(false);
+      if (error.message === 'Account terminated') {
+        navigate('/login?error=account_terminated');
+      }
       return false;
     }
-  }, []);
+  }, [navigate]);
 
   useEffect(() => {
     const handleGoogleRedirect = async () => {
@@ -143,6 +146,7 @@ const AuthProvider = ({ children }) => {
   };
   const loginWithGoogle = useCallback((intent = "login") => {
     try {
+      setError(null);
       window.open(
         `http://localhost:5000/auth/google?intent=${intent}`,
         "_self"

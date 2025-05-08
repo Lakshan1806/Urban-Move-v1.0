@@ -1,6 +1,6 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext ,useEffect} from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
+import { useNavigate ,useLocation} from "react-router-dom";
 import axios from "axios";
 import imgcl from "../signup_photos/signupcustomer.svg";
 import imgl from "../signup_photos/linervector.svg";
@@ -14,8 +14,14 @@ import GoogleLoginButton from "../components/GoogleLogin";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const location = useLocation();
 
+  const navigate = useNavigate();
+  useEffect(() => {
+    if (location.search.includes('account_terminated')) {
+      setError('Your account has been terminated');
+    }
+  }, [location]);
   const [formData, setFormData] = useState({
     username: "",
     password: "",

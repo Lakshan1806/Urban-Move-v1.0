@@ -26,6 +26,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       unique: true,
     },
+    isTerminated: { type: Boolean, default: false },
     photo: { type: String, default: "" },
     age: { type: Number },
     gender: { type: String, enum: ["male", "female", "other"] },

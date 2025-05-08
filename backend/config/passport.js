@@ -15,6 +15,14 @@ passport.use(
       try {
         const email = profile.emails[0].value;
 
+        const terminatedUser = await userModel.findOne({
+          email,
+          isTerminated: true
+        });
+        if (terminatedUser) {
+          return done(null, false, { message: "Account terminated" });
+        }
+        
         const existingGoogleUser = await userModel.findOne({
           googleId: profile.id,
         });

@@ -235,6 +235,11 @@ const userAuthController = {
             authMethod: user?.authMethod || "none",
           });
         }
+        if ( user.isTerminated) {
+          return res.status(401).json({ 
+            message: " account terminated" 
+          });
+        }
 
         if (!user || !bcrypt.compare(password, user.password)) {
           if (user) {
