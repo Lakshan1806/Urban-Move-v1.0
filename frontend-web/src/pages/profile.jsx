@@ -1,67 +1,36 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
 import { toast } from "react-toastify";
-import useProfileForm from "../components/hooks/useProfileForm";
-import EditableField from "../components/EditableField";
-import ImageUploader from "../components/ImageUploder.jsx";
-import PhoneVerification from "../components/phoneVerification.jsx";
+import PhoneVerification from "../components/PhoneVerification.jsx";
 import EmailVerification from "../components/EmailVerification";
 import useOtpVerification from "../components/hooks/useOtpVerification";
 import DeleteAccountModal from "../components/DeleteAccountModel.jsx";
 
 const Profile = () => {
-  const { isAuthenticated, user, logout, updateProfile } =
-    useContext(AuthContext);
+  const { isAuthenticated, user, logout } = useContext(AuthContext);
   const [profile, setProfile] = useState(null);
-  const [error, setError] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [verificationType, setVerificationType] = useState(null);
-  const [tempValue, setTempValue] = useState("");
   const [pendingVerification, setPendingVerification] = useState({
     field: null,
     value: "",
   });
+  const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmPassword: "",
+  });
+  const fileInputRef = useRef(null);
   const navigate = useNavigate();
 
-  const {
-    otp,
-    setOtp,
-    error: phoneError,
-    secondsLeft: phoneSecondsLeft,
-    isActive: isPhoneActive,
-    sendOtp: sendPhoneOtp,
-    verifyOtp: verifyPhoneOtp,
-    resendOtp: resendPhoneOtp,
-  } = useOtpVerification();
-
-  const {
-    emailOtp,
-    setEmailOtp,
-    error: emailError,
-    secondsLeft: emailSecondsLeft,
-    isActive: isEmailActive,
-    sendOtp: sendEmailOtp,
-    verifyOtp: verifyEmailOtp,
-    resendOtp: resendEmailOtp,
-  } = useOtpVerification();
-
-  const {
-    formData,
-    passwordForm,
-    formError,
-    handleChange,
-    handlePasswordChange,
-    saveProfile,
-    changePassword,
-    setFormData,
-    setPasswordForm,
-  } = useProfileForm(profile);
+  const phoneVerification = useOtpVerification();
+  const emailVerification = useOtpVerification();
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -69,164 +38,141 @@ const Profile = () => {
         const response = await axios.get("/auth/profile");
         setProfile(response.data);
       } catch (err) {
-        setError(err.response?.data?.message || "Failed to load profile");
+        toast.error(err.response?.data?.message || "Failed to load profile");
       }
     };
-
     if (isAuthenticated) fetchProfile();
-    else {
-      navigate("/login");
-    }
   }, [isAuthenticated, navigate]);
 
-  const handleEdit = () => setIsEditing(true);
+  const handleImageClick = () => {
+    fileInputRef.current.click();
+  };
+
+  const handleFileChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const previewUrl = URL.createObjectURL(file);
+    setProfile((prev) => ({ ...prev, photo: previewUrl }));
+  };
+
+  const handlePhoneVerify = async () => {
+    if (!profile?.phone || profile.phone.replace(/\D/g, "").length < 10) {
+      toast.error("Please enter a valid phone number");
+      return;
+    }
+
+    try {
+      setIsVerifying(true);
+      setVerificationType("phone");
+      setPendingVerification({ field: "phone", value: profile.phone });
+
+      await phoneVerification.sendOtp("/auth/send-otp", {
+        phone: profile.phone,
+        type: "phone",
+        userId: profile?._id,
+      });
+    } catch (error) {
+      toast.error("Failed to send OTP");
+      setIsVerifying(false);
+    }
+  };
+
+  const handleEmailVerify = async () => {
+    if (!profile?.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)) {
+      toast.error("Please enter a valid email address");
+      return;
+    }
+
+    try {
+      setIsVerifying(true);
+      setVerificationType("email");
+      setPendingVerification({ field: "email", value: profile.email });
+
+      await emailVerification.sendOtp("/auth/send-otp", {
+        email: profile.email,
+        type: "email",
+        userId: profile?._id,
+      });
+    } catch (error) {
+      toast.error("Failed to send OTP");
+      setIsVerifying(false);
+    }
+  };
+
+  const completeVerification = async () => {
+    try {
+      let verificationResult;
+
+      if (verificationType === "phone") {
+        verificationResult = await phoneVerification.verifyOtp(
+          "/auth/verify-otp",
+          {
+            phone: pendingVerification.value,
+            otp: phoneVerification.otp,
+            type: "phone",
+          }
+        );
+      } else {
+        verificationResult = await emailVerification.verifyOtp(
+          "/auth/verify-otp",
+          {
+            email: pendingVerification.value,
+            otp: emailVerification.otp,
+            type: "email",
+          }
+        );
+      }
+
+      if (verificationResult.success) {
+        toast.success("Verification successful!");
+        setIsVerifying(false);
+        setVerificationType(null);
+        setPendingVerification({ field: null, value: "" });
+      }
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Verification failed");
+    }
+  };
 
   const handleSave = async () => {
     try {
-      const updatedFields = {
-        fullname: formData.fullname,
-        username: formData.username,
-        nicNumber: formData.nicNumber,
-        address: formData.address,
-        age: formData.age,
-        email:
-          pendingVerification.field === "email"
-            ? pendingVerification.value
-            : profile?.email,
-        phone:
-          pendingVerification.field === "phone"
-            ? pendingVerification.value
-            : profile?.phone,
-      };
+      const formData = new FormData();
+      formData.append("userId", profile?._id);
+      formData.append("fullname", profile?.fullname || "");
+      formData.append("username", profile?.username || "");
+      formData.append("email", profile?.email || "");
+      formData.append("phone", profile?.phone || "");
+      formData.append("nicNumber", profile?.nicNumber || "");
+      formData.append("address", profile?.address || "");
+      formData.append("age", profile?.age || "");
 
-      await updateProfile(updatedFields);
-      if (pendingVerification.field) {
-        setIsVerifying(true);
-        setVerificationType(pendingVerification.field);
-      } else {
-        setIsEditing(false);
-        toast.success("Profile updated successfully");
+      if (fileInputRef.current?.files[0]) {
+        formData.append("photo", fileInputRef.current.files[0]);
       }
+
+      const response = await axios.post("/auth/updateprofile", formData);
+      setIsEditing(false);
+      toast.success("Profile updated successfully");
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to update profile");
     }
   };
 
-  const handleEmailChange = async (newEmail) => {
-    if (newEmail === profile?.email) return;
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(newEmail)) {
-      return;
+  const changePassword = async () => {
+    setError(null);
+
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      setError("New passwords don't match");
+      return false;
     }
 
-    setTempValue(newEmail);
-    setVerificationType("email");
-    setIsVerifying(true);
     try {
-      await sendEmailOtp("/auth/send-otp", { email: newEmail, type: "email" });
-    } catch (error) {
-      toast.error("Failed to send OTP");
-      setIsVerifying(false);
-    }
-  };
-
-  const handlePhoneChange = async (newPhone) => {
-    if (newPhone === profile?.phone) return;
-
-    if (newPhone.replace(/\D/g, "").length < 10) {
-      return;
-    }
-
-    setTempValue(newPhone);
-    setVerificationType("phone");
-    setIsVerifying(true);
-    try {
-      await sendPhoneOtp("/auth/send-otp", {
-        phone: newPhone,
-        type: "phone",
-        userId: user?._id,
-      });
-    } catch (error) {
-      toast.error("Failed to send OTP");
-      setIsVerifying(false);
-      console.error("OTP send error:", error.response?.data);
-    }
-  };
-
-  const handleVerifyClick = (field) => {
-    if (field === "email") {
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-      if (!emailRegex.test(formData.email)) {
-        toast.error("Please enter a valid email address");
-        return;
-      }
-    } else if (field === "phone") {
-      if (formData.phone.replace(/\D/g, "").length < 10) {
-        toast.error("Please enter a valid phone number");
-        return;
-      }
-    }
-    setPendingVerification({
-      field,
-      value: formData[field],
-    });
-
-    if (field === "phone") {
-      handlePhoneChange(formData.phone);
-    } else {
-      handleEmailChange(formData.email);
-    }
-  };
-
-  const verifyAndUpdate = async () => {
-    try {
-      let verificationResult;
-
-      if (verificationType === "email") {
-        verificationResult = await verifyEmailOtp("/auth/verify-otp", {
-          email: pendingVerification.value,
-          otp: emailOtp,
-          type: "email",
-        });
-      } else {
-        verificationResult = await verifyPhoneOtp("/auth/verify-otp", {
-          phone: pendingVerification.value,
-          otp,
-          type: "phone",
-        });
-      }
-
-      if (verificationResult.success) {
-        const updatedFields = {
-          ...formData,
-          [verificationType]: pendingVerification.value,
-        };
-        await updateProfile(updatedFields);
-
-        setIsVerifying(false);
-        setVerificationType(null);
-        setTempValue("");
-        setOtp("");
-        setEmailOtp("");
-        toast.success("Profile updated successfully");
-
-        const response = await axios.get("/auth/profile");
-        setProfile(response.data);
-      }
-    } catch (error) {
-      toast.error(error.response?.data?.message || "Verification failed");
-      setOtp("");
-      setEmailOtp("");
-    }
-  };
-
-  const handlePasswordSave = async () => {
-    try {
-      await changePassword();
-      setIsChangingPassword(false);
-      toast.success("Password changed successfully");
+      const response = await axios.put("/auth/profile/password", passwordForm);
+      return response.data;
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to change password");
+      setError(err.response?.data?.message || "Failed to change password");
+      throw err;
     }
   };
 
@@ -244,78 +190,69 @@ const Profile = () => {
       });
     } else {
       setIsEditing(false);
-      setFormData({
-        username: profile?.username || "",
-        email: profile?.email || "",
-        phone: profile?.phone || "",
-        fullname: profile?.fullname || "",
-        nicNumber: profile?.nicNumber || "",
-        address: profile?.address || "",
-        age: profile?.age || "",
-      });
+      axios
+        .get("/auth/profile")
+        .then((response) => setProfile(response.data))
+        .catch((err) => toast.error("Failed to reset changes"));
     }
-    setError(null);
   };
-
-  const handleImageUpload = async (file) => {
+  const handlePasswordChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+  const handlePasswordSave = async () => {
     try {
-      const formData = new FormData();
-      formData.append("photo", file);
-
-      const response = await axios.put("/auth/profile", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-      setProfile(response.data);
-      toast.success("Profile photo updated successfully");
+      await changePassword();
+      setIsChangingPassword(false);
+      toast.success("Password changed successfully");
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to upload photo");
-      toast.error("Failed to upload photo");
+      toast.error(err.response?.data?.message || "Failed to change password");
     }
   };
-
   const handleDeleteSuccess = async () => {
     await logout();
     navigate("/");
   };
 
-  if (!isAuthenticated) return null;
+  if (!profile) return;
 
   if (isVerifying) {
     return (
       <div className="flex flex-col items-center justify-center py-40">
         {verificationType === "phone" ? (
           <PhoneVerification
-            title="Verify your new Phone Number"
+            title="Verify your Phone Number"
             description={`We sent a code to ${pendingVerification.value}`}
-            onContinue={verifyAndUpdate}
+            onContinue={completeVerification}
             onResend={() =>
-              resendPhoneOtp("/auth/resend-otp", {
+              phoneVerification.resendOtp("/auth/resend-otp", {
                 phone: pendingVerification.value,
                 type: "phone",
               })
             }
-            isActive={isPhoneActive}
-            secondsLeft={phoneSecondsLeft}
-            error={phoneError}
-            onOtpSubmit={setOtp}
+            isActive={phoneVerification.isActive}
+            secondsLeft={phoneVerification.secondsLeft}
+            error={phoneVerification.error}
+            onOtpSubmit={phoneVerification.setOtp}
           />
         ) : (
           <EmailVerification
-            title="Verify your new Email Address"
+            title="Verify your Email Address"
             description={`We sent a code to ${pendingVerification.value}`}
-            onContinue={verifyAndUpdate}
+            onContinue={completeVerification}
             onResend={() =>
-              resendEmailOtp("/auth/resend-otp", {
+              emailVerification.resendOtp("/auth/resend-otp", {
                 email: pendingVerification.value,
                 type: "email",
               })
             }
-            isActive={isEmailActive}
-            secondsLeft={emailSecondsLeft}
-            error={emailError}
-            onOtpSubmit={setEmailOtp}
+            isActive={emailVerification.isActive}
+            secondsLeft={emailVerification.secondsLeft}
+            error={emailVerification.error}
+            onOtpSubmit={emailVerification.setOtp}
           />
         )}
         <button
@@ -336,131 +273,207 @@ const Profile = () => {
         </h1>
       </div>
 
+      <div className="flex items-center justify-center mb-6">
+        <div className="relative">
+          <img
+            src={
+              profile?.photo
+                ? profile.photo.includes("http")
+                  ? profile.photo
+                  : `http://localhost:5000${profile.photo}`
+                : "/default-user.png"
+            }
+            alt="Profile"
+            className="w-40 h-40 rounded-full object-cover border-2 border-orange-500"
+          />
+          {isEditing && (
+            <label className="absolute bottom-0 right-0 bg-black rounded-full p-2 cursor-pointer hover:bg-gray-800 transition">
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                onChange={handleFileChange}
+                accept="image/*"
+              />
+              <span className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer ">
+                Change
+              </span>
+            </label>
+          )}
+        </div>
+      </div>
+
       {!isChangingPassword ? (
         <>
-          <div className="flex items-center justify-center mb-6">
-            <ImageUploader
-              initialImage={profile?.photo}
-              onImageChange={handleImageUpload}
-            />
-          </div>
-
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Full Name :
+                  Full Name
                 </label>
-                <EditableField
-                  name="fullname"
-                  value={formData.fullname}
-                  onChange={handleChange}
-                  isEditing={isEditing}
-                  className="mt-1 pb-0 block w-full border-gray-300 rounded-md shadow-sm"
-                />
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="fullname"
+                    value={profile.fullname || ""}
+                    onChange={(e) =>
+                      setProfile({ ...profile, fullname: e.target.value })
+                    }
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                  />
+                ) : (
+                  <div className="mt-1 p-2">{profile.fullname || "-"}</div>
+                )}
               </div>
+
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Username :
+                  Username
                 </label>
-                <EditableField
-                  label="Username"
-                  name="username"
-                  value={formData.username}
-                  onChange={handleChange}
-                  isEditing={isEditing}
-                />
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="username"
+                    value={profile.username || ""}
+                    onChange={(e) =>
+                      setProfile({ ...profile, username: e.target.value })
+                    }
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                  />
+                ) : (
+                  <div className="mt-1 p-2">{profile.username || "-"}</div>
+                )}
               </div>
-              <div className="space-y-4">
+
+              <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Email :
+                  Email
                 </label>
-                <EditableField
-                  label="Email"
-                  name="email"
-                  value={formData.email}
-                  onChange={(e) =>
-                    setFormData({ ...formData, email: e.target.value })
-                  }
-                  isEditing={isEditing}
-                  type="email"
-                  needsVerification={
-                    isEditing && formData.email !== profile?.email
-                  }
-                  onVerify={() => handleVerifyClick("email")}
-                  isVerifying={isVerifying && verificationType === "email"}
-                />
+                {isEditing ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      name="email"
+                      value={profile.email || ""}
+                      onChange={(e) =>
+                        setProfile({ ...profile, email: e.target.value })
+                      }
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                    />
+                    {profile.email !== user?.email && (
+                      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+                        <button
+                          onClick={handleEmailVerify}
+                          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                        >
+                          verify
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-1 p-2">{profile.email || "-"}</div>
+                )}
               </div>
             </div>
+
             <div className="space-y-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Phone :
+                  Phone
                 </label>
-                <EditableField
-                  name="phone"
-                  value={formData.phone}
-                  onChange={(e) =>
-                    setFormData({ ...formData, phone: e.target.value })
-                  }
-                  isEditing={isEditing}
-                  type="tel"
-                  needsVerification={
-                    isEditing && formData.phone !== profile?.phone
-                  }
-                  onVerify={() => handleVerifyClick("phone")}
-                  isVerifying={isVerifying && verificationType === "phone"}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                />
+                {isEditing ? (
+                  <div className="flex gap-2">
+                    <input
+                      type="tel"
+                      name="phone"
+                      value={profile.phone || ""}
+                      onChange={(e) =>
+                        setProfile({ ...profile, phone: e.target.value })
+                      }
+                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                    />
+                    {profile.phone !== user?.phone && (
+                      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+                        <button
+                          onClick={handlePhoneVerify}
+                          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                        >
+                          verify
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <div className="mt-1 p-2">{profile.phone}</div>
+                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  NIC Number :
+                  NIC Number
                 </label>
-                <EditableField
-                  name="nicNumber"
-                  value={formData.nicNumber}
-                  onChange={handleChange}
-                  isEditing={isEditing}
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                />
+                {isEditing ? (
+                  <input
+                    type="text"
+                    name="nicNumber"
+                    value={profile.nicNumber || ""}
+                    onChange={(e) =>
+                      setProfile({ ...profile, nicNumber: e.target.value })
+                    }
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                  />
+                ) : (
+                  <div className="mt-1 p-2">{profile.nicNumber || "-"}</div>
+                )}
               </div>
 
               <div>
                 <label className="block text-sm font-medium text-gray-700">
-                  Age:
+                  Age
                 </label>
-                <EditableField
-                  name="age"
-                  value={formData.age}
-                  onChange={handleChange}
-                  isEditing={isEditing}
-                  type="number"
-                  className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-                />
+                {isEditing ? (
+                  <input
+                    type="number"
+                    name="age"
+                    value={profile.age || ""}
+                    onChange={(e) =>
+                      setProfile({ ...profile, age: e.target.value })
+                    }
+                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                  />
+                ) : (
+                  <div className="mt-1 p-2">{profile.age || "-"}</div>
+                )}
               </div>
             </div>
           </div>
+
           <div className="mt-4">
             <label className="block text-sm font-medium text-gray-700">
-              Address :
+              Address
             </label>
-            <EditableField
-              name="address"
-              value={formData.address}
-              onChange={handleChange}
-              isEditing={isEditing}
-              className="mt-1 block w-full border-gray-300 rounded-md shadow-sm"
-            />
+            {isEditing ? (
+              <input
+                type="text"
+                name="address"
+                value={profile.address || ""}
+                onChange={(e) =>
+                  setProfile({ ...profile, address: e.target.value })
+                }
+                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+              />
+            ) : (
+              <div className="mt-1 p-2">{profile.address || "-"}</div>
+            )}
           </div>
         </>
       ) : (
         <div className="space-y-6">
           <h2 className="text-xl font-semibold mb-4">Change Password</h2>
           <div className="space-y-4">
-            <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
                 Current Password:
               </label>
               <input
@@ -471,8 +484,8 @@ const Profile = () => {
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
               />
             </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
                 New Password:
               </label>
               <input
@@ -483,8 +496,8 @@ const Profile = () => {
                 className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
               />
             </div>
-            <div className="flex flex-col">
-              <label className="text-sm font-medium text-gray-700 mb-1">
+            <div>
+              <label className="block text-sm font-medium text-gray-700">
                 Confirm Password:
               </label>
               <input
@@ -499,43 +512,30 @@ const Profile = () => {
         </div>
       )}
 
-      {(error || formError) && (
-        <div className="text-red-500 text-center my-4">
-          {error || formError}
-        </div>
-      )}
-
       <div className="flex flex-row space-x-4 mt-6 justify-baseline">
-        {isEditing || isChangingPassword || isVerifying ? (
+        {isEditing || isChangingPassword ? (
           <>
-            {!isVerifying && (
-              <div className="bg-black rounded-[30px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
-                <button
-                  type="button"
-                  onClick={isChangingPassword ? handlePasswordSave : handleSave}
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-                >
-                  save
-                </button>
-              </div>
-            )}
-            <div
-              className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
-            >
+            <div className="bg-black rounded-[30px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+              <button
+                onClick={isChangingPassword ? handlePasswordSave : handleSave}
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              >
+                Save
+              </button>
+            </div>
+            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
               <button
                 onClick={handleCancel}
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
               >
                 Cancel
               </button>
             </div>
-            {isEditing && !isChangingPassword && (
-              <div
-                className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
-              >
+            {isEditing && (
+              <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
                 <button
                   onClick={() => setShowDeleteModal(true)}
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
                 >
                   Delete Account
                 </button>
@@ -546,8 +546,7 @@ const Profile = () => {
           <>
             <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
               <button
-                type="button"
-                onClick={handleEdit}
+                onClick={() => setIsEditing(true)}
                 className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
               >
                 Edit
@@ -555,7 +554,6 @@ const Profile = () => {
             </div>
             <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
               <button
-                type="button"
                 onClick={() => setIsChangingPassword(true)}
                 className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
               >
@@ -565,9 +563,10 @@ const Profile = () => {
           </>
         )}
       </div>
+
       {showDeleteModal && (
         <DeleteAccountModal
-          userId={user?._id}
+          userId={profile?._id}
           onClose={() => setShowDeleteModal(false)}
           onSuccess={handleDeleteSuccess}
         />

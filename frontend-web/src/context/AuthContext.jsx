@@ -167,19 +167,7 @@ const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
-  const updateProfile = async (updatedData) => {
-    try {
-      const response = await axios.put("/auth/updateprofile", {
-        ...updatedData,
-        userId: user?._id,
-      });
-      setUser((prev) => ({ ...prev, ...response.data }));
-      return response.data;
-    } catch (error) {
-      console.error("Update profile error:", error.response?.data);
-      throw error;
-    }
-  };
+  
 
   const value = {
     user,
@@ -193,7 +181,6 @@ const AuthProvider = ({ children }) => {
     loginWithGoogle,
     getProfile,
     checkAuth,
-    updateProfile,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

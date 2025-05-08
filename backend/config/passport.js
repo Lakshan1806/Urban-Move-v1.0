@@ -45,6 +45,7 @@ passport.use(
           avatar: profile.photos[0]?.value,
           authMethod: "google",
           isAccountVerified: false,
+          phone: `google-${profile.id}`
         });
 
         logger.info(
