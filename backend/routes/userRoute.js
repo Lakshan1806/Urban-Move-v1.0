@@ -17,11 +17,9 @@ const userRoutes = express.Router();
 //userRoutes.put('/:id', rentalController.updateRental);
 
 // Delete a rental
-//userRoutes.delete('/:id', rentalController.deleteRental); 
+//userRoutes.delete('/:id', rentalController.deleteRental);
 
-
-
-userRoutes.post("/submit",feedbackController.submit );
+userRoutes.post("/submit", feedbackController.submit);
 
 userRoutes.get("/slideshow_images", rentalController.fetchSlideshowImage);
 
