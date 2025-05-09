@@ -1,8 +1,8 @@
-import User from "../../models/usermodel.js";
+import User from "../../../models/usermodel.js";
 import jwt from "jsonwebtoken";
 
-const driverAccountManagementController = {
-  getAllDriver: async (req, res) => {
+const userAccountManagementController = {
+  getAllUser: async (req, res) => {
     const { token } = req.cookies;
     if (token) {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
@@ -35,4 +35,4 @@ const driverAccountManagementController = {
   },
 };
 
-export default driverAccountManagementController;
+export default userAccountManagementController;

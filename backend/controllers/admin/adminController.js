@@ -1,9 +1,9 @@
-import adminAuthController from "./adminAuthController.js";
-import adminAccountManagementController from "./adminAccountManagementController.js";
-import customerAccountManagementController from "./customerAccountManagementController.js";
-import carManagementController from "./carManagementController.js";
-import driverAccountManagementController from "./driverAccountManagementController.js";
-import promoManagementController from "./promoManagementController.js";
+import adminAuthController from "./adminAccount/adminAuthController.js";
+import adminAccountManagementController from "./adminAccount/adminAccountManagementController.js";
+import customerAccountManagementController from "./customerAccount/customerAccountManagementController.js";
+import carManagementController from "./car/carManagementController.js";
+import driverAccountManagementController from "./driverAccount/driverAccountManagementController.js";
+import promoManagementController from "./promotion/promoManagementController.js";
 
 const adminController = {
   auth: adminAuthController,

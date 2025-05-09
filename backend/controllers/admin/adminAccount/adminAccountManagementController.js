@@ -1,11 +1,12 @@
-import Admin from "../../models/admin.model.js";
+import Admin from "../../../models/admin.model.js";
 import jwt from "jsonwebtoken";
-import generateRandomPassword from "../../utils/passwordGenerator.js";
-import sendWelcomeMail from "../../utils/mailer.js";
+import generateRandomPassword from "../../../utils/passwordGenerator.js";
+import sendWelcomeMail from "../../../utils/mailer.js";
 
 const adminAccountManagementController = {
   changePassword: (req, res) => {
-    res.send("Server is ready");
+    // To Be Implemented
+    res.send("To Be Implemented");
   },
 
   addAdmin: async (req, res) => {
