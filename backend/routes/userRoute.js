@@ -342,6 +342,6 @@ userRoutes.post("/submit", feedbackController.submit);
 
 userRoutes.get("/slideshow_images", rentalController.fetchSlideshowImage);
 
-userRoutes.get("/availableCars", getAvailableCars);
+
 
 export default userRoutes;
