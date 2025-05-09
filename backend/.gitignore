@@ -1,4 +1,7 @@
 uploads/admin/*
 uploads/cars/*
+uploads/promotions/*
 !uploads/admin/.gitkeep
 !uploads/cars/.gitkeep
+!uploads/promotions/.gitkeep
+
