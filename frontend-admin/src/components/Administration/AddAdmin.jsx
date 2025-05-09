@@ -69,9 +69,9 @@ function AddAdmin() {
               <input
                 type="radio"
                 name="role"
-                value="admin"
+                value="Admin"
                 checked={role === "Admin"}
-                onChange={() => setRole("Admin")}
+                onChange={(e) => setRole(e.target.value)}
               />
               Admin
             </label>
@@ -80,9 +80,9 @@ function AddAdmin() {
               <input
                 type="radio"
                 name="role"
-                value="super-admin"
+                value="Super Admin"
                 checked={role === "Super Admin"}
-                onChange={() => setRole("Super Admin")}
+                onChange={(e) => setRole(e.target.value)}
               />
               Super Admin
             </label>
