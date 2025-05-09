@@ -10,10 +10,13 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
-import authRouter from "./routes/authRoutes.js";
+import userRoutes from "./routes/userRoute.js";
 import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
+import fs from "fs";
+
+const PORT = 5000;
 dotenv.config();
 
 if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
@@ -42,7 +45,6 @@ app.use(
       maxAge: 24 * 60 * 60 * 1000, // 1 day
     },
     store: MongoStore.create({
-      // Add session store
       mongoUrl: process.env.MONGO_URI,
       collectionName: "sessions",
     }),
@@ -55,7 +57,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-app.use("/auth/", authRouter);
+app.use("/auth", userRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err);
@@ -65,30 +67,25 @@ app.use((err, req, res, next) => {
 app.get("/", (req, res) => {
   res.send("Server is ready");
 });
-app.use(express.json());
-app.use(
-  cors({
-    origin: "http://localhost:5173",
-    credentials: true,
-  })
-);
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 console.log(path.join(__dirname, "/uploads"));
 
+
+app.use(express.json());
+
 app.use(cookieParser());
 app.use("/admin", adminRoutes);
-app.use("/feedback", feedbackRoutes);
-
-app.use(express.urlencoded({ extended: false }));
+app.use("/user", userRoutes);
+//app.use ("/cars", carRoutes);
 
 console.log(process.env.MONGO_URI);
 console.log("server is ready");
 console.log("Current Working Directory:", process.cwd());
 
-app.use("/api/auth", authRouter);
+//app.use("/api/auth", userRoutes);
 app.use("/api/admin", adminRoutes);
 
 async function startServer() {
