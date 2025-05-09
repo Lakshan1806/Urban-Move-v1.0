@@ -13,49 +13,24 @@ const promoCodeSchema = new mongoose.Schema(
     },
     discountType: {
       type: String,
-      enum: ["percentage", "fixed"],
+      enum: ["Percentage", "Fixed"],
       required: true,
     },
-    discountValue: {
-      type: Number,
-      required: true,
-      min: 0,
-    },
-
-    maxUses: {
-      type: Number,
-      default: 1,
-      min: 1,
-    },
-    usedCount: {
-      type: Number,
-      default: 0,
-      min: 0,
-    },
-
-    perUserLimit: {
-      type: Number,
-      default: 1,
-      min: 1,
-    },
-
-    expiresAt: {
-      type: Date,
-      required: true,
-    },
-    isActive: {
-      type: Boolean,
-      default: true,
-    },
+    discountValue: { type: Number, required: true, min: 0 },
+    maxUses: { type: Number, default: 1, min: 1 },
+    usedCount: { type: Number, default: 0, min: 0 },
+    perUserLimit: { type: Number, default: 1, min: 1 },
+    expiresAt: { type: Date, required: true },
+    isActive: { type: Boolean, default: true },
+    description: { type: String, required: true },
+    path: { type: String, required: true },
   },
   {
     timestamps: true,
   }
 );
 
-promoCodeSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
-
-promoCodeSchema.methods.isValid = function (userId) {
+promoCodeSchema.methods.isValid = function () {
   if (!this.isActive) {
     return false;
   }
@@ -68,4 +43,4 @@ promoCodeSchema.methods.isValid = function (userId) {
   return true;
 };
 
-export default mongoose.model("PromoCode", promoCodeSchema);
+export default mongoose.model("Promotion", promoCodeSchema);
