@@ -2,7 +2,6 @@ import React, { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
-import { toast } from "react-toastify";
 import PhoneVerification from "../components/PhoneVerification.jsx";
 import EmailVerification from "../components/EmailVerification";
 import useOtpVerification from "../components/hooks/useOtpVerification";
@@ -38,7 +37,7 @@ const Profile = () => {
         const response = await axios.get("/auth/profile");
         setProfile(response.data);
       } catch (err) {
-        toast.error(err.response?.data?.message || "Failed to load profile");
+        console.error(err.response?.data?.message || "Failed to load profile");
       }
     };
     if (isAuthenticated) fetchProfile();
@@ -58,7 +57,7 @@ const Profile = () => {
 
   const handlePhoneVerify = async () => {
     if (!profile?.phone || profile.phone.replace(/\D/g, "").length < 10) {
-      toast.error("Please enter a valid phone number");
+      console.error("Please enter a valid phone number");
       return;
     }
 
@@ -73,14 +72,14 @@ const Profile = () => {
         userId: profile?._id,
       });
     } catch (error) {
-      toast.error("Failed to send OTP");
+      console.error("Failed to send OTP");
       setIsVerifying(false);
     }
   };
 
   const handleEmailVerify = async () => {
     if (!profile?.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)) {
-      toast.error("Please enter a valid email address");
+      console.error("Please enter a valid email address");
       return;
     }
 
@@ -95,7 +94,7 @@ const Profile = () => {
         userId: profile?._id,
       });
     } catch (error) {
-      toast.error("Failed to send OTP");
+      console.error("Failed to send OTP");
       setIsVerifying(false);
     }
   };
@@ -125,13 +124,13 @@ const Profile = () => {
       }
 
       if (verificationResult.success) {
-        toast.success("Verification successful!");
+        console.log("Verification successful!");
         setIsVerifying(false);
         setVerificationType(null);
         setPendingVerification({ field: null, value: "" });
       }
     } catch (error) {
-      toast.error(error.response?.data?.message || "Verification failed");
+      console.error(error.response?.data?.message || "Verification failed");
     }
   };
 
@@ -153,9 +152,11 @@ const Profile = () => {
 
       const response = await axios.post("/auth/updateprofile", formData);
       setIsEditing(false);
-      toast.success("Profile updated successfully");
+      console.log("Profile updated successfully");
     } catch (error) {
-      toast.error(error.response?.data?.message || "Failed to update profile");
+      console.error(
+        error.response?.data?.message || "Failed to update profile"
+      );
     }
   };
 
@@ -193,7 +194,7 @@ const Profile = () => {
       axios
         .get("/auth/profile")
         .then((response) => setProfile(response.data))
-        .catch((err) => toast.error("Failed to reset changes"));
+        .catch((err) => console.error("Failed to reset changes"));
     }
   };
   const handlePasswordChange = (e) => {
@@ -207,9 +208,9 @@ const Profile = () => {
     try {
       await changePassword();
       setIsChangingPassword(false);
-      toast.success("Password changed successfully");
+      console.log("Password changed successfully");
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to change password");
+      console.error(err.response?.data?.message || "Failed to change password");
     }
   };
   const handleDeleteSuccess = async () => {

@@ -1,7 +1,6 @@
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
-import { toast } from "react-toastify";
 
 const ResetPasswordPage = () => {
   const [password, setPassword] = useState("");
@@ -19,22 +18,21 @@ const ResetPasswordPage = () => {
       return;
     }
     if (password.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      console.error("Password must be at least 8 characters");
       return;
     }
 
     try {
       await resetPassword(token, password);
 
-      toast.success(
+      console.log(
         "Password reset successfully, redirecting to login page..."
       );
       setTimeout(() => {
         navigate("/login");
       }, 2000);
     } catch (error) {
-      console.error(error);
-      toast.error(error.message || "Error resetting password");
+      console.error(error.message || "Error resetting password");
     }
   };
 
@@ -69,7 +67,7 @@ const ResetPasswordPage = () => {
           />
 
           <button
-            className="w-full py-3 px-4 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-lg shadow-lg hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-gray-900 transition duration-200"
+            className="w-full py-3 px-4 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent  bg-clip-text font-bold rounded-lg cursor-pointer"
             type="submit"
             disabled={isLoading}
           >

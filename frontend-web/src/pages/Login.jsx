@@ -1,7 +1,6 @@
-import React, { useState, useContext ,useEffect} from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate ,useLocation} from "react-router-dom";
-import axios from "axios";
+import { useNavigate, useLocation } from "react-router-dom";
 import imgcl from "../signup_photos/signupcustomer.svg";
 import imgl from "../signup_photos/linervector.svg";
 import arrow from "../signup_photos/arrowvector.svg";
@@ -9,27 +8,23 @@ import { Link } from "react-router-dom";
 import OtpInput from "../components/otp-input";
 import Line1 from "../signup_photos/liner1.svg";
 import useCountdown from "../components/hooks/useCountdown";
-import { toast } from "react-toastify";
 import GoogleLoginButton from "../components/GoogleLogin";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
   const location = useLocation();
-
   const navigate = useNavigate();
-  useEffect(() => {
-    if (location.search.includes('account_terminated')) {
-      setError('Your account has been terminated');
-    }
-  }, [location]);
+
   const [formData, setFormData] = useState({
     username: "",
     password: "",
     phone: "",
     otp: "",
   });
+
   const [step, setStep] = useState(1);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const {
     secondsLeft: phoneSecondsLeft,
@@ -37,25 +32,45 @@ const Login = () => {
     start: startPhoneTimer,
     reset: resetPhoneTimer,
   } = useCountdown(60);
+
+  useEffect(() => {
+    const checkLoginProgress = async () => {
+      try {
+        const progress = await login.getProgress();
+        if (progress.status === "in-progress") {
+          const stepMap = {
+            "verify-credentials": 1,
+            "verify-phone": 2,
+            "verify-otp": 3,
+          };
+          setStep(stepMap[progress.nextStep] || 1);
+          setFormData((prev) => ({
+            ...prev,
+            username: progress.username || "",
+            phone: progress.phoneNumber || "",
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to check login progress:", error);
+      }
+    };
+    checkLoginProgress();
+  }, [login]);
+
+  useEffect(() => {
+    if (location.search.includes("account_terminated")) {
+      setError("Your account has been terminated");
+    }
+  }, [location]);
+
   const handleResendPhoneOtp = async () => {
     if (isPhoneActive) return;
-
     try {
-      const response = await axios.post(
-        "/auth/resend-otp",
-        { phone: formData.phone }
-      );
-
-      if (response.data.message.includes("sent to phone")) {
-        toast.success("New OTP sent to your phone");
-        startPhoneTimer();
-        console.log("New Phone OTP:", response.data.otp);
-      } else {
-        throw new Error(response.data.message || "Failed to resend OTP");
-      }
+      await login.resendOtp();
+      console.log("New OTP sent to your phone");
+      startPhoneTimer();
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to resend OTP");
-      console.error(err);
+      console.error(err.message || "Failed to resend OTP");
     }
   };
 
@@ -63,47 +78,56 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const validateSriLankanPhone = (phone) => {
+    const phoneRegex = /^(\+94|0)(7[0-9])([0-9]{7})$/;
+    return phoneRegex.test(phone);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
       if (step === 1) {
-        await axios.post(
-          "/auth/login",
-          {
-            username: formData.username,
-            password: formData.password
-          }
-        );
+        await login.verifyCredentials(formData.username, formData.password);
         setStep(2);
       } else if (step === 2) {
-        await axios.post(
-          "/auth/login",
-          {
-            phone: formData.phone
-          }
-        );
+        if (!validateSriLankanPhone(formData.phone)) {
+          throw new Error(
+            "Invalid  phone number format (0XXXXXXXXX or +94XXXXXXXXX)"
+          );
+        }
+        await login.verifyPhone(formData.phone);
         startPhoneTimer();
         setStep(3);
       } else if (step === 3) {
-        const response = await login({ otp: formData.otp });
+        const response = await login.verifyOtp(formData.otp);
         if (response.success) {
+          resetPhoneTimer();
           navigate("/");
-        } else {
-          toast.error(response.message || "Login failed");
         }
-        resetPhoneTimer();
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Login failed. Please try again."
-      );
+      const errorMsg =
+        err.response?.data?.message || err.message || "Login failed";
+      setError(errorMsg);
+
+      if (err.response?.data?.requiredStep) {
+        const stepMap = {
+          "verify-credentials": 1,
+          "verify-phone": 2,
+          "verify-otp": 3,
+        };
+        setStep(stepMap[err.response.data.requiredStep] || 1);
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className=" flex flex-col items-center px-0 py-0 ">
+    <div className="flex flex-col items-center px-0 py-0 h-full overflow-auto min-h-0">
       {step === 1 && (
         <img
           src={imgcl}
@@ -111,7 +135,8 @@ const Login = () => {
           className="absolute z-0 w-full h-auto"
         />
       )}
-      <div className="flex flex-col px-0.5  z-10 pt-[130px]">
+
+      <div className="flex flex-col px-0.5 z-10 pt-[130px]">
         <form onSubmit={handleSubmit} className="w-[340px]">
           {step === 1 && (
             <>
@@ -120,9 +145,9 @@ const Login = () => {
               </h2>
               {error && <p className="text-red-500 text-center">{error}</p>}
 
-              <label className=" mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
+              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
                 Username
-              </label>
+              </p>
               <input
                 type="text"
                 name="username"
@@ -131,38 +156,43 @@ const Login = () => {
                 value={formData.username}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
 
-              <label className=" mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
+              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
                 Password
-              </label>
-              <input
-                type="password"
-                name="password"
-                placeholder="Enter your password"
-                className="bg-white w-full p-2 border rounded border-[#FFD12E]"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
+              </p>
+              <div className="relative">
+                <input
+                  type="password"
+                  name="password"
+                  placeholder="Enter your password"
+                  className="bg-white w-full p-2 border rounded border-[#FFD12E]"
+                  value={formData.password}
+                  onChange={handleChange}
+                  required
+                  disabled={loading}
+                />
+              </div>
               <div className="flex items-center mb-6">
                 <Link
                   to="/forgot-password"
-                  className="text-sm text-green-400 hover:underline"
-                >
+                  className="text-sm hover:underline flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text"
+                  >
                   Forgot password?
                 </Link>
               </div>
               {error && (
-                <p className="text-red-500 font-semibold mb-2">{error}</p>
+                <p className="text-red-500 font-semibold mt-2">{error}</p>
               )}
 
               <div className="flex justify-center">
                 <button
                   type="submit"
                   className="pt-[10px] pb-[10px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] cursor-pointer"
+                  disabled={loading}
                 >
-                  SIGN IN
+                  {loading ? "Processing..." : "SIGN IN"}
                 </button>
               </div>
 
@@ -174,6 +204,7 @@ const Login = () => {
             </>
           )}
         </form>
+
         <form onSubmit={handleSubmit}>
           {step === 2 && (
             <>
@@ -184,25 +215,28 @@ const Login = () => {
                 <p className="font-[700] text-[20px]">
                   We will send a verification code to this number
                 </p>
+
                 <img src={Line1} className="h-auto w-full" />
                 {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <input
                   type="tel"
                   name="phone"
-                  placeholder="Enter your Mobile number"
+                  placeholder="e.g., 0771234567 or +94771234567"
                   className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
                   value={formData.phone}
                   onChange={handleChange}
                   required
+                  disabled={loading}
                 />
 
                 <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
                   <button
                     type="submit"
                     className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    disabled={loading}
                   >
-                    Continue
+                    {loading ? "Sending..." : "Continue"}
                   </button>
                   <img src={arrow} className="pl-1 pt-1" />
                 </div>
@@ -210,15 +244,16 @@ const Login = () => {
             </>
           )}
         </form>
+
         <form onSubmit={handleSubmit}>
           {step === 3 && (
             <>
-              <div className="flex flex-col items-center justify-center  gap-[25px] w-auto">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
                 <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
-                  verify your Mobile Number
+                  Verify your Mobile Number
                 </h1>
                 <p className="font-[700] text-[20px]">
-                  We will send a verification code to this number
+                  We sent a verification code to your phone
                 </p>
                 <img src={Line1} className="h-auto w-full" />
                 {error && <p className="text-red-500 text-center">{error}</p>}
@@ -226,21 +261,23 @@ const Login = () => {
                 <OtpInput
                   length={6}
                   onOtpSubmit={(otp) => setFormData({ ...formData, otp })}
+                  disabled={loading}
                 />
 
                 <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    disabled={loading}
                   >
-                    continue
+                    {loading ? "Verifying..." : "Continue"}
                   </button>
                   <img src={arrow} className="pl-1 pt-1" />
                 </div>
                 <button
                   onClick={handleResendPhoneOtp}
-                  disabled={isPhoneActive}
-                  className={`${isPhoneActive ? "text-gray-400" : "text-orange-500"}`}
+                  disabled={isPhoneActive || loading}
+                  className={`${isPhoneActive || loading ? "text-gray-400" : "bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent  bg-clip-text"}`}
                 >
                   {isPhoneActive
                     ? `Resend in ${phoneSecondsLeft}s`
