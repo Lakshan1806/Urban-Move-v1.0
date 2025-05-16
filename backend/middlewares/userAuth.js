@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import userModel from "../models/usermodel.js"; // Import your user model
+import userModel from "../models/usermodel.js";
 
 const userAuth = async (req, res, next) => {
   const { token } = req.cookies;
@@ -26,11 +26,17 @@ const userAuth = async (req, res, next) => {
         message: "Account terminated - please contact support",
       });
     }
+    console.log("Auth check successful for user:", user._id);
 
     req.user = user;
     req.body.userId = tokenDecode.id;
     next();
   } catch (error) {
+    console.error("Auth middleware error:", {
+      error: error.message,
+      stack: error.stack,
+      tokenPresent: !!req.cookies.token,
+    });
     let message = "Authentication failed";
     if (error.name === "TokenExpiredError") {
       message = "Session expired - please login again";

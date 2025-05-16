@@ -21,7 +21,7 @@ const ForgotPasswordPage = () => {
   return (
     <div className="  bg-gray-800  rounded-2xl shadow-lg max-w-md mx-auto mt-44 ">
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent  bg-clip-text">
           Forgot Password
         </h2>
 
@@ -40,7 +40,7 @@ const ForgotPasswordPage = () => {
               required
             />
             <button
-              className="w-full py-3 px-4 bg-gradient-to-r  text-black font-bold rounded-lg  focus:ring-offset-gray-900 cursor-pointer "
+              className="w-full py-3 px-4 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent  bg-clip-text cursor-pointer "
               type="submit"
             >
               {isLoading ? (
@@ -66,8 +66,8 @@ const ForgotPasswordPage = () => {
       <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
         <Link
           to={"/login"}
-          className="text-sm text-green-400 hover:underline flex items-center"
-        >
+          className="text-sm hover:underline flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text"
+          >
           <ArrowLeft className="h-4 w-4 mr-2" /> Back to Login
         </Link>
       </div>

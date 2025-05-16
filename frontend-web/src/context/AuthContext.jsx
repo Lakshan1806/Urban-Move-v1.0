@@ -15,12 +15,14 @@ const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [message, setMessage] = useState("");
   const [error, setError] = useState(null);
-
+  const [registrationStep, setRegistrationStep] = useState(1);
   const navigate = useNavigate();
 
   const checkAuth = useCallback(async () => {
     try {
       const response = await axios.get("/auth/is-auth");
+
+      console.log("Auth check response:", response.data);
 
       if (response.data.success) {
         setUser(response.data.user);
@@ -32,74 +34,216 @@ const AuthProvider = ({ children }) => {
         return false;
       }
     } catch (error) {
-      console.error("Auth check failed:", error);
+      console.error("Auth check failed:", {
+        error: error.response?.data || error.message,
+        status: error.response?.status,
+      });
       setUser(null);
       setIsAuthenticated(false);
-      if (error.message === 'Account terminated') {
-        navigate('/login?error=account_terminated');
+
+      if (error.message === "Account terminated") {
+        navigate("/login?error=account_terminated");
       }
       return false;
     }
   }, [navigate]);
 
   useEffect(() => {
-    const handleGoogleRedirect = async () => {
+    const initializeAuth = async () => {
+      await checkAuth();
       const urlParams = new URLSearchParams(window.location.search);
       if (urlParams.get("source") === "google") {
-        await checkAuth();
         navigate("/");
       }
     };
 
-    checkAuth();
-    handleGoogleRedirect();
+    initializeAuth();
   }, [checkAuth, navigate]);
 
-  // Register function
-  const register = async (formData) => {
-    setError(null);
-    setMessage("");
-    console.log("Sending registration data:", formData);
-    try {
-      const response = await axios.post("/auth/register", formData);
-
-      if (response.status === 201) {
-        setUser(response.data.user);
-        setIsAuthenticated(true);
-        navigate("/");
-      } else {
-        setMessage(response.data.message);
+  const register = {
+    start: async (username, password) => {
+      try {
+        const response = await axios.post("auth/register/start", {
+          username,
+          password,
+        });
+        setRegistrationStep(2);
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || error;
       }
-      return response.data;
-    } catch (error) {
-      console.error("Registration failed:", error);
-      setError(
-        error.response?.data?.message ||
-          "Registration failed. Please try again."
-      );
-    }
+    },
+
+    addPhone: async (phoneNumber) => {
+      try {
+        const response = await axios.post("auth/register/phone", {
+          phoneNumber,
+        });
+        setRegistrationStep(3);
+        return response.data;
+      } catch (error) {
+        if (error.response?.data?.requiredStep) {
+          setRegistrationStep(getStepNumber(error.response.data.requiredStep));
+        }
+        throw error.response?.data || error;
+      }
+    },
+
+    verifyPhone: async (otp) => {
+      try {
+        const response = await axios.post("auth/register/verify-phone", {
+          otp,
+        });
+        setRegistrationStep(4);
+        return response.data;
+      } catch (error) {
+        if (error.response?.data?.requiredStep) {
+          setRegistrationStep(getStepNumber(error.response.data.requiredStep));
+        }
+        throw error.response?.data || error;
+      }
+    },
+
+    addEmail: async (email) => {
+      try {
+        const response = await axios.post("auth/register/email", { email });
+        setRegistrationStep(5);
+        return response.data;
+      } catch (error) {
+        if (error.response?.data?.requiredStep) {
+          setRegistrationStep(getStepNumber(error.response.data.requiredStep));
+        }
+        throw error.response?.data || error;
+      }
+    },
+
+    verifyEmail: async (otp) => {
+      try {
+        const response = await axios.post("auth/register/verify-email", {
+          otp,
+        });
+
+        setRegistrationStep(6);
+
+        await checkAuth();
+
+        setTimeout(() => navigate("/"), 2000);
+
+        return response.data;
+      } catch (error) {
+        if (error.response?.data?.requiredStep) {
+          setRegistrationStep(getStepNumber(error.response.data.requiredStep));
+        }
+        throw error.response?.data || error;
+      }
+    },
+
+    getProgress: async () => {
+      try {
+        const response = await axios.get("auth/register/progress");
+        if (response.data.status !== "new") {
+          setRegistrationStep(getStepNumber(response.data.nextStep));
+        }
+        return response.data;
+      } catch (error) {
+        console.error("Progress check failed:", error);
+        throw error;
+      }
+    },
+
+    resendOtp: async (type) => {
+      try {
+        const response = await axios.post("auth/register/resend-otp", { type });
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || error;
+      }
+    },
+    clearRegistrationSession: async () => {
+      try {
+        await axios.post("/auth/register/clear-session");
+        setRegistrationStep(1);
+      } catch (error) {
+        console.error("Failed to clear registration session:", error);
+      }
+    },
   };
 
-  // OTP login function
-  const login = async ({ otp }) => {
-    try {
-      const response = await axios.post("/auth/login", { otp });
-
-      if (response.data.success) {
-        setUser(response.data.user);
-        setIsAuthenticated(true);
-      }
-      return response.data;
-    } catch (error) {
-      return {
-        success: false,
-        message: error.response?.data?.message || "Something went wrong",
-        details: error.response?.data?.details || null,
-      };
-    }
+  const getStepNumber = (stepName) => {
+    const steps = {
+      start: 1,
+      phone: 2,
+      "verify-phone": 3,
+      email: 4,
+      "verify-email": 5,
+    };
+    return steps[stepName] || 1;
   };
 
-  // Logout function
+  const login = {
+    verifyCredentials: async (username, password) => {
+      try {
+        const response = await axios.post("/auth/login/verify-credentials", {
+          username,
+          password,
+        });
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || error;
+      }
+    },
+
+    verifyPhone: async (phoneNumber) => {
+      try {
+        const response = await axios.post("/auth/login/verify-phone", {
+          phoneNumber,
+        });
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || error;
+      }
+    },
+
+    verifyOtp: async (otp) => {
+      try {
+        const response = await axios.post("/auth/login/verify-otp", { otp });
+
+        if (response.data.success) {
+          setUser(response.data.user);
+          setIsAuthenticated(true);
+          if (response.data.token) {
+            document.cookie = `token=${response.data.token}; path=/; ${
+              process.env.NODE_ENV === "production"
+                ? "secure; sameSite=strict"
+                : ""
+            }`;
+          }
+        }
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || error;
+      }
+    },
+
+    getProgress: async () => {
+      try {
+        const response = await axios.get("/auth/login/progress");
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || error;
+      }
+    },
+
+    resendOtp: async () => {
+      try {
+        const response = await axios.post("/auth/login/resend-otp");
+        return response.data;
+      } catch (error) {
+        throw error.response?.data || error;
+      }
+    },
+  };
+
   const logout = async () => {
     try {
       await axios.post("/auth/logout");
@@ -112,24 +256,12 @@ const AuthProvider = ({ children }) => {
     }
   };
 
-  // Forgot password handler
   const forgotPassword = async (email) => {
     try {
       const response = await axios.post("/auth/forgot-password", { email });
       return response.data;
     } catch (error) {
       throw new Error("Failed to send password reset link");
-    }
-  };
-
-  // Resend OTP handler
-  const resendOtp = async (email) => {
-    try {
-      const response = await axios.post("/resend-otp", { email });
-      return response.data;
-    } catch (error) {
-      console.error("Resend OTP error:", error);
-      throw error.response?.data?.message || "Failed to resend OTP";
     }
   };
 
@@ -171,7 +303,6 @@ const AuthProvider = ({ children }) => {
       throw error;
     }
   }, []);
-  
 
   const value = {
     user,
@@ -180,11 +311,11 @@ const AuthProvider = ({ children }) => {
     login,
     logout,
     forgotPassword,
-    resendOtp,
     resetPassword,
     loginWithGoogle,
     getProfile,
     checkAuth,
+    registrationStep,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
@@ -197,6 +328,4 @@ const useAuth = () => {
   return context;
 };
 
-
 export { AuthContext, AuthProvider, useAuth };
-

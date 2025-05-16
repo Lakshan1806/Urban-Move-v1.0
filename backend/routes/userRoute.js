@@ -11,17 +11,43 @@ import sendOtp from "../utils/sendOtp.js";
 import validateOtp from "../utils/validateOtp.js";
 import otpModel from "../models/otpModels.js";
 import userUpload from "../middlewares/userMulter.js";
+import { validateRegistrationStep } from "../middlewares/registrationMiddleware.js";
+import { validateRequest } from "../middlewares/validationMiddleware.js";
 
 dotenv.config();
 
 const userRoutes = express.Router();
-userRoutes.post("/register", userController.auth.register);
-userRoutes.post("/login", userController.auth.login);
+
 userRoutes.post("/logout", userController.auth.logout);
 userRoutes.get("/is-auth", userAuth, userController.auth.isAuthenticated);
-userRoutes.post("/resend-otp", userController.auth.resendOTP);
 userRoutes.post("/google/verify-phone", userController.auth.verifyGooglePhone);
 userRoutes.post("/forgot-password", userController.password.forgotPassword);
+userRoutes.post(
+  "/register/start",
+  userController.auth.register.startRegistration
+);
+userRoutes.post(
+  "/register/phone",
+  validateRegistrationStep("phone"),
+  userController.auth.register.addPhoneNumber
+);
+userRoutes.post(
+  "/register/verify-phone",
+  validateRegistrationStep("verify-phone"),
+  userController.auth.register.verifyPhoneOtp
+);
+userRoutes.post(
+  "/register/email",
+  validateRegistrationStep("email"),
+  userController.auth.register.addEmail
+);
+userRoutes.post(
+  "/register/verify-email",
+  validateRegistrationStep("verify-email"),
+  userController.auth.register.verifyEmailOtp
+);
+userRoutes.get("/register/progress", userController.auth.register.getProcess);
+userRoutes.post("/register/resend-otp", userController.auth.register.resendOtp);
 userRoutes.post(
   "/reset-password/:token",
   userController.password.resetPassword
@@ -104,6 +130,29 @@ userRoutes.get(
     }
   }
 );
+
+userRoutes.post("/register/clear-session", (req, res) => {
+  req.session.registration = null;
+  res.json({ success: true, message: "Registration session cleared" });
+});
+
+userRoutes.post(
+  "/login/verify-credentials",
+  validateRequest(["username", "password"]),
+  userController.auth.login.verifyCredentials
+);
+userRoutes.post(
+  "/login/verify-phone",
+  validateRequest(["phoneNumber"]),
+  userController.auth.login.verifyPhone
+);
+userRoutes.post(
+  "/login/verify-otp",
+  validateRequest(["otp"]),
+  userController.auth.login.verifyOtp
+);
+userRoutes.post("/login/resend-otp", userController.auth.login.resendOtp);
+userRoutes.get("/login/progress", userController.auth.login.getProgress);
 
 userRoutes.post("/send-otp", async (req, res) => {
   console.log("OTP request received:", req.body);

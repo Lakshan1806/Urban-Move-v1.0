@@ -1,7 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import imgc from "../signup_photos/signupcustomer.svg";
 import { Link } from "react-router-dom";
 import imgl from "../signup_photos/linervector.svg";
@@ -10,12 +8,10 @@ import Line1 from "../signup_photos/liner1.svg";
 import OtpInput from "../components/otp-input";
 import success from "../signup_photos/success.svg";
 import useCountdown from "../components/hooks/useCountdown";
-import { toast } from "react-toastify";
 import GoogleLoginButton from "../components/GoogleLogin";
 
 const Register = () => {
-  const { register } = useContext(AuthContext);
-  const navigate = useNavigate();
+  const { register, registrationStep ,setRegistrationStep} = useContext(AuthContext);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -26,8 +22,8 @@ const Register = () => {
     emailOTP: "",
   });
 
-  const [step, setStep] = useState(1);
   const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const {
     secondsLeft: phoneSecondsLeft,
@@ -43,27 +39,58 @@ const Register = () => {
     reset: resetEmailTimer,
   } = useCountdown(60);
 
+  useEffect(() => {
+    const handleBeforeUnload = () => {
+      register.clearRegistrationSession();
+    };
+
+    window.addEventListener("beforeunload", handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [register]);
+
+  useEffect(() => {
+    const checkProgress = async () => {
+      try {
+        const progress = await register.getProgress();
+        if (progress.status === "new") {
+          setRegistrationStep(1);
+          setFormData({
+            username: "",
+            password: "",
+            phoneNumber: "",
+            otp: "",
+            email: "",
+            emailOTP: "",
+          });
+        } else {
+          setFormData((prev) => ({
+            ...prev,
+            username: progress.username || "",
+            phoneNumber: progress.phone || "",
+            email: progress.email || "",
+          }));
+        }
+      } catch (error) {
+        console.error("Failed to check registration progress:", error);
+        setRegistrationStep(1);
+      }
+    };
+
+    checkProgress();
+  }, [register]);
+
   const handleResendPhoneOtp = async () => {
     if (isPhoneActive) return;
 
     try {
-      const response = await axios.post(
-        "/auth/resend-otp",
-        { phone: formData.phoneNumber }
-        
-      );
-
-      if (response.data.message.includes("sent to phone")) {
-        toast.success("New OTP sent to your phone");
-        startPhoneTimer();
-
-        console.log("New Phone OTP:", response.data.otp);
-      } else {
-        throw new Error(response.data.message || "Failed to resend OTP");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to resend OTP");
-      console.error(err);
+      await register.resendOtp("phone");
+      console.log("OTP resent to your phone");
+      startPhoneTimer();
+    } catch (error) {
+      console.error(error.message || "Failed to resend OTP");
     }
   };
 
@@ -71,97 +98,60 @@ const Register = () => {
     if (isEmailActive) return;
 
     try {
-      const response = await axios.post(
-        "/auth/resend-otp",
-        { email: formData.email }
-        
-      );
-
-      if (response.data.message.includes("sent to email")) {
-        toast.success("New OTP sent to your email");
-        startEmailTimer();
-
-        console.log("New Email OTP:", response.data.otp);
-      } else {
-        throw new Error(response.data.message || "Failed to resend OTP");
-      }
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to resend OTP");
-      console.error(err);
+      await register.resendOtp("email");
+      console.log("OTP resent to your email");
+      startEmailTimer();
+    } catch (error) {
+      console.error(error.message || "Failed to resend OTP");
     }
   };
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
+  const validateSriLankanPhone = (phone) => {
+    const phoneRegex = /^(\+94|0)(7[0-9])([0-9]{7})$/;
+    return phoneRegex.test(phone);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
+    setLoading(true);
 
     try {
-      if (step === 1) {
-        await axios.post(
-          "/auth/register",
-          {
-            username: formData.username,
-            password: formData.password
-          }
-        
-        );
-        setStep(2);
-      } else if (step === 2) {
-        await axios.post(
-          "/auth/register",
-          {
-            phoneNumber: formData.phoneNumber
-          }
-          
-        );
+      if (registrationStep === 1) {
+        await register.start(formData.username, formData.password);
+      } else if (registrationStep === 2) {
+        if (!validateSriLankanPhone(formData.phoneNumber)) {
+          setError(
+            "Please enter a valid Sri Lankan phone number (0XXXXXXXXX or +94XXXXXXXXX)"
+          );
+          setLoading(false);
+          return;
+        }
+        await register.addPhone(formData.phoneNumber);
         startPhoneTimer();
-        setStep(3);
-      } else if (step === 3) {
-        await axios.post(
-          "/auth/register",
-          {
-            otp: formData.otp
-          }
-          
-        );
+      } else if (registrationStep === 3) {
+        await register.verifyPhone(formData.otp);
         resetPhoneTimer();
-        setStep(4);
-      } else if (step === 4) {
-        await axios.post(
-          "/auth/register",
-          {
-            email: formData.email
-          }
-        );
+      } else if (registrationStep === 4) {
+        await register.addEmail(formData.email);
         startEmailTimer();
-        setStep(5);
-      } else if (step === 5) {
-        await axios.post(
-          "/auth/register",
-          {
-            emailOTP: formData.emailOTP
-          }
-        );
+      } else if (registrationStep === 5) {
+        await register.verifyEmail(formData.emailOTP);
         resetEmailTimer();
-        setStep(6);
-        setTimeout(() => {
-          navigate("/");
-        }, 2000);
       }
     } catch (err) {
-      setError(
-        err.response?.data?.message || "Registration failed. Please try again."
-      );
+      setError(err.message || "Registration failed. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
-    <div className=" flex flex-col items-center px-0 py-0 h-full overflow-auto min-h-0 ">
-      {step === 1 && (
+    <div className="flex flex-col items-center px-0 py-0 h-full overflow-auto min-h-0">
+      {registrationStep === 1 && (
         <img
           src={imgc}
           alt="Signup Background"
@@ -169,9 +159,9 @@ const Register = () => {
         />
       )}
 
-      <div className="flex flex-col px-0.5  z-10 pt-[130px]">
+      <div className="flex flex-col px-0.5 z-10 pt-[130px]">
         <form onSubmit={handleSubmit} className="w-[340px]">
-          {step === 1 && (
+          {registrationStep === 1 && (
             <>
               <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
                 Signup as a Customer
@@ -189,6 +179,7 @@ const Register = () => {
                 value={formData.username}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
 
               <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
@@ -202,6 +193,7 @@ const Register = () => {
                 value={formData.password}
                 onChange={handleChange}
                 required
+                disabled={loading}
               />
               {error && (
                 <p className="text-red-500 font-semibold mt-2">{error}</p>
@@ -211,8 +203,9 @@ const Register = () => {
                 <button
                   type="submit"
                   className="pt-[10px] pb-[10px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] cursor-pointer"
+                  disabled={loading}
                 >
-                  SIGN UP
+                  {loading ? "Processing..." : "SIGN UP"}
                 </button>
               </div>
 
@@ -224,10 +217,11 @@ const Register = () => {
             </>
           )}
         </form>
+
         <form onSubmit={handleSubmit}>
-          {step === 2 && (
+          {registrationStep === 2 && (
             <>
-              <div className="flex flex-col items-center justify-center  gap-[25px] w-auto">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
                 <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
                   Enter your Mobile Number
                 </h1>
@@ -246,15 +240,16 @@ const Register = () => {
                   onChange={handleChange}
                   className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
                   required
+                  disabled={loading}
                 />
                 <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    disabled={loading}
                   >
-                    continue
+                    {loading ? "Sending..." : "Continue"}
                   </button>
-
                   <img src={arrow} className="pl-1 pt-1" />
                 </div>
               </div>
@@ -263,14 +258,14 @@ const Register = () => {
         </form>
 
         <form onSubmit={handleSubmit}>
-          {step === 3 && (
+          {registrationStep === 3 && (
             <>
-              <div className="flex flex-col items-center justify-center  gap-[25px] w-auto">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
                 <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
-                  verify your Mobile Number
+                  Verify your Mobile Number
                 </h1>
                 <p className="font-[700] text-[20px]">
-                  We will send a verification code to this number
+                  We sent a verification code to your phone
                 </p>
                 <img src={Line1} className="h-auto w-full" />
                 {error && <p className="text-red-500 text-center">{error}</p>}
@@ -278,22 +273,23 @@ const Register = () => {
                 <OtpInput
                   length={6}
                   onOtpSubmit={(otp) => setFormData({ ...formData, otp })}
+                  disabled={loading}
                 />
 
                 <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    disabled={loading}
                   >
-                    continue
+                    {loading ? "Verifying..." : "Continue"}
                   </button>
-
                   <img src={arrow} className="pl-1 pt-1" />
                 </div>
                 <button
                   onClick={handleResendPhoneOtp}
-                  disabled={isPhoneActive}
-                  className={`${isPhoneActive ? "text-gray-400" : "text-orange-500"}`}
+                  disabled={isPhoneActive || loading}
+                  className={`${isPhoneActive || loading ? "text-gray-400" : "text-orange-500"}`}
                 >
                   {isPhoneActive
                     ? `Resend in ${phoneSecondsLeft}s`
@@ -305,9 +301,9 @@ const Register = () => {
         </form>
 
         <form onSubmit={handleSubmit}>
-          {step === 4 && (
+          {registrationStep === 4 && (
             <>
-              <div className="flex flex-col items-center justify-center  gap-[25px] w-auto">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
                 <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[500] text-[48px]">
                   Enter your Email Address
                 </h1>
@@ -325,13 +321,15 @@ const Register = () => {
                   onChange={handleChange}
                   className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
                   required
+                  disabled={loading}
                 />
                 <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    disabled={loading}
                   >
-                    continue
+                    {loading ? "Sending..." : "Continue"}
                   </button>
                   <img src={arrow} className="pl-1 pt-1" />
                 </div>
@@ -341,14 +339,14 @@ const Register = () => {
         </form>
 
         <form onSubmit={handleSubmit}>
-          {step === 5 && (
+          {registrationStep === 5 && (
             <>
-              <div className="flex flex-col items-center justify-center  gap-[25px] w-auto">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
                 <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
-                  verify your email address
+                  Verify your email address
                 </h1>
                 <p className="font-[700] text-[20px]">
-                  We will send a verification code to this email
+                  We sent a verification code to your email
                 </p>
                 <img src={Line1} className="h-auto w-full" />
                 {error && <p className="text-red-500 text-center">{error}</p>}
@@ -358,22 +356,23 @@ const Register = () => {
                   onOtpSubmit={(emailOTP) =>
                     setFormData({ ...formData, emailOTP })
                   }
+                  disabled={loading}
                 />
 
                 <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    disabled={loading}
                   >
-                    continue
+                    {loading ? "Verifying..." : "Continue"}
                   </button>
-
                   <img src={arrow} className="pl-1 pt-1" />
                 </div>
                 <button
                   onClick={handleResendEmailOtp}
-                  disabled={isEmailActive}
-                  className={`${isEmailActive ? "text-gray-400" : "text-orange-500"}`}
+                  disabled={isEmailActive || loading}
+                  className={`${isEmailActive || loading ? "text-gray-400" : "text-orange-500"}`}
                 >
                   {isEmailActive
                     ? `Resend in ${emailSecondsLeft}s`
@@ -383,29 +382,23 @@ const Register = () => {
             </>
           )}
         </form>
-        <form>
-          {step === 6 && (
-            <>
-              <div className="flex flex-col items-center justify-center  gap-[25px] w-auto">
-                <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[500] text-[48px]">
-                  Account created successfully
-                </h1>
 
-                <img src={Line1} className="h-auto w-full" />
-
-                <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
-                  <button
-                    type="button"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
-                    disabled
-                  >
-                    <img src={success} alt="success" />
-                  </button>
-                </div>
-              </div>
-            </>
-          )}
-        </form>
+        {registrationStep === 6 && (
+          <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
+            <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[500] text-[48px]">
+              Account created successfully
+            </h1>
+            <img src={Line1} className="h-auto w-full" />
+            <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+              <button
+                type="button"
+                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              >
+                <img src={success} alt="success" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
