@@ -4,3 +4,4 @@ uploads/user/*
 !uploads/admin/.gitkeep
 !uploads/cars/.gitkeep
 !uploads/user/.gitkeep
+!uploads/driverDocuments/.gitkeep

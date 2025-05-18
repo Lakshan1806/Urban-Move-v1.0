@@ -13,7 +13,7 @@ import otpModel from "../models/otpModels.js";
 import userUpload from "../middlewares/userMulter.js";
 import { validateRegistrationStep } from "../middlewares/registrationMiddleware.js";
 import { validateRequest } from "../middlewares/validationMiddleware.js";
-
+import driverUpload from "../middlewares/driverUpload.js";
 dotenv.config();
 
 const userRoutes = express.Router();
@@ -52,6 +52,7 @@ userRoutes.post(
   "/reset-password/:token",
   userController.password.resetPassword
 );
+userRoutes.post("register/upload-documents", driverUpload.array("documents", 5),userController.auth.register.uploadDocuments);
 userRoutes.put(
   "/profile/password",
   userAuth,

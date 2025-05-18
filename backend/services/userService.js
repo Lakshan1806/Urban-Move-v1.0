@@ -1,7 +1,5 @@
-// services/userService.js
 import userModel from "../models/usermodel.js";
 import bcrypt from "bcrypt";
-import { handleErrors } from "../utils/errorHandler.js";
 
 export default {
   userExists: async (field, value) => {
@@ -30,6 +28,19 @@ export default {
     } catch (error) {
       throw error;
     }
+  },
+  createDriver: async (data) => {
+    const hashedPassword = await bcrypt.hash(data.password, 10);
+    return userModel.create({
+      username: data.username,
+      password: hashedPassword,
+      phone: data.phone,
+      email: data.email,
+      role: "driver",
+      isAccountVerified: true,
+      driverVerified: "pending",
+      driverDocuments: data.driverDocuments,
+    });
   },
 
   findById: async (id) => {
