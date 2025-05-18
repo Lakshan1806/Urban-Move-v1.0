@@ -18,7 +18,7 @@ const userAuthController = {
   register: {
     startRegistration: async (req, res) => {
       try {
-        const { username, password } = req.body;
+        const { username, password,userType } = req.body;
 
         if (!username || !password) {
           return validationError(res, "Username and password are required");
@@ -31,6 +31,7 @@ const userAuthController = {
         await saveToSession(req.session, SESSION_REGISTRATION_KEY, {
           username,
           password,
+          userType
         });
 
         return res.json({
@@ -180,6 +181,18 @@ const userAuthController = {
         if (!isValid) {
           return validationError(res, message || "Invalid OTP");
         }
+        if (registration.userType === "driver") {
+          await saveToSession(req.session, SESSION_REGISTRATION_KEY, {
+            ...registration,
+            emailVerified: true,
+          });
+
+          return res.json({
+            success: true,
+            message: "Email verified. Please upload documents.",
+            nextStep: "upload-documents",
+          });
+        }
 
         const user = await userService.createUser({
           username: registration.username,
@@ -217,6 +230,65 @@ const userAuthController = {
             username: user.username,
             email: user.email,
             phone: user.phone,
+          },
+        });
+      } catch (error) {
+        handleErrors(res, error);
+      }
+    },
+    uploadDocuments: async (req, res) => {
+      try {
+        const registration = getFromSession(
+          req.session,
+          SESSION_REGISTRATION_KEY
+        );
+
+        if (!registration?.email) {
+          return validationError(
+            res,
+            "Registration session expired or incomplete"
+          );
+        }
+
+        if (!req.files || req.files.length === 0) {
+          return validationError(res, "No documents uploaded");
+        }
+
+        const documentPaths = req.files.map((file) =>
+          file.path.replace(/\\/g, "/").replace("backend/uploads", "/uploads")
+        );
+
+        const driver = await userService.createDriver({
+          username: registration.username,
+          password: registration.password,
+          phone: registration.phoneNumber,
+          email: registration.email,
+          isAccountVerified: true,
+          driverDocuments: documentPaths,
+          driverVerifiedStatus: "pending",
+        });
+
+        const token = generateJwtToken(driver._id, driver.username);
+
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "strict",
+          maxAge: 3600000,
+          path: "/",
+        });
+
+        await clearFromSession(req.session, SESSION_REGISTRATION_KEY);
+
+        return res.json({
+          success: true,
+          message: "Driver registration submitted. Pending admin verification.",
+          user: {
+            id: driver._id,
+            username: driver.username,
+            email: driver.email,
+            phone: driver.phone,
+            driverVerified: driver.driverVerified,
           },
         });
       } catch (error) {
