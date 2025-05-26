@@ -7,6 +7,8 @@ export const validateRegistrationStep = (requiredStep) => {
       "verify-phone": ["phoneNumber"],
       email: ["phoneVerified"],
       "verify-email": ["email"],
+      "upload-documents": ["emailVerified"],
+
     };
 
     const missingRequirements = stepRequirements[requiredStep]?.filter(

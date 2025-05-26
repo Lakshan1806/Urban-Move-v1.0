@@ -14,45 +14,92 @@ import userUpload from "../middlewares/userMulter.js";
 import { validateRegistrationStep } from "../middlewares/registrationMiddleware.js";
 import { validateRequest } from "../middlewares/validationMiddleware.js";
 import driverUpload from "../middlewares/driverUpload.js";
+import userModel from "../models/usermodel.js";
+import driverModel from "../models/driver.models.js";
+import driverAuth from "../middlewares/driverAuth.js";
+
 dotenv.config();
 
 const userRoutes = express.Router();
 
+const userregisterController = userController.auth.createAuthController(
+  userModel,
+  "user",
+  "registration"
+);
+
 userRoutes.post("/logout", userController.auth.logout);
-userRoutes.get("/is-auth", userAuth, userController.auth.isAuthenticated);
 userRoutes.post("/google/verify-phone", userController.auth.verifyGooglePhone);
 userRoutes.post("/forgot-password", userController.password.forgotPassword);
-userRoutes.post(
-  "/register/start",
-  userController.auth.register.startRegistration
-);
+userRoutes.get("/is-auth", userAuth, userregisterController.isAuthenticated);
+
+userRoutes.post("/register/start", userregisterController.startRegistration);
 userRoutes.post(
   "/register/phone",
   validateRegistrationStep("phone"),
-  userController.auth.register.addPhoneNumber
+  userregisterController.addPhoneNumber
 );
 userRoutes.post(
   "/register/verify-phone",
   validateRegistrationStep("verify-phone"),
-  userController.auth.register.verifyPhoneOtp
+  userregisterController.verifyPhoneOtp
 );
 userRoutes.post(
   "/register/email",
   validateRegistrationStep("email"),
-  userController.auth.register.addEmail
+  userregisterController.addEmail
 );
 userRoutes.post(
   "/register/verify-email",
   validateRegistrationStep("verify-email"),
-  userController.auth.register.verifyEmailOtp
+  userregisterController.verifyEmailOtp
 );
-userRoutes.get("/register/progress", userController.auth.register.getProcess);
-userRoutes.post("/register/resend-otp", userController.auth.register.resendOtp);
+userRoutes.get("/register/progress", userregisterController.getProcess);
+userRoutes.post("/register/resend-otp", userregisterController.resendOtp);
 userRoutes.post(
   "/reset-password/:token",
   userController.password.resetPassword
 );
-userRoutes.post("register/upload-documents", driverUpload.array("documents", 5),userController.auth.register.uploadDocuments);
+/* userRoutes.post("register/upload-documents",  validateRegistrationStep("upload-documents"),
+ driverUpload.array("documents", 5),userController.auth.register.uploadDocuments); */
+
+const driverregisterController = userController.auth.createAuthController(
+  driverModel,
+  "driver",
+  "registration"
+);
+userRoutes.get("/is-dauth", driverAuth, userregisterController.isAuthenticated);
+
+userRoutes.post("/dregister/start", driverregisterController.startRegistration);
+userRoutes.post(
+  "/dregister/phone",
+  validateRegistrationStep("phone"),
+  driverregisterController.addPhoneNumber
+);
+userRoutes.post(
+  "/dregister/verify-phone",
+  validateRegistrationStep("verify-phone"),
+  driverregisterController.verifyPhoneOtp
+);
+userRoutes.post(
+  "/dregister/email",
+  validateRegistrationStep("email"),
+  driverregisterController.addEmail
+);
+userRoutes.post(
+  "/dregister/verify-email",
+  validateRegistrationStep("verify-email"),
+  driverregisterController.verifyEmailOtp
+);
+userRoutes.get("/dregister/progress", driverregisterController.getProcess);
+userRoutes.post("/dregister/resend-otp", driverregisterController.resendOtp);
+
+userRoutes.post(
+  "/dregister/upload-documents",
+  validateRegistrationStep("upload-documents"),
+  driverUpload.array("documents", 5),
+  driverregisterController.uploadDocuments
+);
 userRoutes.put(
   "/profile/password",
   userAuth,

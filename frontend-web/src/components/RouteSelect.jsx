@@ -1,4 +1,4 @@
-import Signupinitialpage from "../pages/SignupInitialPage";
+import Signupinitialpage from "../pages/Signupinitialpage.jsx";
 import Home from "../pages/Home";
 import Rent from "../pages/Rent";
 import Drive from "../pages/Drive";
@@ -17,6 +17,8 @@ import ResetpasswordPage from "../pages/ResetPasswordPage.jsx";
 import Profile from "../pages/profile.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 import GooglePhoneVerification from "../pages/GooglePhoneVerification.jsx";
+import DriverRegister from "../pages/driverRegister.jsx";
+
 function RouteSelect() {
   const userId = "123456"; // Replace this with actual logged-in user ID
 
@@ -32,6 +34,7 @@ function RouteSelect() {
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/signup" element={<Signupinitialpage />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/dRegister" element={<DriverRegister />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Signininitialpage />} />
           <Route path="/email" element={<EmailForm />} />{" "}

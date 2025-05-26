@@ -42,15 +42,8 @@ const userSchema = new mongoose.Schema(
     verificationTokenExpiresAt: Date,
     role: {
       type: String,
-      enum: ["user", "driver"],
       default: "user",
-    },
-   driverDocuments: [{ type: String }],
-    driverVerified: {
-      type: String,
-      enum: ["pending", "approved", "rejected"],
-      default: "pending",
-    },
+    }
   },
   { timestamps: true }
 );
