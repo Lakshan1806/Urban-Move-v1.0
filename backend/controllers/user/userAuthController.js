@@ -10,28 +10,28 @@ import generateJwtToken from "../../utils/generateJWTToken.js";
 import nodemailer from "../../utils/nodemailer.js";
 import userModel from "../../models/usermodel.js";
 import bcrypt from "bcrypt";
+import driverModel from "../../models/driver.models.js";
 
 const SESSION_REGISTRATION_KEY = "registration";
 const SESSION_LOGIN_KEY = "loginProcess";
 
 const userAuthController = {
-  register: {
+  createAuthController: (Model, role, SESSION_REGISTRATION_KEY) => ({
     startRegistration: async (req, res) => {
       try {
-        const { username, password,userType } = req.body;
+        const { username, password } = req.body;
 
         if (!username || !password) {
           return validationError(res, "Username and password are required");
         }
 
-        if (await userService.userExists("username", username)) {
-          return validationError(res, "Username already exists");
-        }
+        const existing = await Model.findOne({ username });
+        if (existing)
+          return res.status(400).json({ message: `${role} already exists` });
 
         await saveToSession(req.session, SESSION_REGISTRATION_KEY, {
           username,
           password,
-          userType
         });
 
         return res.json({
@@ -64,7 +64,7 @@ const userAuthController = {
           return validationError(res, "Invalid phone number format");
         }
 
-        if (await userService.userExists("phone", phoneNumber)) {
+        if (await Model.findOne({ phone: phoneNumber })) {
           return validationError(res, "Phone number already registered");
         }
 
@@ -139,7 +139,7 @@ const userAuthController = {
           return validationError(res, "Invalid email format");
         }
 
-        if (await userService.userExists("email", email)) {
+        if (await Model.findOne({ email })) {
           return validationError(res, "Email already registered");
         }
 
@@ -181,10 +181,11 @@ const userAuthController = {
         if (!isValid) {
           return validationError(res, message || "Invalid OTP");
         }
-        if (registration.userType === "driver") {
+        if (role === "driver") {
           await saveToSession(req.session, SESSION_REGISTRATION_KEY, {
             ...registration,
             emailVerified: true,
+            
           });
 
           return res.json({
@@ -194,7 +195,7 @@ const userAuthController = {
           });
         }
 
-        const user = await userService.createUser({
+        const user = await Model.create({
           username: registration.username,
           password: registration.password,
           phone: registration.phoneNumber,
@@ -258,14 +259,20 @@ const userAuthController = {
           file.path.replace(/\\/g, "/").replace("backend/uploads", "/uploads")
         );
 
-        const driver = await userService.createDriver({
+        await saveToSession(req.session, SESSION_REGISTRATION_KEY, {
+          ...registration,
+          documentsUploaded: true,
+        });
+
+        
+        const driver = await Model.create({
           username: registration.username,
           password: registration.password,
           phone: registration.phoneNumber,
           email: registration.email,
           isAccountVerified: true,
           driverDocuments: documentPaths,
-          driverVerifiedStatus: "pending",
+          driverVerified: "pending",
         });
 
         const token = generateJwtToken(driver._id, driver.username);
@@ -283,7 +290,7 @@ const userAuthController = {
         return res.json({
           success: true,
           message: "Driver registration submitted. Pending admin verification.",
-          user: {
+          driver: {
             id: driver._id,
             username: driver.username,
             email: driver.email,
@@ -376,9 +383,66 @@ const userAuthController = {
           ...response,
         });
       }
+      if (role === "driver" && !registration.documentsUploaded) {
+        return res.json({
+          status: "in-progress",
+          nextStep: "upload-documents",
+          ...response,
+        });
+      }
       return res.json({ status: "complete", ...response });
     },
+    registerAsDriverController: async (req, res) => {
+      try {
+        const userId = req.user._id;
+
+        // Check if user already has a driver profile
+        const existingDriver = await Model.findOne({ user: userId });
+        if (existingDriver) {
+          return res
+            .status(400)
+            .json({ message: "You have already registered as a driver." });
+        }
+
+        if (!req.files || req.files.length === 0) {
+          return validationError(res, "No documents uploaded");
+        }
+
+        const documentPaths = req.files.map((file) =>
+          file.path.replace(/\\/g, "/").replace("backend/uploads", "/uploads")
+        );
+
+        const newDriver = new Model({
+          user: userId,
+          driverDocuments: documentPaths,
+          driverVerified: "pending",
+          isAccountVerified: true,
+        });
+
+        await newDriver.save();
+
+        return res
+          .status(201)
+          .json({ message: "Driver profile submitted for approval." });
+      } catch (err) {
+        console.error("Error in registerAsDriver:", err);
+        return res.status(500).json({ message: "Something went wrong." });
+      }
+    },
+    isAuthenticated: async (req, res) => {
+    try {
+      if (req.body.userId) {
+        const user = await Model
+          .findById(req.body.userId)
+          .select("-password -__v");
+        return res.json({ success: true, user });
+      }
+      return validationError(res, "Not authenticated", 401);
+    } catch (error) {
+      handleErrors(res, error);
+    }
   },
+  }),
   login: {
     verifyCredentials: async (req, res) => {
       try {
@@ -618,19 +682,7 @@ const userAuthController = {
     }
   },
 
-  isAuthenticated: async (req, res) => {
-    try {
-      if (req.body.userId) {
-        const user = await userModel
-          .findById(req.body.userId)
-          .select("-password -__v");
-        return res.json({ success: true, user });
-      }
-      return validationError(res, "Not authenticated", 401);
-    } catch (error) {
-      handleErrors(res, error);
-    }
-  },
+  
   verifyGooglePhone: async (req, res) => {
     try {
       const tempUser = getFromSession(req.session, "tempUser");
