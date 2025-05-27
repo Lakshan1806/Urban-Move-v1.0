@@ -10,7 +10,6 @@ export const getRouteDetails = async (pickup, dropoff) => {
     const response = await axios.get(url);
     const data = response.data;
 
-    
     if (data.status !== "OK") {
       throw new Error(data.error_message || "Failed to fetch route details");
     }
@@ -34,6 +33,3 @@ export const getRouteDetails = async (pickup, dropoff) => {
     throw error;
   }
 };
-
-
-

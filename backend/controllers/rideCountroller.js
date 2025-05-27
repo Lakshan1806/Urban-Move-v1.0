@@ -1,10 +1,11 @@
 import Ride from '../models/RideModel.js';
 import mongoose from 'mongoose';
+import { getDistanceFromLatLonInKm } from '../utils/distanceCalculations.js';
 
 // Create a new ride
 export const createRide = async (req, res) => {
   try {
-    const { userId, pickup, dropoff, startLocation, endLocation, distance, duration, scheduledTime, steps ,ridestatus,fare} = req.body;
+    const { userId, pickup, dropoff, startLocation, endLocation, distance, duration, scheduledTime, steps, ridestatus, fare } = req.body;
     
     const newRide = new Ride({
       userId,
@@ -17,7 +18,7 @@ export const createRide = async (req, res) => {
       fare,
       scheduledTime,
       steps,
-      ridestatus: scheduledTime ? 'scheduled' : 'pending'
+      status: scheduledTime ? 'scheduled' : 'pending'
     });
 
     const savedRide = await newRide.save();
@@ -214,7 +215,6 @@ export const cancelRide = async (req, res) => {
       });
     }
 
-    // Check if ride is already completed or cancelled
     if (ride.status === 'completed' || ride.status === 'cancelled') {
       return res.status(400).json({
         success: false,
@@ -240,7 +240,7 @@ export const cancelRide = async (req, res) => {
   }
 };
 
-// Get active rides (pending or in_progress)
+// Get active rides
 export const getActiveRides = async (req, res) => {
   try {
     const activeRides = await Ride.find({
@@ -302,7 +302,6 @@ export const completeRide = async (req, res) => {
       });
     }
 
-    // Check if ride is already completed or cancelled
     if (ride.status === 'completed') {
       return res.status(400).json({
         success: false,
@@ -334,17 +333,125 @@ export const completeRide = async (req, res) => {
     });
   }
 };
-const rideCountroller = {
-    createRide,
-    getUserRides,
-    getRideById,
-    updateRideStatus,
-    updateDriverLocation,
-    cancelRide,
-    getActiveRides,
-    getScheduledRides,
-    completeRide
+
+// Start tracking
+export const startTracking = async (req, res) => {
+  try {
+    const { rideId } = req.body;
     
-  };
-  
-  export default rideCountroller;
+    if (!mongoose.Types.ObjectId.isValid(rideId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid ride ID'
+      });
+    }
+
+    const ride = await Ride.findById(rideId);
+    
+    if (!ride) {
+      return res.status(404).json({
+        success: false,
+        message: 'Ride not found'
+      });
+    }
+
+    if (!['pending', 'scheduled'].includes(ride.status)) {
+      return res.status(400).json({
+        success: false,
+        message: `Cannot start tracking for ride with status ${ride.status}`
+      });
+    }
+
+    const updatedRide = await Ride.findByIdAndUpdate(
+      rideId,
+      { 
+        status: 'in_progress',
+        driverLocation: ride.startLocation,
+        lastUpdated: new Date()
+      },
+      { new: true }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Live tracking started successfully',
+      data: updatedRide
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to start tracking',
+      error: error.message
+    });
+  }
+};
+
+// Get ride status
+export const getRideStatus = async (req, res) => {
+  try {
+    const { rideId } = req.params;
+    
+    if (!mongoose.Types.ObjectId.isValid(rideId)) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid ride ID'
+      });
+    }
+
+    const ride = await Ride.findById(rideId).lean();
+    
+    if (!ride) {
+      return res.status(404).json({
+        success: false,
+        message: 'Ride not found'
+      });
+    }
+
+    let progress = 0;
+    if (ride.driverLocation && ride.startLocation && ride.endLocation) {
+      const totalDistance = getDistanceFromLatLonInKm(
+        ride.startLocation.lat,
+        ride.startLocation.lng,
+        ride.endLocation.lat,
+        ride.endLocation.lng
+      );
+      
+      const completedDistance = getDistanceFromLatLonInKm(
+        ride.startLocation.lat,
+        ride.startLocation.lng,
+        ride.driverLocation.lat,
+        ride.driverLocation.lng
+      );
+      
+      progress = Math.min(100, Math.max(0, (completedDistance / totalDistance) * 100));
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        ...ride,
+        progress
+      }
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Failed to get ride status',
+      error: error.message
+    });
+  }
+};
+
+export default {
+  createRide,
+  getUserRides,
+  getRideById,
+  updateRideStatus,
+  updateDriverLocation,
+  cancelRide,
+  getActiveRides,
+  getScheduledRides,
+  startTracking,
+  completeRide,
+  getRideStatus
+};

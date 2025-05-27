@@ -52,7 +52,7 @@ const LocationIcon = () => (
 );
 
 
-function Ride() {
+function Ride() { 
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
   const [routeDetails, setRouteDetails] = useState(null);
@@ -283,46 +283,79 @@ const fetchScheduledRides = async () => {
     }
   };
 
-  const fetchDriverLocation = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/location/ride-status/${rideId}`
-      );
+const fetchDriverLocation = async () => {
+  try {
+    const response = await axios.get(
+      `http://localhost:5000/api/rides/status/${rideId}`
+    );
 
-      if (response.data.status === "SUCCESS") {
-        setDriverLocation(response.data.driverLocation);
-        setProgress(response.data.progress);
+    if (response.data.success) {
+      const rideData = response.data.data;
+      setDriverLocation(rideData.driverLocation);
+      setProgress(rideData.progress || 0);
 
-        // Update map URL with current driver location
-        if (response.data.driverLocation && routeDetails) {
-          const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-          const newMapUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${response.data.driverLocation.lat},${response.data.driverLocation.lng}&destination=${encodeURIComponent(dropoff)}&zoom=13`;
-          setMapUrl(newMapUrl);
+      // Update map URL with current driver location
+      if (rideData.driverLocation && routeDetails) {
+        const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+        const newMapUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${rideData.driverLocation.lat},${rideData.driverLocation.lng}&destination=${encodeURIComponent(dropoff)}&zoom=13`;
+        setMapUrl(newMapUrl);
+      }
+    }
+  } catch (err) {
+    console.error("Error fetching ride status:", err);
+  }
+};
+
+const simulateDriverMovement = async (rideId) => {
+  try {
+    // Get current ride data
+    const response = await axios.get(
+      `http://localhost:5000/api/rides/${rideId}`
+    );
+    
+    if (response.data.success) {
+      const ride = response.data.data;
+      const steps = ride.steps || [];
+      
+      if (steps.length > 0) {
+        // Find the next step towards destination
+        const nextStep = steps.find(step => {
+          if (!ride.driverLocation || !step.end_location) return false;
+          return getDistanceFromLatLonInKm(
+            ride.driverLocation.lat,
+            ride.driverLocation.lng,
+            step.end_location.lat,
+            step.end_location.lng
+          ) > 0.1;
+        }) || steps[0];
+        
+        if (nextStep && nextStep.end_location) {
+          // Calculate midpoint between current location and next step
+          const currentLat = ride.driverLocation?.lat || ride.startLocation.lat;
+          const currentLng = ride.driverLocation?.lng || ride.startLocation.lng;
+          
+          const latDiff = nextStep.end_location.lat - currentLat;
+          const lngDiff = nextStep.end_location.lng - currentLng;
+          
+          // Move 25% towards the next step
+          const newLat = currentLat + latDiff * 0.25;
+          const newLng = currentLng + lngDiff * 0.25;
+          
+          // Update driver location in backend
+          await axios.put(
+            `http://localhost:5000/api/rides/${rideId}/location`,
+            {
+              lat: newLat,
+              lng: newLng
+            }
+          );
         }
       }
-    } catch (err) {
-      console.error("Error fetching driver location:", err);
     }
-  };
-
-  const simulateDriverMovement = async () => {
-    if (!driverLocation) return;
-
-    const newLat = driverLocation.lat + 0.001;
-    const newLng = driverLocation.lng + 0.001;
-
-    try {
-      await axios.post("http://localhost:5000/location/update-location", {
-        rideId,
-        lat: newLat,
-        lng: newLng,
-      });
-
-      await fetchDriverLocation();
-    } catch (err) {
-      console.error("Error updating driver location:", err);
-    }
-  };
+  } catch (err) {
+    console.error("Error simulating movement:", err);
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -411,36 +444,129 @@ const fetchScheduledRides = async () => {
       setIsScheduling(false);
     }
   };
-//database
-  const handleStartRide = async() => {
-    try{
-      const distanceKm = routeDetails ? parseFloat(routeDetails.distance.split(' ')[0]) : 0;
-      const calculatedFare = Math.round(distanceKm * 100);
-      const response=await axios.post(
-          'http://localhost:5000/api/rideRoute/createride'
-        ,{
-          
-          userId: "65a1b2c3d4e5f6a7b8c9d0e1", // Replace with actual user ID from auth
-          pickup,
-          dropoff,
-          startLocation: routeDetails?.start_location || { lat: 0, lng: 0 },
-          endLocation: routeDetails?.end_location || { lat: 0, lng: 0 },
-          distance: routeDetails?.distance || "0 km",
-          duration: routeDetails?.duration || "0 mins",
-           fare: calculatedFare,
-          ridestatus: "pending",
-          scheduledTime: scheduledTime || null,
-          steps: routeDetails?.steps || []
-
-        })
+   //database
+const handleStartRide = async () => {
+  try {
+    setLoading(true);
+    setError(null);
+     if (!routeDetails) {
+      throw new Error("Route details are missing");
     }
-    catch(error){
 
+    // Calculate fare based on distance
+    const distanceKm = routeDetails ? parseFloat(routeDetails.distance.split(' ')[0]) : 0;
+    const calculatedFare = Math.round(distanceKm * 68);
+
+    // First create the ride in database
+    const createRideResponse = await axios.post(
+      'http://localhost:5000/api/rides',
+      {
+        userId: "65a1b2c3d4e5f6a7b8c9d0e1", // TODO: Replace with actual user ID from auth
+        pickup,
+        dropoff,
+        startLocation: routeDetails?.start_location || { lat: 0, lng: 0 },
+        endLocation: routeDetails?.end_location || { lat: 0, lng: 0 },
+        distance: routeDetails?.distance || "0 km",
+        duration: routeDetails?.duration || "0 mins",
+        fare: calculatedFare,
+        status: "pending",
+        scheduledTime: scheduledTime || null,
+        steps: routeDetails.steps,
+        driverLocation: routeDetails.start_location 
+      }
+    );
+     
+    if (!createRideResponse.data?.success) {
+      throw new Error(createRideResponse.data?.message || "Failed to create ride");
     }
-    startLiveTracking();
-    const simulationInterval = setInterval(simulateDriverMovement, 3000);
-    return () => clearInterval(simulationInterval);
-  };
+
+    const rideId = createRideResponse.data.data._id;
+    setRideId(rideId);
+    
+
+    // Start live tracking
+    const startTrackingResponse = await axios.post(
+      'http://localhost:5000/api/rides/start-tracking',
+      { rideId }
+    );
+
+    if (!startTrackingResponse.data?.success) {
+      throw new Error(startTrackingResponse.data?.message || "Failed to start tracking");
+    }
+
+    setIsTracking(true);
+    
+    // Start polling for ride updates
+    const fetchAndUpdateRideStatus = async () => {
+      try {
+        const statusResponse = await axios.get(
+          `http://localhost:5000/api/rides/status/${rideId}`
+        );
+
+        if (statusResponse.data?.success) {
+          const updatedRide = statusResponse.data.data;
+          setDriverLocation(updatedRide.driverLocation);
+          setProgress(updatedRide.progress || 0);
+
+          // Update map URL with current driver location
+          if (updatedRide.driverLocation && routeDetails) {
+            const apiKey = process.env.GOOGLE_MAPS_API_KEY;
+            const newMapUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${updatedRide.driverLocation.lat},${updatedRide.driverLocation.lng}&destination=${encodeURIComponent(dropoff)}&zoom=13`;
+            setMapUrl(newMapUrl);
+          }
+
+          // If progress is 100%, complete the ride
+          if (updatedRide.progress >= 100) {
+            clearInterval(updateInterval);
+            clearInterval(simulationInterval);
+            setIsTracking(false);
+            // Optionally mark ride as completed in backend
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching ride status:", err);
+        // Implement retry logic or error handling as needed
+      }
+    };
+
+    // Initial fetch
+    await fetchAndUpdateRideStatus();
+    
+    // Set up interval for updates (every 3 seconds)
+    const updateInterval = setInterval(fetchAndUpdateRideStatus, 3000);
+    setTrackingInterval(updateInterval);
+
+    // Start driver simulation (for demo purposes)
+    const simulateMovement = async () => {
+      try {
+        await simulateDriverMovement(rideId);
+      } catch (err) {
+        console.error("Error in driver simulation:", err);
+      }
+    };
+
+    const simulationInterval = setInterval(simulateMovement, 5000);
+
+    // Cleanup function
+    return () => {
+      clearInterval(updateInterval);
+      clearInterval(simulationInterval);
+    };
+
+  } catch (error) {
+    console.error("Error starting ride:", error);
+    setError(error.response?.data?.message || error.message || "Failed to start ride");
+    
+    // Reset tracking state if failed
+    setIsTracking(false);
+    if (trackingInterval) {
+      clearInterval(trackingInterval);
+      setTrackingInterval(null);
+    }
+  } finally {
+    setLoading(false);
+  }
+};
 
   const cancelScheduledRide = async (rideId) => {
     try {
