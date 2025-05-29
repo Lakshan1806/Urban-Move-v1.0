@@ -181,7 +181,7 @@ const DriverAuthProvider = ({ children }) => {
   const login = {
     verifyCredentials: async (username, password) => {
       try {
-        const response = await axios.post("/auth/login/verify-credentials", {
+        const response = await axios.post("/auth/dlogin/verify-credentials", {
           username,
           password,
         });
@@ -193,7 +193,7 @@ const DriverAuthProvider = ({ children }) => {
 
     verifyPhone: async (phoneNumber) => {
       try {
-        const response = await axios.post("/auth/login/verify-phone", {
+        const response = await axios.post("/auth/dlogin/verify-phone", {
           phoneNumber,
         });
         return response.data;
@@ -204,7 +204,7 @@ const DriverAuthProvider = ({ children }) => {
 
     verifyOtp: async (otp) => {
       try {
-        const response = await axios.post("/auth/login/verify-otp", { otp });
+        const response = await axios.post("/auth/dlogin/verify-otp", { otp });
 
         if (response.data.success) {
           setDriver(response.data.user);
@@ -225,7 +225,7 @@ const DriverAuthProvider = ({ children }) => {
 
     getProgress: async () => {
       try {
-        const response = await axios.get("/auth/login/progress");
+        const response = await axios.get("/auth/dlogin/progress");
         return response.data;
       } catch (error) {
         throw error.response?.data || error;
@@ -234,7 +234,7 @@ const DriverAuthProvider = ({ children }) => {
 
     resendOtp: async () => {
       try {
-        const response = await axios.post("/auth/login/resend-otp");
+        const response = await axios.post("/auth/dlogin/resend-otp");
         return response.data;
       } catch (error) {
         throw error.response?.data || error;

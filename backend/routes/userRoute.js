@@ -30,7 +30,7 @@ const userregisterController = userController.auth.createAuthController(
 
 userRoutes.post("/logout", userController.auth.logout);
 userRoutes.post("/google/verify-phone", userController.auth.verifyGooglePhone);
-userRoutes.post("/forgot-password", userController.password.forgotPassword);
+userRoutes.post("/forgot-password", userController.password(userModel,"user").forgotPassword);
 userRoutes.get("/is-auth", userAuth, userregisterController.isAuthenticated);
 
 userRoutes.post("/register/start", userregisterController.startRegistration);
@@ -58,10 +58,13 @@ userRoutes.get("/register/progress", userregisterController.getProcess);
 userRoutes.post("/register/resend-otp", userregisterController.resendOtp);
 userRoutes.post(
   "/reset-password/:token",
-  userController.password.resetPassword
+  userController.password(userModel,"user").resetPassword
 );
-/* userRoutes.post("register/upload-documents",  validateRegistrationStep("upload-documents"),
- driverUpload.array("documents", 5),userController.auth.register.uploadDocuments); */
+userRoutes.put(
+  "/profile/password",
+  userAuth,
+  userController.password(userModel,"user").changePassword
+);
 
 const driverregisterController = userController.auth.createAuthController(
   driverModel,
@@ -100,11 +103,18 @@ userRoutes.post(
   driverUpload.array("documents", 5),
   driverregisterController.uploadDocuments
 );
+userRoutes.post("/forgot-password", userController.password(driverModel,"driver").forgotPassword);
+
+userRoutes.post(
+  "/reset-password/:token",
+  userController.password(driverModel,"driver").resetPassword
+);
 userRoutes.put(
   "/profile/password",
   userAuth,
-  userController.password.changePassword
+  userController.password(driverModel,"driver").changePassword
 );
+
 userRoutes.get("/profile", userAuth, userController.profile.getUserProfile);
 userRoutes.post(
   "/updateprofile",
@@ -184,23 +194,54 @@ userRoutes.post("/register/clear-session", (req, res) => {
   res.json({ success: true, message: "Registration session cleared" });
 });
 
+const userloginController = userController.auth.login(
+  userModel,
+  "user",
+  "login"
+);
+
 userRoutes.post(
   "/login/verify-credentials",
   validateRequest(["username", "password"]),
-  userController.auth.login.verifyCredentials
+  userloginController.verifyCredentials
 );
 userRoutes.post(
   "/login/verify-phone",
   validateRequest(["phoneNumber"]),
-  userController.auth.login.verifyPhone
+  userloginController.verifyPhone
 );
 userRoutes.post(
   "/login/verify-otp",
   validateRequest(["otp"]),
-  userController.auth.login.verifyOtp
+  userloginController.verifyOtp
 );
-userRoutes.post("/login/resend-otp", userController.auth.login.resendOtp);
-userRoutes.get("/login/progress", userController.auth.login.getProgress);
+userRoutes.post("/login/resend-otp", userloginController.resendOtp);
+userRoutes.get("/login/progress", userloginController.getProgress);
+
+const driverloginController = userController.auth.login(
+  driverModel,
+  "driver",
+  "login"
+);
+
+userRoutes.post(
+  "/dlogin/verify-credentials",
+  validateRequest(["username", "password"]),
+  driverloginController.verifyCredentials
+);
+userRoutes.post(
+  "/dlogin/verify-phone",
+  validateRequest(["phoneNumber"]),
+  driverloginController.verifyPhone
+);
+userRoutes.post(
+  "/dlogin/verify-otp",
+  validateRequest(["otp"]),
+  driverloginController.verifyOtp
+);
+userRoutes.post("/dlogin/resend-otp", driverloginController.resendOtp);
+userRoutes.get("/dlogin/progress", driverloginController.getProgress);
+
 
 userRoutes.post("/send-otp", async (req, res) => {
   console.log("OTP request received:", req.body);
