@@ -195,7 +195,7 @@ useEffect(() => {
         <img
           src={imgd}
           alt="Signup Background"
-          className="absolute z-0 w-full h-auto"
+          className="absolute z-0 w-full mx-auto h-dvh"
         />
       )}
 

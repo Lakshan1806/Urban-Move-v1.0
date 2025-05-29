@@ -25,12 +25,12 @@ function RouteSelect() {
 
   return (
     <div>
-      <main className="h-dvh ">
+      <main className="h-full shrink-0 ">
         <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/rent" element={<Rent />} />
+          {/* <Route path="/" element={<Home />} />
+          <Route path="/rent" element={<Rent />} /> */}
           <Route path="/drive" element={<Drive />} />
-          <Route path="/ride" element={<Ride />} />
+          {/* <Route path="/ride" element={<Ride />} />
           <Route path="/help" element={<Help />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/signup" element={<Signupinitialpage />} />
@@ -39,17 +39,17 @@ function RouteSelect() {
           <Route path="/dLogin" element={<DriverLogin />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Signininitialpage />} />
-          <Route path="/email" element={<EmailForm />} />{" "}
+          <Route path="/email" element={<EmailForm />} />
           <Route path="/feedback" element={<Feedback />} />
           <Route
             path="/trip-history"
             element={<TripHistory userId={userId} />}
-          />{" "}
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />{" "}
+          />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route
             path="/reset-password/:token"
             element={<ResetpasswordPage />}
-          />{" "}
+          />
           <Route
             path="/profile"
             element={
@@ -57,8 +57,8 @@ function RouteSelect() {
                 <Profile />
               </ProtectedRoute>
             }
-          />{" "}
-          <Route path="/verify-phone" element={<GooglePhoneVerification />} />
+          />
+          <Route path="/verify-phone" element={<GooglePhoneVerification />} /> */}
         </Routes>
       </main>
     </div>
