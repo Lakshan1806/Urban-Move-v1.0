@@ -5,12 +5,12 @@ import {
 } from "../../utils/sessionHelpers.js";
 import { handleErrors, validationError } from "../../utils/errorHandler.js";
 import otpService from "../../services/otpService.js";
-import userService from "../../services/userService.js";
+//import userService from "../../services/userService.js";
 import generateJwtToken from "../../utils/generateJWTToken.js";
 import nodemailer from "../../utils/nodemailer.js";
-import userModel from "../../models/usermodel.js";
+//import userModel from "../../models/usermodel.js";
 import bcrypt from "bcrypt";
-import driverModel from "../../models/driver.models.js";
+//import driverModel from "../../models/driver.models.js";
 
 const SESSION_REGISTRATION_KEY = "registration";
 const SESSION_LOGIN_KEY = "loginProcess";
@@ -443,7 +443,7 @@ const userAuthController = {
     }
   },
   }),
-  login: {
+  login:(Model, role, SESSION_REGISTRATION_KEY) => ( {
     verifyCredentials: async (req, res) => {
       try {
         const { username, password } = req.body;
@@ -452,10 +452,10 @@ const userAuthController = {
           return validationError(res, "Username and password are required");
         }
 
-        const user = await userService.findByUsername(username);
+        const user = await Model.findOne({ username });
 
         if (!user) {
-          return validationError(res, "Invalid credentials");
+          return validationError(res, '${role} not found');
         }
 
         if (user.authMethod === "google") {
@@ -467,8 +467,12 @@ const userAuthController = {
         if (user.isTerminated) {
           return validationError(
             res,
-            "Account terminated - please contact support"
+            "Account terminated - please contact support @urbanmove.lk"
           );
+        }
+        
+        if(user.driverVerified ==="rejected"){
+          return validationError( res, "Account verification rejected - please contact support @urbanmove.lk");
         }
 
         const isMatch = bcrypt.compare(password, user.password);
@@ -514,10 +518,10 @@ const userAuthController = {
           return validationError(res, "Invalid phone number format");
         }
 
-        const user = await userService.findById(loginData.userId);
+        const user = await Model.findOne({ _id: loginData.userId });
         if (!user) {
           await clearFromSession(req.session, SESSION_LOGIN_KEY);
-          return validationError(res, "User not found");
+          return validationError(res, '${role} not found');
         }
 
         if (user.phone !== phoneNumber) {
@@ -565,10 +569,10 @@ const userAuthController = {
           return validationError(res, message || "Invalid OTP");
         }
 
-        const user = await userService.findById(loginData.userId);
+        const user = await Model.findById(loginData.userId);
         if (!user) {
           await clearFromSession(req.session, SESSION_LOGIN_KEY);
-          return validationError(res, "User not found");
+          return validationError(res, "${role} not found");
         }
 
         const token = generateJwtToken(user._id, user.username);
@@ -660,7 +664,7 @@ const userAuthController = {
         handleErrors(res, error);
       }
     },
-  },
+  }),
 
   logout: async (req, res) => {
     try {
@@ -683,7 +687,7 @@ const userAuthController = {
   },
 
   
-  verifyGooglePhone: async (req, res) => {
+  verifyGooglePhone:(Model, role) => ( async (req, res) => {
     try {
       const tempUser = getFromSession(req.session, "tempUser");
       if (!tempUser?.googleId) {
@@ -702,7 +706,7 @@ const userAuthController = {
           return validationError(res, "Invalid phone number format");
         }
 
-        if (await userService.userExists("phone", phoneNumber)) {
+        if (await Model.compare("phone", phoneNumber)) {
           return validationError(res, "Phone number already exists");
         }
 
@@ -734,7 +738,7 @@ const userAuthController = {
           return validationError(res, "Invalid or expired OTP");
         }
 
-        const updatedUser = await userModel.findOneAndUpdate(
+        const updatedUser = await Model.findOneAndUpdate(
           { googleId: tempUser.googleId },
           {
             phone: tempUser.phoneNumber,
@@ -743,7 +747,7 @@ const userAuthController = {
           { new: true }
         );
 
-        const token = generateJwtToken(updatedUser._id, updatedUser.username);
+        const token = generateJwtToken(updatedUser._id, updatedUser.username, role);
 
         res.cookie("token", token, {
           httpOnly: true,
@@ -771,6 +775,6 @@ const userAuthController = {
     } catch (error) {
       handleErrors(res, error);
     }
-  },
+  }),
 };
 export default userAuthController;

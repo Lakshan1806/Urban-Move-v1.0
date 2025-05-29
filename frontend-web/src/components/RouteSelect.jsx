@@ -18,6 +18,7 @@ import Profile from "../pages/profile.jsx";
 import ProtectedRoute from "./ProtectedRoute";
 import GooglePhoneVerification from "../pages/GooglePhoneVerification.jsx";
 import DriverRegister from "../pages/driverRegister.jsx";
+import DriverLogin from "../pages/DriverLogin.jsx";
 
 function RouteSelect() {
   const userId = "123456"; // Replace this with actual logged-in user ID
@@ -35,6 +36,7 @@ function RouteSelect() {
           <Route path="/signup" element={<Signupinitialpage />} />
           <Route path="/register" element={<Register />} />
           <Route path="/dRegister" element={<DriverRegister />} />
+          <Route path="/dLogin" element={<DriverLogin />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signin" element={<Signininitialpage />} />
           <Route path="/email" element={<EmailForm />} />{" "}

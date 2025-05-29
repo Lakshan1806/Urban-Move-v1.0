@@ -1,12 +1,12 @@
 import dotenv from "dotenv";
-import userModel from "../../models/usermodel.js";
+//import userModel from "../../models/usermodel.js";
 import nodemailer from "../../utils/nodemailer.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
 dotenv.config();
 
-const userPasswordController = {
+const userPasswordController = (Model, role) => ({
   changePassword: async (req, res) => {
     try {
       const { currentPassword, newPassword, confirmPassword, userId } =
@@ -26,10 +26,10 @@ const userPasswordController = {
         });
       }
 
-      const user = await userModel.findById(userId).select("+password");
+      const user = await Model.findById(userId).select("+password");
 
       if (!user) {
-        return res.status(404).json({ message: "User not found" });
+        return res.status(404).json({ message: `${role} not found` });
       }
 
       // Verify current password
@@ -59,12 +59,12 @@ const userPasswordController = {
    forgotPassword: async (req, res) => {
       const { email } = req.body;
       try {
-        const user = await userModel.findOne({ email });
+        const user = await Model.findOne({ email });
   
         if (!user) {
           return res
             .status(400)
-            .json({ success: false, message: "User not found" });
+            .json({ success: false, message: `${role} not found` });
         }
   
         const resetToken = crypto.randomBytes(20).toString("hex");
@@ -100,7 +100,7 @@ const userPasswordController = {
         const { token } = req.params;
         const { password } = req.body;
   
-        const user = await userModel.findOne({
+        const user = await Model.findOne({
           resetPasswordToken: token,
           resetPasswordExpiresAt: { $gt: Date.now() },
         });
@@ -113,7 +113,7 @@ const userPasswordController = {
   
         const hashedPassword = await bcrypt.hash(password, 10);
   
-        const result = await userModel.updateOne(
+        const result = await Model.updateOne(
           { _id: user._id },
           {
             $set: {
@@ -128,7 +128,7 @@ const userPasswordController = {
           throw new Error("Failed to update password");
         }
   
-        const updatedUser = await userModel.findById(user._id);
+        const updatedUser = await Model.findById(user._id);
   
         await nodemailer.sendResetSuccessEmail(updatedUser.email);
   
@@ -139,5 +139,5 @@ const userPasswordController = {
         res.status(500).json({ success: false, message: error.message });
       }
     },
-};
+});
 export default userPasswordController;
