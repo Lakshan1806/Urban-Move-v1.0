@@ -5,7 +5,6 @@ import cors from "cors";
 import adminRoutes from "./routes/adminRoutes.js";
 import checkAndCreateAdmin from "./utils/adminInitialSetup.js";
 import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
-import feedbackRoutes from "./routes/feedbackRoute.js";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -23,18 +22,18 @@ if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
   console.error(" Missing SESSION_SECRET or MONGO_URI in .env file");
   process.exit(1);
 }
-
+ 
 const app = express();
 
 app.use(
   cors({
     credentials: true,
-    origin: "http://localhost:5173",
+    origin: ["http://localhost:5173", "http://localhost:5174"],
   })
 );
 
 app.use(
-  session({
+  session({ 
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -72,7 +71,6 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 console.log(path.join(__dirname, "/uploads"));
-
 
 app.use(express.json());
 
