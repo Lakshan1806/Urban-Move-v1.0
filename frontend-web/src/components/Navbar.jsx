@@ -52,7 +52,7 @@ function NavBar() {
     "font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text text-[15px] uppercase rounded-[50px]";
 
   return (
-    <nav className="bg-black w-full h-full px-[25px] flex flex-row items-center justify-between top-0 sticky">
+    <nav className="bg-black w-full  z-20 h-full px-[25px] flex flex-row items-center justify-between top-0 sticky">
       <header>
         <img src={Logo} alt="Logo" className="w-[60px] h-[60px]" />
       </header>

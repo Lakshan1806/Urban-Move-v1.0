@@ -1,14 +1,15 @@
 import dotenv from "dotenv";
-import userModel from "../../models/usermodel.js";
+//import userModel from "../../models/usermodel.js";
 import ArchivedUser from "../../models/archivedUser.model.js";
 import nodemailer from "../../utils/nodemailer.js";
+import ArchivedDriver from "../../models/archivedDriver.models.js";
 
 dotenv.config();
 
-const userProfileController = {
+const userProfileController = (Model, role) => ({
   getUserProfile: async (req, res) => {
     try {
-      const user = await userModel.findById(req.body.userId).select({
+      const user = await Model.findById(req.body.userId).select({
         fullname: 1,
         username: 1,
         email: 1,
@@ -44,7 +45,7 @@ const userProfileController = {
       console.log("Update profile request body:", req.body);
 
       if (!userId) {
-        return res.status(400).json({ message: "User ID is required" });
+        return res.status(400).json({ message: `${role} is required` });
       }
 
       if (!username || !email || !phone) {
@@ -58,13 +59,13 @@ const userProfileController = {
       }
 
       if (req.file && req.file.path) {
-        const user = await userModel.findByIdAndUpdate(req.body.userId, {
+        const user = await Model.findByIdAndUpdate(req.body.userId, {
           $set: { photo: req.file.path },
         });
         console.log("Uploaded file:", req.file);
       }
 
-      const updatedUser = await userModel.findByIdAndUpdate(userId, {
+      const updatedUser = await Model.findByIdAndUpdate(userId, {
         $set: {
           fullname,
           username,
@@ -86,19 +87,32 @@ const userProfileController = {
     try {
       const { reason, userId } = req.body;
 
-      const user = await userModel.findById(userId);
+      const user = await Model.findById(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
 
-      const archivedUser = new ArchivedUser({
-        originalId: user._id,
-        ...user.toObject(),
-        reasonForDeletion: reason || "No reason provided",
-        deletedAt: new Date(),
-      });
-      await archivedUser.save();
-      await nodemailer.deleteAccountEmail(user.email);
+      if (role === "user" && Model === "userModel") {
+        const archivedUser = new ArchivedUser({
+          originalId: user._id,
+          ...user.toObject(),
+          reasonForDeletion: reason || "No reason provided",
+          deletedAt: new Date(),
+        });
+        await archivedUser.save();
+        await nodemailer.deleteAccountEmail(user.email);
 
-      await userModel.findByIdAndDelete(userId);
+        await Model.findByIdAndDelete(userId);
+      } else {
+        const archivedDriver = new ArchivedDriver({
+          originalId: user._id,
+          ...user.toObject(),
+          reasonForDeletion: reason || "No reason provided",
+          deletedAt: new Date(),
+        });
+        await archivedDriver.save();
+        await nodemailer.deleteAccountEmail(user.email);
+
+        await Model.findByIdAndDelete(userId);
+      }
 
       res.clearCookie("token");
 
@@ -112,5 +126,5 @@ const userProfileController = {
       });
     }
   },
-};
+});
 export default userProfileController;
