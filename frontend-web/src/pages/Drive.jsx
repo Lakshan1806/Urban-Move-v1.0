@@ -11,9 +11,9 @@ import Drive4thpage from "../drive_components/drive4thpage";
 function Drive() {
   return (
     <div className="h-full flex flex-col ">
-      {/* <div className="flex flex-row">
+      <div className="flex flex-row">
         <Navbardrive />
-      </div> */}
+      </div>
       <div className="flex-1 flex flex-col overflow-y-auto  min-h-0 snap-y snap-mandatory scroll-smooth">
         <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
           <Drive1stpageleft />
@@ -39,9 +39,8 @@ function Drive() {
             </p> */}
           {/* <img src={img3} alt="img3" /> */}
 
-          <Drive3rdpage />
+          <Drive4thpage />
         </div>
-       
       </div>
     </div>
   );

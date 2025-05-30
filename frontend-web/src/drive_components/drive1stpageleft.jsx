@@ -19,8 +19,8 @@ function Drive1stpageleft() {
             Already have an account? Sign in
           </Link>
         </div>
-        <div className="w-2/3 h-full">
-         {/*  <img src={img1} alt="img1" className="h-full w-auto max-w-full" /> */}
+        <div className=" flex w-2/3 h-full justify-center">
+         <img src={img1} alt="img1" className="h-full" /> 
         </div>
       </div>
     </div>

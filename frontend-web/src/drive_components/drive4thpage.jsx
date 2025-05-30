@@ -1,36 +1,48 @@
-function Drive3rdpage() {
-  const styles1 = "text-center text-[32px] font-[700]  ";
-  const styles2 = " text-left text-[24px] font-[500] ";
+function Drive4thpage() {
+  const styles3 = "text-center text-[32px] font-[700] ";
+  const styles4 = " text-left text-[24px] font-[500] ";
   return (
     <div className="justify-center items-center col-span-12 row-span-6">
       <div className="flex flex-row">
         <div>
-          <p className={styles1}>Requirements</p>
-          <div className={styles2}>
+          <p className={styles3}>Protection on every trip</p>
+          <div className={styles4}>
             <ul className="list-disc list-outside ">
-              <li>Meet the minimum age to drive in your city. </li>
-              <li>Have at least one year of driving experience. </li>
-              <li>Clear a background check.</li>
+              <li>
+                For every trip you complete using the Driver app, we provide
+                auto insurance coverage to ensure the safety and protection of
+                both you and your rider.
+              </li>
             </ul>
           </div>
         </div>
         <div>
-          <p className={styles1}>Required documents</p>
-          <div className={styles2}>
+          <p className={styles3}>Help if you need it</p>
+          <div className={styles4}>
             <ul className="list-disc list-outside">
-              <li>Valid driver's license</li>
-              <li>Proof of residency in your city, state, or province</li>
-              <li>Insurance of the vehicle</li>
+              <li>
+                The Emergency Button connects you directly to 119, allowing you
+                to get help quickly.
+              </li>
+              <li>
+                The app also displays your trip details, making it easy to share
+                crucial information with authorities when needed.
+              </li>
             </ul>
           </div>
         </div>
         <div>
-          <p className={styles1}> Signup process</p>
-          <div className={styles2}>
+          <p className={styles3}> Community Guidelines</p>
+          <div className={styles4}>
             <ul className="list-disc list-outside">
-              <li>Submit documents and photo</li>
-              <li>Provide information for a background check</li>
-              <li>Find out if your car is eligible, or get a car</li>
+              <li>
+                Our standards are designed to ensure safe connections and foster
+                positive interactions for everyone.
+              </li>
+              <li>
+                Discover how these guidelines apply to you and enhance your
+                experience.
+              </li>
             </ul>
           </div>
         </div>
@@ -38,4 +50,4 @@ function Drive3rdpage() {
     </div>
   );
 }
-export default Drive3rdpage;
+export default Drive4thpage;
