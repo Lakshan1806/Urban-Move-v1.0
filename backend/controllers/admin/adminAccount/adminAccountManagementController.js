@@ -64,7 +64,7 @@ const adminAccountManagementController = {
     res.json(admins);
   },
 
-  accountInfo: async (req, res) => {
+  accountInfo: async (req, res) => {   
     const { token } = req.cookies;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });

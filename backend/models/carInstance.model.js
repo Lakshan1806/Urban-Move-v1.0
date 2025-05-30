@@ -20,3 +20,4 @@ const carInstanceSchema = new mongoose.Schema(
 );
 
 export default mongoose.model("CarInstance", carInstanceSchema);
+ 
