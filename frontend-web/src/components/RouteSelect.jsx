@@ -27,10 +27,10 @@ function RouteSelect() {
     <div>
       <main className="h-full shrink-0 ">
         <Routes>
-          {/* <Route path="/" element={<Home />} />
-          <Route path="/rent" element={<Rent />} /> */}
+          <Route path="/" element={<Home />} />
+          <Route path="/rent" element={<Rent />} />
           <Route path="/drive" element={<Drive />} />
-          {/* <Route path="/ride" element={<Ride />} />
+          <Route path="/ride" element={<Ride />} />
           <Route path="/help" element={<Help />} />
           <Route path="/payment" element={<PaymentPage />} />
           <Route path="/signup" element={<Signupinitialpage />} />
@@ -58,7 +58,7 @@ function RouteSelect() {
               </ProtectedRoute>
             }
           />
-          <Route path="/verify-phone" element={<GooglePhoneVerification />} /> */}
+          <Route path="/verify-phone" element={<GooglePhoneVerification />} />
         </Routes>
       </main>
     </div>

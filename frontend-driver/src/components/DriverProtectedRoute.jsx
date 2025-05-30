@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useDriverAuth } from "../context/DriverAuthContext";
+import { useDriverAuth } from "../context/DriverAuthContext-driver";
 import { useNavigate } from "react-router-dom";
 
 const DriverProtectedRoute = ({ children }) => {

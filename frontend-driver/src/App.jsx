@@ -1,5 +1,5 @@
 import axios from "axios";
-import NavBar from "./components/Navbar";
+import Navbar from "./components/Navbar";
 import DriverRouteSelect from "./components/DriverRouteSelect";
 
 axios.defaults.baseURL = "http://localhost:5000";
@@ -9,7 +9,7 @@ function App() {
   return (
     <div className="debug-outlines">
       <div className="h-dvh ">
-        <NavBar />
+        <Navbar />
         <DriverRouteSelect />
       </div>
     </div>
