@@ -7,6 +7,7 @@ import Drive2ndpageleft from "../drive_components/drive2ndpageleft";
 import Drive2ndpageright from "../drive_components/drive2ndpageright";
 import Drive3rdpage from "../drive_components/drive3rdpage";
 import Drive4thpage from "../drive_components/drive4thpage";
+import Footer from "../components/Footer";
 
 function Drive() {
   return (
@@ -40,6 +41,9 @@ function Drive() {
           {/* <img src={img3} alt="img3" /> */}
 
           <Drive4thpage />
+        </div>
+        <div className=" h-[180px] shrink-0 snap-start">
+          <Footer/>
         </div>
       </div>
     </div>
