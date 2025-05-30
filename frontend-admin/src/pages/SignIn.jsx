@@ -1,12 +1,15 @@
 import Logo from "../assets/Urban_Move.svg";
 import Line from "../assets/Line.svg";
-import { useState } from "react";
+import { Toast } from "primereact/toast";
+import { useState, useRef } from "react";
 import { UserContext } from "../context/userContext";
 import { useContext } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import getToastSeverity from "../utils/getToastSeverity";
 
 function SignIn() {
+  const toast = useRef(null);
   const navigate = useNavigate();
   const { setUser } = useContext(UserContext);
   const [username, setUsername] = useState("");
@@ -21,10 +24,48 @@ function SignIn() {
 
   const handleSignin = async (event) => {
     event.preventDefault();
-    await axios.post("/admin/login", loginData);
-    const response = await axios.get("/admin/profile");
-    localStorage.setItem("userData", JSON.stringify(response.data));
-    setUser(response.data);
+
+    try {
+      const loginRes = await axios.post("/admin/login", loginData);
+      toast.current.show({
+        severity: getToastSeverity(loginRes.status),
+        summary: `Login ${loginRes.status}`,
+        detail: loginRes.data.message || "Login successful",
+        life: 3000,
+      });
+    } catch (err) {
+      const status = err.response?.status;
+      toast.current.show({
+        severity: getToastSeverity(status || 500),
+        summary: status ? `Error ${status}` : "Network Error",
+        detail: err.response?.data?.message || err.message,
+        life: 4000,
+      });
+      return;
+    }
+    let profileRes;
+    try {
+      profileRes = await axios.get("/admin/profile");
+      toast.current.show({
+        severity: getToastSeverity(profileRes.status),
+        summary: `Profile ${profileRes.status}`,
+        detail: profileRes.data.username
+          ? `Welcome, ${profileRes.data.username}!`
+          : "Profile loaded",
+        life: 3000,
+      });
+    } catch (err) {
+      const status = err.response?.status;
+      toast.current.show({
+        severity: getToastSeverity(status || 500),
+        summary: status ? `Error ${status}` : "Network Error",
+        detail: err.response?.data?.message || err.message,
+        life: 4000,
+      });
+      return;
+    }
+    localStorage.setItem("userData", JSON.stringify(profileRes.data));
+    setUser(profileRes.data);
     navigate("/dashboard", { replace: true });
   };
 
@@ -82,6 +123,7 @@ function SignIn() {
           </form>
         </div>
       </div>
+      <Toast ref={toast} position="bottom-right" />
     </div>
   );
 }

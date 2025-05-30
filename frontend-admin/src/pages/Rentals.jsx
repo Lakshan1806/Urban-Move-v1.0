@@ -2,7 +2,8 @@ import { useState } from "react";
 import AvailableCars from "../components/Rentals/AvailableCars";
 import CarDetails from "../components/Rentals/CarDetails";
 import AddCars from "../components/Rentals/AddCars";
-//import CurrentActivity from "../components/Rentals/CurrentActivity";
+import RecentlyDeletedCars from "../components/Rentals/RecentlyDeletedCars";
+import CurrentActivity from "../components/Rentals/CurrentActivity";
 
 function Rentals() {
   const [carDetails, setCarDetails] = useState(null);
@@ -24,20 +25,15 @@ function Rentals() {
           Rentals
         </h1>
       </div>
-      <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
-        <div className="grid grid-cols-12 grid-rows-12 gap-3  h-full">
+      <div className="flex-1 flex flex-col gap-3 overflow-y-auto min-h-0 snap-y snap-mandatory scroll-smooth">
+        <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
           {component}
-
-          <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
-            <CarDetails car={carDetails} onUpdate={setCarDetails} />
-          </div>
+          <CarDetails car={carDetails} onUpdate={setCarDetails} />
         </div>
-        <div className="grid grid-cols-12 grid-rows-12 gap-3 h-full">
-          {component}
-
-          <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
-            <CarDetails car={carDetails} onUpdate={setCarDetails} />
-          </div>
+        <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
+          <RecentlyDeletedCars />
+          <CurrentActivity />
+          <RecentlyDeletedCars />
         </div>
       </div>
     </div>

@@ -13,7 +13,7 @@ createRoot(document.getElementById("root")).render(
     <BrowserRouter>
       <PrimeReactProvider
         value={{
-          unstyled: true,
+          unstyled: false,
           pt: Tailwind,
           ptOptions: {
             mergeSections: true,

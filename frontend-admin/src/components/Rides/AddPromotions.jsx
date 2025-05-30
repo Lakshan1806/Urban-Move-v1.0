@@ -12,6 +12,7 @@ function AddPromotions() {
   const [description, setDescription] = useState("");
   const [keyImageUrl, setKeyImageUrl] = useState(null);
   const [keyTempImage, setKeyTempImage] = useState(null);
+  const [isEditable, setIsEditable] = useState(false);
 
   const handleKeyImageClick = () => {
     keyImageInputRef.current.click();
@@ -163,15 +164,27 @@ function AddPromotions() {
             />
           </div>
           <div className="flex flex-row items-center justify-center gap-5">
-            <div className="button-wrapper">
-              <button
-                type="button"
-                className="button-primary"
-                onClick={handleSave}
-              >
-                Save
-              </button>
-            </div>
+            {isEditable ? (
+              <div className="button-wrapper">
+                <button
+                  type="button"
+                  className="button-primary"
+                  onClick={handleSave}
+                >
+                  Save
+                </button>
+              </div>
+            ) : (
+              <div className="button-wrapper">
+                <button
+                  type="button"
+                  className="button-primary"
+                  onClick={() => setIsEditable(true)}
+                >
+                  Add Promo
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
