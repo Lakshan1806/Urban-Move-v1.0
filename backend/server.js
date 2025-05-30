@@ -12,7 +12,6 @@ import userRoutes from "./routes/userRoute.js";
 import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
-import fs from "fs";
 
 const PORT = 5000;
 dotenv.config();
@@ -86,6 +85,7 @@ console.log("Current Working Directory:", process.cwd());
 //app.use("/api/auth", userRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/rideRoute",RideRoute);
+app.use('/api/schedule', scheduleRoutes);
 
 async function startServer() {
   await connectDB();

@@ -1,40 +1,25 @@
-import express from 'express';
-import rideController from '../controllers/rideController.js';
+//live tracing implements
+import { 
+  createRide,
+  startTracking, 
+  getRideStatus, 
+  updateDriverLocation,
+  completeRide 
+} from '../controllers/rideController.js';
 import userAuth from '../middlewares/userAuth.js';
 
-const router = express.Router();
+// Create ride endpoint
+router.post('/', userAuth, createRide);
 
-// Create a new ride
-router.post('/', userAuth, rideController.createRide);
+// Corrected endpoints with proper base path
+router.post('/api/rides/start-tracking', userAuth, startTracking);
+router.get('/api/rides/status/:rideId', userAuth, getRideStatus);
+router.post('/api/rides/update-location', userAuth, updateDriverLocation);
+router.post('/api/rides/complete', userAuth, completeRide);
 
-// Get all rides for a user
-router.get('/user/:userId', userAuth, rideController.getUserRides);
-
-// Get ride by ID
-router.get('/:rideId', userAuth, rideController.getRideById);
-
-// Update ride status
-router.put('/:rideId/status', userAuth, rideController.updateRideStatus);
-
-// Update driver location
-router.put('/:rideId/location', userAuth, rideController.updateDriverLocation);
-
-// Cancel a ride
-router.delete('/:rideId', userAuth, rideController.cancelRide);
-
-// Get active rides
-router.get('/active', userAuth, rideController.getActiveRides);
-
-// Get scheduled rides
-router.get('/scheduled', userAuth, rideController.getScheduledRides);
-
-// Start tracking
-router.post('/start-tracking', userAuth, rideController.startTracking);
-
-// Complete a ride
-router.put('/:rideId/complete', userAuth, rideController.completeRide);
-
-// Get ride status
-router.get('/:rideId/status', userAuth, rideController.getRideStatus);
+// In your routes file
+router.post('/schedule', ridesController.scheduleRide);
+router.get('/scheduled', ridesController.getScheduledRides);
+router.delete('/scheduled/:id', ridesController.cancelScheduledRide);
 
 export default router;
