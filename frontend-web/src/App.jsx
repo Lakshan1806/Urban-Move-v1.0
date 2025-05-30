@@ -7,7 +7,7 @@ axios.defaults.withCredentials = true;
 
 function App() {
   return (
-    <div className="debug-outlines">
+    <div className="debug-outline">
       <div className="h-dvh grid grid-rows-[80px_1fr]">
         <NavBar />
         <RouteSelect />
