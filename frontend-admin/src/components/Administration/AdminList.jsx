@@ -20,7 +20,7 @@ function AdminList() {
   }, []);
 
   return (
-    <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
       {user.map((admin) => {
         console.log(admin.photo);
         return (
