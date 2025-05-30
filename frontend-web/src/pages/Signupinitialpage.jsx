@@ -1,7 +1,7 @@
 import { Link, useNavigate } from "react-router-dom";
 import Line from "../signup_photos/linervector.svg";
 import arrow from "../signup_photos/arrowvector.svg";
-import React from "react";
+import vector1 from "../signup_photos/vector1.svg";
 
 function Signupinitialpage() {
   const navigate = useNavigate();
@@ -9,12 +9,12 @@ function Signupinitialpage() {
   const handleContinue = () => {
     navigate("/register");
   };
-  const handleClick = () =>{
+  const handleClick = () => {
     navigate("/dregister");
-  }
+  };
   return (
-    <div className="grid grid-cols-2">
-       <div className="flex flex-col items-center justify-center h-svh gap-[20px]">
+    <div className="flex justify-between px-14 h-full">
+      <div className="flex flex-col items-center justify-center  gap-[20px]">
         <p className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
           Create a driver account
         </p>
@@ -32,7 +32,10 @@ function Signupinitialpage() {
           <Link to="/login">Already have an account? Sign in</Link>
         </p>
       </div>
-      <div className="flex flex-col items-center justify-center h-svh gap-[20px]">
+
+      <img src={vector1} className="h-full py-10" />
+
+      <div className="flex flex-col items-center justify-center  gap-[20px]">
         <p className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
           Create a customer account
         </p>
@@ -50,7 +53,6 @@ function Signupinitialpage() {
           <Link to="/login">Already have an account? Sign in</Link>
         </p>
       </div>
-     
     </div>
   );
 }

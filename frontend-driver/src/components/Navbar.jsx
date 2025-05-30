@@ -33,7 +33,7 @@ function NavBar() {
       icon: <FaSignOutAlt />,
       action: () => {
         logout();
-        navigate("/");
+        window.location.href = "http://localhost:5173/signin";
         setDropdownOpen(false);
       },
     },

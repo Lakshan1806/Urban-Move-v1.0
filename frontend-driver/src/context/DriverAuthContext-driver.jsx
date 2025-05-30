@@ -16,6 +16,8 @@
  
   const navigate = useNavigate();
 
+  
+
   const checkAuth = useCallback(async () => {
     try {
       const response = await axios.get("/auth/is-dauth");
@@ -38,22 +40,49 @@
       });
       setDriver(null);
       setIsAuthenticated(false);
-
-      if (error.message === "Account terminated") {
-        navigate("/login?error=account_terminated");
-      }
       return false;
     }
   }, [navigate]);
-  
-  useEffect(() =>{
+
+    useEffect(() =>{
     checkAuth();
   },[checkAuth]);
+
+    const logout = async () => {
+    try {
+      await axios.post("/auth/logout");
+      setDriver(null);
+      setIsAuthenticated(false);
+      window.location.href = "http://localhost:5173/signin"; 
+    } catch (error) {
+      console.error("Logout failed:", error);
+      throw error;
+    }
+  };
+
+    const getProfile = useCallback(async () => {
+      try {
+        const response = await axios.get("/auth/driver/profile");
+        if (response.data) {
+          setDriver(response.data);
+          setIsAuthenticated(true);
+          return response.data;
+        }
+      } catch (error) {
+        setIsAuthenticated(false);
+        console.error("Failed to fetch profile:", error);
+        throw error;
+      }
+    }, []);
+  
+
 
    const value = {
     driver,
     isAuthenticated,
-    checkAuth
+    checkAuth,
+    logout,
+    getProfile
   };
 
   return (

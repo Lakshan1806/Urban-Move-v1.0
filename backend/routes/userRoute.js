@@ -30,7 +30,10 @@ const userregisterController = userController.auth.createAuthController(
 
 userRoutes.post("/logout", userController.auth.logout);
 userRoutes.post("/google/verify-phone", userController.auth.verifyGooglePhone);
-userRoutes.post("/forgot-password", userController.password(userModel,"user").forgotPassword);
+userRoutes.post(
+  "/forgot-password",
+  userController.password(userModel, "user").forgotPassword
+);
 userRoutes.get("/is-auth", userAuth, userregisterController.isAuthenticated);
 
 userRoutes.post("/register/start", userregisterController.startRegistration);
@@ -58,12 +61,28 @@ userRoutes.get("/register/progress", userregisterController.getProcess);
 userRoutes.post("/register/resend-otp", userregisterController.resendOtp);
 userRoutes.post(
   "/reset-password/:token",
-  userController.password(userModel,"user").resetPassword
+  userController.password(userModel, "user").resetPassword
 );
 userRoutes.put(
   "/profile/password",
   userAuth,
-  userController.password(userModel,"user").changePassword
+  userController.password(userModel, "user").changePassword
+);
+userRoutes.get(
+  "/profile",
+  userAuth,
+  userController.profile(userModel, "user").getUserProfile
+);
+userRoutes.post(
+  "/updateprofile",
+  userAuth,
+  userUpload.single("photo"),
+  userController.profile(userModel, "user").updateProfile
+);
+userRoutes.delete(
+  "/delete-account",
+  userAuth,
+  userController.profile(userModel, "user").deleteAccount
 );
 
 const driverregisterController = userController.auth.createAuthController(
@@ -103,29 +122,36 @@ userRoutes.post(
   driverUpload.array("documents", 5),
   driverregisterController.uploadDocuments
 );
-userRoutes.post("/forgot-password", userController.password(driverModel,"driver").forgotPassword);
+userRoutes.post(
+  "/driver/forgot-password",
+  userController.password(driverModel, "driver").forgotPassword
+);
 
 userRoutes.post(
-  "/reset-password/:token",
-  userController.password(driverModel,"driver").resetPassword
+  "/driver/reset-password/:token",
+  userController.password(driverModel, "driver").resetPassword
 );
 userRoutes.put(
-  "/profile/password",
-  userAuth,
-  userController.password(driverModel,"driver").changePassword
+  "/driver/profile/password",
+  driverAuth,
+  userController.password(driverModel, "driver").changePassword
 );
 
-userRoutes.get("/profile", userAuth, userController.profile.getUserProfile);
+userRoutes.get(
+  "/driver/profile",
+  driverAuth,
+  userController.profile(driverModel, "driver").getUserProfile
+);
 userRoutes.post(
-  "/updateprofile",
-  userAuth,
-  userUpload.single("photo"),
-  userController.profile.updateProfile
+  "/driver/updateprofile",
+  driverAuth,
+  driverUpload.single("photo"),
+  userController.profile(driverModel, "driver").updateProfile
 );
 userRoutes.delete(
-  "/delete-account",
-  userAuth,
-  userController.profile.deleteAccount
+  "/driver/delete-account",
+  driverAuth,
+  userController.profile(driverModel, "driver").deleteAccount
 );
 
 userRoutes.get(
@@ -241,7 +267,6 @@ userRoutes.post(
 );
 userRoutes.post("/dlogin/resend-otp", driverloginController.resendOtp);
 userRoutes.get("/dlogin/progress", driverloginController.getProgress);
-
 
 userRoutes.post("/send-otp", async (req, res) => {
   console.log("OTP request received:", req.body);
