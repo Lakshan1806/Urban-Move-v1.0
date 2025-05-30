@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Chart } from "primereact/chart";
 
 function CancelledRideStats() {
@@ -42,8 +42,7 @@ function CancelledRideStats() {
     };
     const options = {
       maintainAspectRatio: false,
-       
-      
+
       plugins: {
         legend: {
           labels: {
