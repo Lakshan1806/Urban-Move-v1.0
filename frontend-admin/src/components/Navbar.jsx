@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import axios from "axios";
 import Logo from "../assets/Urban_Move_Colour.svg";
 import HomeIcon from "../assets/Home.svg";
 import RideIcon from "../assets/Ride.svg";
@@ -20,9 +21,9 @@ function Navbar() {
   const navigate = useNavigate();
   console.log("Navbar is rendering");
 
-  function handleSignout() {
+  async function handleSignout() {
     localStorage.removeItem("userData");
-    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    await axios.post("/admin/logout", {});
     setUser(null);
     navigate("/", { replace: true });
   }
