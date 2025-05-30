@@ -8,6 +8,7 @@ import authenticateToken from "../middlewares/adminTokenAuthenticator.js";
 const adminRoutes = express.Router();
 
 adminRoutes.post("/login", adminController.auth.login);
+adminRoutes.post("/logout", adminController.auth.logout);
 adminRoutes.post("/change_password", adminController.admin.changePassword);
 adminRoutes.post("/add_admin", adminController.admin.addAdmin);
 adminRoutes.post(
@@ -42,7 +43,9 @@ adminRoutes.get("/get_all_driver", adminController.driver.getAllDriver);
 adminRoutes.get("/profile", authenticateToken, adminController.auth.profile);
 adminRoutes.get("/account_info", adminController.admin.accountInfo);
 adminRoutes.get("/get_all_car_models", adminController.car.get.getAllCarModels);
+adminRoutes.get("/get_all_deleted_car_models", adminController.car.get.getAllDeletedCarModels);
 adminRoutes.get("/get_all_car_units", adminController.car.get.getAllCarUnits);
+adminRoutes.get("/get_all_promotions", adminController.promotion.getAllPromotion);
 
 adminRoutes.patch(
   "/update_car_image",
