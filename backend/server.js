@@ -5,7 +5,6 @@ import cors from "cors";
 import adminRoutes from "./routes/adminRoutes.js";
 import checkAndCreateAdmin from "./utils/adminInitialSetup.js";
 import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
-import feedbackRoutes from "./routes/feedbackRoute.js";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -28,7 +27,7 @@ if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
   console.error(" Missing SESSION_SECRET or MONGO_URI in .env file");
   process.exit(1);
 }
-
+ 
 const app = express();
 
 app.use(
@@ -39,7 +38,7 @@ app.use(
 );
 
 app.use(
-  session({
+  session({ 
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
