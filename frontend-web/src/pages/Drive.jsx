@@ -20,19 +20,26 @@ function Drive() {
           <Drive1stpageleft />
         </div>
         <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          {/* <div className="p-[10px] text-center text-[36px] font-[700] font-sans">
+          <div className="col-span-12 row-span-1 p-[10px] text-center text-[30px] font-semibold flex justify-center items-center">
             Why become a rideshare driver?
-          </div> */}
-          <Drive2ndpageleft />
-          <Drive2ndpageright />
+          </div>
+
+          <div className="col-span-6 row-start-2 row-span-11">
+            <Drive2ndpageleft />
+          </div>
+
+          <div className="col-span-6 row-start-2 row-span-11">
+            <Drive2ndpageright />
+          </div>
         </div>
         <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          {/* <p className=" text-center text-[36px] font-[700]">
-              Here's what you need to become a driver
-            </p> */}
-          {/* <img src={img3} alt="img3" /> */}
-
-          <Drive3rdpage />
+          <div className="col-span-12 row-span-1 p-[10px] text-center text-[30px] font-semibold flex justify-center items-center">
+            Here's what you need to become a driver{" "}
+          </div>
+          <div className="col-span-12 row-span-6 justify-center">
+            <img src={img3} alt="img3" className="w-full h-[80%] " />
+            <Drive3rdpage />
+          </div>
         </div>
         <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
           {/* <p className=" text-center text-[36px] font-[700]">
@@ -43,7 +50,7 @@ function Drive() {
           <Drive4thpage />
         </div>
         <div className=" h-[180px] shrink-0 snap-start">
-          <Footer/>
+          <Footer />
         </div>
       </div>
     </div>
