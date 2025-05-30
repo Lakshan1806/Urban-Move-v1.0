@@ -1,8 +1,8 @@
 import mongoose from "mongoose";
-import CarModel from "./carModel.model.js";
+import CarModel from "./carInstance.model.js";
 
 const recentlyDeletedCar = mongoose.model(
-  "RecentlyDeletedCarModel",
+  "RecentlyDeletedCarUnit",
   CarModel.schema
 );
  

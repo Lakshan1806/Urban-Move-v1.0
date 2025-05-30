@@ -13,5 +13,5 @@ const adminController = {
   car: carManagementController,
   promotion: promoManagementController,
 };
-
+ 
 export default adminController;

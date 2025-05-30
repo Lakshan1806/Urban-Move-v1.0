@@ -7,7 +7,7 @@ const createController = {
     const { token } = req.cookies;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
-    }
+    } 
 
     try {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);

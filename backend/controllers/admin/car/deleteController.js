@@ -60,13 +60,13 @@ const deleteController = {
     }
     try {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
-      const deletedDoc = await CarModel.findByIdAndDelete(carId);
-      if (!deletedDoc) {
+      const deletedModel = await CarModel.findByIdAndDelete(carId);
+      if (!deletedModel) {
         return res.status(404).json({ error: "Car not found" });
       }
 
-      const docObject = deletedDoc.toObject();
-      await RecentlyDeletedCar.create(docObject);
+      const modelObject = deletedModel.toObject();
+      await RecentlyDeletedCar.create(modelObject);
 
       return res
         .status(200)
