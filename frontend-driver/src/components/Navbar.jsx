@@ -9,16 +9,16 @@ function NavBar() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const navigate = useNavigate();
 
-  /* useEffect(() => {
+  useEffect(() => {
     console.log(
       "Navbar detected authentication change:",
       isAuthenticated,
       driver
     );
-  }, [isAuthenticated, driver]); */
+  }, [isAuthenticated, driver]); 
 
   const navItems = [
-    { path: "/driver/home", label: "Home" },
+    { path: "/", label: "Home" },
     { path: "/earnings", label: "Earnings" },
     { path: "/banking", label: "Banking" },
     { path: "/help", label: "Help" },
