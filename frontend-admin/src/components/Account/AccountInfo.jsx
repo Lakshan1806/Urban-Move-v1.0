@@ -90,16 +90,17 @@ function AccountInfo() {
           className="hidden"
           onChange={handleFileChange}
         />
-
-        <div className="button-wrapper">
-          <button
-            type="button"
-            className="button-primary"
-            onClick={handleImageClick}
-          >
-            Upload new photo
-          </button>
-        </div>
+        {isEditable ? (
+          <div className="button-wrapper">
+            <button
+              type="button"
+              className="button-primary"
+              onClick={handleImageClick}
+            >
+              Upload new photo
+            </button>
+          </div>
+        ) : null}
       </div>
       <p>Personal info</p>
       <div className="flex flex-col">
