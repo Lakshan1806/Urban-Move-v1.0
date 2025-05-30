@@ -24,7 +24,7 @@ function AvailableCars({ onCarSelect, onAddCars }) {
   };
 
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-4 row-span-12 pt-4 px-4 pb-0 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
       {car.map((cars) => {
         console.log("data :", cars);
         console.log("data :", cars.images);
@@ -41,10 +41,10 @@ function AvailableCars({ onCarSelect, onAddCars }) {
             <div className="flex flex-col w-1/2">
               <h3 className="text-sm font-bold">{cars.make}</h3>
               <h3 className="text-xl font-bold">{cars.model}</h3>
-              <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[15px]">
+              <div className="button-wrapper">
                 <button
                   type="button"
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  className="button-primary"
                   onClick={() => onCarSelect(cars)}
                 >
                   Select
@@ -54,14 +54,17 @@ function AvailableCars({ onCarSelect, onAddCars }) {
           </div>
         );
       })}
-      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer sticky bottom-0">
-        <button
-          type="button"
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-          onClick={handleButtonClick}
-        >
-          Add Cars
-        </button>
+
+      <div className="sticky bottom-0 z-20 bg-white/30 backdrop-blur-md px-4 py-5">
+        <div className="button-wrapper">
+          <button
+            type="button"
+            className="button-primary"
+            onClick={handleButtonClick}
+          >
+            Add Cars
+          </button>
+        </div>
       </div>
     </div>
   );
