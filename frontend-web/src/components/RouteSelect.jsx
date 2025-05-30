@@ -24,7 +24,7 @@ function RouteSelect() {
   const userId = "123456"; // Replace this with actual logged-in user ID
 
   return (
-    <main className="h-full min-h-0 overflow-auto">
+    <main className="h-full min-h-0">
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/rent" element={<Rent />} />
