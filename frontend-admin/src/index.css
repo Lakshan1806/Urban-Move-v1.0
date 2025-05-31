@@ -1,6 +1,35 @@
 @import "tailwindcss";
 
-.debug-outlines * {
+@utility debug-outline {
+  & * {
     outline: 1px solid rgba(255, 0, 0, 0.5);
   }
-  
+}
+
+@utility button-wrapper {
+  background-color: #000;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  padding: 5px 22px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+@utility button-primary {
+  font-family: var(--tw-font-sans);
+  background-image: linear-gradient(to bottom, #ffd12e, #ff7c1d);
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  cursor: pointer;
+}
+
+@utility button-warning {
+  font-family: var(--tw-font-sans);
+  background-image: linear-gradient(to bottom, #ffd12e, #ff7c1d);
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  cursor: pointer;
+}
