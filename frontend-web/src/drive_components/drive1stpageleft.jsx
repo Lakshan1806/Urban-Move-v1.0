@@ -21,10 +21,10 @@ function Drive1stpageleft() {
           >
             Already have an account? Sign in
           </Link>
-          <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+          <div className="button-wrapper">
             <button
               onClick={handleClick}
-              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              className="button-primary"
             >
               Get Started
             </button>
