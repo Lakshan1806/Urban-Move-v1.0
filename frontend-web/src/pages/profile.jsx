@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import axios from "axios";
@@ -54,10 +54,23 @@ const Profile = () => {
     const previewUrl = URL.createObjectURL(file);
     setProfile((prev) => ({ ...prev, photo: previewUrl }));
   };
+  const validateSriLankanPhone = (phone) => {
+    const phoneRegex = /^(\+94|0)(7[0-9])([0-9]{7})$/;
+    return phoneRegex.test(phone);
+  };
 
   const handlePhoneVerify = async () => {
-    if (!profile?.phone || profile.phone.replace(/\D/g, "").length < 10) {
-      console.error("Please enter a valid phone number");
+    try {
+      if (!validateSriLankanPhone(formData.phone)) {
+        throw new Error(
+          "Invalid phone number format (0XXXXXXXXX or +94XXXXXXXXX)"
+        );
+      }
+      if (!profile?.phone || profile.phone.replace(/\D/g, "").length < 10) {
+        throw new Error("Please enter a valid phone number");
+      }
+    } catch {
+      alert(err.message);
       return;
     }
 

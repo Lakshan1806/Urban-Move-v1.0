@@ -126,6 +126,9 @@ userRoutes.post(
   "/driver/forgot-password",
   userController.password(driverModel, "driver").forgotPassword
 );
+userRoutes.get("/driver/me", driverAuth, (req, res) => {
+  res.json({ success: true, driver: req.driver });
+});
 
 userRoutes.post(
   "/driver/reset-password/:token",

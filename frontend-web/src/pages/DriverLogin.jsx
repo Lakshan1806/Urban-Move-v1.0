@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react";
-import {  DriverAuthContext } from "../context/driverAuthContext";
+import { DriverAuthContext } from "../context/driverAuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import imgd from "../signup_photos/signindriver.svg";
 import imgl from "../signup_photos/linervector.svg";
@@ -13,7 +13,6 @@ import GoogleLoginButton from "../components/GoogleLogin";
 const DriverLogin = () => {
   const { login } = useContext(DriverAuthContext);
   const location = useLocation();
-  const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     username: "",
@@ -105,8 +104,8 @@ const DriverLogin = () => {
         const response = await login.verifyOtp(formData.otp);
         if (response.success) {
           resetPhoneTimer();
-         window.open("http://localhost:5174/")
         }
+        window.location.href = "http://localhost:5174/";
       }
     } catch (err) {
       const errorMsg =
@@ -132,12 +131,12 @@ const DriverLogin = () => {
         <img
           src={imgd}
           alt="Signup Background"
-          className="absolute z-0 w-full h-auto"
+          className="absolute z-0 w-full mx-auto h-dvh pl-3"
         />
       )}
 
       <div className="flex flex-col px-0.5 z-10 pt-[130px]">
-        <form onSubmit={handleSubmit} className="w-[340px]">
+        <form onSubmit={handleSubmit} className="w-[300px]">
           {step === 1 && (
             <>
               <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
@@ -178,7 +177,7 @@ const DriverLogin = () => {
                 <Link
                   to="/forgot-password"
                   className="text-sm hover:underline flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text"
-                  >
+                >
                   Forgot password?
                 </Link>
               </div>

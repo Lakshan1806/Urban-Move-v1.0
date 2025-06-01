@@ -5,12 +5,10 @@ import {
 } from "../../utils/sessionHelpers.js";
 import { handleErrors, validationError } from "../../utils/errorHandler.js";
 import otpService from "../../services/otpService.js";
-//import userService from "../../services/userService.js";
 import generateJwtToken from "../../utils/generateJWTToken.js";
 import nodemailer from "../../utils/nodemailer.js";
-//import userModel from "../../models/usermodel.js";
+import userModel from "../../models/usermodel.js";
 import bcrypt from "bcrypt";
-//import driverModel from "../../models/driver.models.js";
 
 const SESSION_REGISTRATION_KEY = "registration";
 const SESSION_LOGIN_KEY = "loginProcess";
@@ -185,7 +183,6 @@ const userAuthController = {
           await saveToSession(req.session, SESSION_REGISTRATION_KEY, {
             ...registration,
             emailVerified: true,
-            
           });
 
           return res.json({
@@ -264,7 +261,6 @@ const userAuthController = {
           documentsUploaded: true,
         });
 
-        
         const driver = await Model.create({
           username: registration.username,
           password: registration.password,
@@ -280,12 +276,19 @@ const userAuthController = {
         res.cookie("token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
+          sameSite: "Lax",
           maxAge: 3600000,
           path: "/",
         });
 
         await clearFromSession(req.session, SESSION_REGISTRATION_KEY);
+        nodemailer
+          .sendEmail(
+            user.email,
+            "Welcome to Our Service",
+            "Your account has been successfully created!"
+          )
+          .catch((err) => console.error("Error sending welcome email:", err));
 
         return res.json({
           success: true,
@@ -430,20 +433,20 @@ const userAuthController = {
       }
     },
     isAuthenticated: async (req, res) => {
-    try {
-      if (req.body.userId) {
-        const user = await Model
-          .findById(req.body.userId)
-          .select("-password -__v");
-        return res.json({ success: true, user });
+      try {
+        if (req.body.userId) {
+          const user = await Model.findById(req.body.userId).select(
+            "-password -__v"
+          );
+          return res.json({ success: true, user });
+        }
+        return validationError(res, "Not authenticated", 401);
+      } catch (error) {
+        handleErrors(res, error);
       }
-      return validationError(res, "Not authenticated", 401);
-    } catch (error) {
-      handleErrors(res, error);
-    }
-  },
+    },
   }),
-  login:(Model, role, SESSION_REGISTRATION_KEY) => ( {
+  login: (Model, role, SESSION_REGISTRATION_KEY) => ({
     verifyCredentials: async (req, res) => {
       try {
         const { username, password } = req.body;
@@ -455,7 +458,7 @@ const userAuthController = {
         const user = await Model.findOne({ username });
 
         if (!user) {
-          return validationError(res, '${role} not found');
+          return validationError(res, "${role} not found");
         }
 
         if (user.authMethod === "google") {
@@ -470,9 +473,12 @@ const userAuthController = {
             "Account terminated - please contact support @urbanmove.lk"
           );
         }
-        
-        if(user.driverVerified ==="rejected"){
-          return validationError( res, "Account verification rejected - please contact support @urbanmove.lk");
+
+        if (user.driverVerified === "rejected") {
+          return validationError(
+            res,
+            "Account verification rejected - please contact support @urbanmove.lk"
+          );
         }
 
         const isMatch = bcrypt.compare(password, user.password);
@@ -521,7 +527,7 @@ const userAuthController = {
         const user = await Model.findOne({ _id: loginData.userId });
         if (!user) {
           await clearFromSession(req.session, SESSION_LOGIN_KEY);
-          return validationError(res, '${role} not found');
+          return validationError(res, "${role} not found");
         }
 
         if (user.phone !== phoneNumber) {
@@ -580,7 +586,7 @@ const userAuthController = {
         res.cookie("token", token, {
           httpOnly: true,
           secure: process.env.NODE_ENV === "production",
-          sameSite: "strict",
+          sameSite: "Lax",
           maxAge: 3600000, // 1 hour
           path: "/",
         });
@@ -686,8 +692,7 @@ const userAuthController = {
     }
   },
 
-  
-  verifyGooglePhone:(Model, role) => ( async (req, res) => {
+  verifyGooglePhone: async (req, res) => {
     try {
       const tempUser = getFromSession(req.session, "tempUser");
       if (!tempUser?.googleId) {
@@ -706,7 +711,7 @@ const userAuthController = {
           return validationError(res, "Invalid phone number format");
         }
 
-        if (await Model.compare("phone", phoneNumber)) {
+        if (await userModel.compare("phone", phoneNumber)) {
           return validationError(res, "Phone number already exists");
         }
 
@@ -738,7 +743,7 @@ const userAuthController = {
           return validationError(res, "Invalid or expired OTP");
         }
 
-        const updatedUser = await Model.findOneAndUpdate(
+        const updatedUser = await userModel.findOneAndUpdate(
           { googleId: tempUser.googleId },
           {
             phone: tempUser.phoneNumber,
@@ -747,7 +752,11 @@ const userAuthController = {
           { new: true }
         );
 
-        const token = generateJwtToken(updatedUser._id, updatedUser.username, role);
+        const token = generateJwtToken(
+          updatedUser._id,
+          updatedUser.username,
+          role
+        );
 
         res.cookie("token", token, {
           httpOnly: true,
@@ -775,6 +784,6 @@ const userAuthController = {
     } catch (error) {
       handleErrors(res, error);
     }
-  }),
+  },
 };
 export default userAuthController;

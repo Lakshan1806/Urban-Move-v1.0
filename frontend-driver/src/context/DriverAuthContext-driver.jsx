@@ -1,28 +1,26 @@
-  import React, {
-    createContext,
-    useState,
-    useCallback,
-    useContext,
-    useEffect
-  } from "react";
-  import { useNavigate } from "react-router-dom";
-  import axios from "axios";
+import React, {
+  createContext,
+  useState,
+  useCallback,
+  useContext,
+  useEffect,
+} from "react";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
 
-  const DriverAuthContext = createContext();
-  
-  const DriverAuthProvider = ({ children }) => {
+const DriverAuthContext = createContext();
+
+const DriverAuthProvider = ({ children }) => {
   const [driver, setDriver] = useState(null);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
- 
-  const navigate = useNavigate();
 
-  
+  const navigate = useNavigate();
 
   const checkAuth = useCallback(async () => {
     try {
-      const response = await axios.get("/auth/is-dauth");
+      const response = await axios.get("/auth/driver/me");
 
-      console.log("Auth check response:", response.data);
+      console.log(" AuthContext: driver authenticated", response.data);
 
       if (response.data.success) {
         setDriver(response.data.driver);
@@ -44,45 +42,43 @@
     }
   }, [navigate]);
 
-    useEffect(() =>{
+  useEffect(() => {
     checkAuth();
-  },[checkAuth]);
+  }, [checkAuth]);
 
-    const logout = async () => {
+  const logout = async () => {
     try {
       await axios.post("/auth/logout");
       setDriver(null);
       setIsAuthenticated(false);
-      window.location.href = "http://localhost:5173/signin"; 
+      window.location.href = "http://localhost:5173/signin";
     } catch (error) {
       console.error("Logout failed:", error);
       throw error;
     }
   };
 
-    const getProfile = useCallback(async () => {
-      try {
-        const response = await axios.get("/auth/driver/profile");
-        if (response.data) {
-          setDriver(response.data);
-          setIsAuthenticated(true);
-          return response.data;
-        }
-      } catch (error) {
-        setIsAuthenticated(false);
-        console.error("Failed to fetch profile:", error);
-        throw error;
+  const getProfile = useCallback(async () => {
+    try {
+      const response = await axios.get("/auth/driver/profile");
+      if (response.data) {
+        setDriver(response.data);
+        setIsAuthenticated(true);
+        return response.data;
       }
-    }, []);
-  
+    } catch (error) {
+      setIsAuthenticated(false);
+      console.error("Failed to fetch profile:", error);
+      throw error;
+    }
+  }, []);
 
-
-   const value = {
+  const value = {
     driver,
     isAuthenticated,
     checkAuth,
     logout,
-    getProfile
+    getProfile,
   };
 
   return (

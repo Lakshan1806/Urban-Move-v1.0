@@ -1,4 +1,3 @@
-//import { useState } from "react";
 import Navbardrive from "../drive_components/Navbardrive";
 import Drive1stpageleft from "../drive_components/drive1stpageleft";
 import img3 from "../drive_photos/img3.svg";
@@ -33,21 +32,34 @@ function Drive() {
           </div>
         </div>
         <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          <div className="col-span-12 row-span-1 p-[10px] text-center text-[30px] font-semibold flex justify-center items-center">
-            Here's what you need to become a driver{" "}
-          </div>
-          <div className="col-span-12 row-span-6 justify-center">
-            <img src={img3} alt="img3" className="w-full h-[80%] " />
+          <h1 className=" col-span-12 row-span-1 text-3xl font-semibold text-center">
+            Here's what you need to become a driver
+          </h1>
+
+          <img
+            src={img3}
+            alt="img3"
+            className="col-span-12  row-span-7 w-full h-full object-cover"
+          />
+
+          <div className="col-span-12 row-span-5 w-full h-full ">
             <Drive3rdpage />
           </div>
         </div>
         <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          {/* <p className=" text-center text-[36px] font-[700]">
-              Here's what you need to become a driver
-            </p> */}
-          {/* <img src={img3} alt="img3" /> */}
+          <h1 className=" col-span-12 row-span-1 text-3xl font-semibold text-center">
+            Safty on the road
+          </h1>
 
-          <Drive4thpage />
+          <img
+            src={img4}
+            alt="img4"
+            className="col-span-12  row-span-7 w-full h-full object-cover"
+          />
+
+          <div className="col-span-12 row-span-5 w-full h-full ">
+            <Drive4thpage />
+          </div>
         </div>
         <div className=" h-[180px] shrink-0 snap-start">
           <Footer />

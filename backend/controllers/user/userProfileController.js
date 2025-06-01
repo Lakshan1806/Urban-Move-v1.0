@@ -9,7 +9,11 @@ dotenv.config();
 const userProfileController = (Model, role) => ({
   getUserProfile: async (req, res) => {
     try {
-      const user = await Model.findById(req.body.userId).select({
+      const id = req.body.driverId || req.body.userId;
+      if (!id) {
+        return res.status(400).json({ message: `${role} ID is required` });
+      }
+      const user = await Model.findById(id).select({
         fullname: 1,
         username: 1,
         email: 1,
@@ -90,7 +94,7 @@ const userProfileController = (Model, role) => ({
       const user = await Model.findById(userId);
       if (!user) return res.status(404).json({ message: "User not found" });
 
-      if (role === "user" && Model === "userModel") {
+      if (role === "user") {
         const archivedUser = new ArchivedUser({
           originalId: user._id,
           ...user.toObject(),
