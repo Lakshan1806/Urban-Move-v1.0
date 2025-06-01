@@ -13,7 +13,7 @@ import { FaCheck, FaFileUpload } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 
 const DriverRegister = () => {
-    const navigate = useNavigate(); 
+  const navigate = useNavigate();
 
   const { register, registrationStep, setRegistrationStep } =
     useContext(DriverAuthContext);
@@ -49,10 +49,10 @@ const DriverRegister = () => {
         setError("Please upload all required documents");
         return;
       }
-     const result= await register.uploadDocuments(files);
-       if (result.success) {
-      setRegistrationStep(7); 
-    }
+      const result = await register.uploadDocuments(files);
+      if (result.success) {
+        setRegistrationStep(7);
+      }
     } catch (err) {
       setError(err.message || "Document upload failed");
     } finally {
@@ -74,53 +74,52 @@ const DriverRegister = () => {
     reset: resetEmailTimer,
   } = useCountdown(60);
 
-   useEffect(() => {
+  useEffect(() => {
     if (registrationStep === 8) {
       const timeout = setTimeout(() => {
-      window.location.href = "http://localhost:5174/"; 
+        window.location.href = "http://localhost:5174/";
       }, 3000);
 
-      return () => clearTimeout(timeout); 
+      return () => clearTimeout(timeout);
     }
   }, [registrationStep, navigate]);
 
   useEffect(() => {
-  const handleBeforeUnload = (e) => {
-    if (registrationStep < 7) {
-      register.clearRegistrationSession();
-    }
-  };
+    const handleBeforeUnload = (e) => {
+      if (registrationStep < 7) {
+        register.clearRegistrationSession();
+      }
+    };
 
     window.addEventListener("beforeunload", handleBeforeUnload);
 
     return () => {
       window.removeEventListener("beforeunload", handleBeforeUnload);
     };
-  }, [register,registrationStep]);
+  }, [register, registrationStep]);
 
-useEffect(() => {
-  const checkProgress = async () => {
-    try {
-      const progress = await register.getProgress();
+  useEffect(() => {
+    const checkProgress = async () => {
+      try {
+        const progress = await register.getProgress();
 
-      if (progress.status !== "new") {
-        const step = getStepNumber(progress.nextStep);
-        setRegistrationStep(step);
-        setFormData((prev) => ({
-          ...prev,
-          username: progress.username || "",
-          phoneNumber: progress.phone || "",
-          email: progress.email || "",
-        }));
+        if (progress.status !== "new") {
+          const step = getStepNumber(progress.nextStep);
+          setRegistrationStep(step);
+          setFormData((prev) => ({
+            ...prev,
+            username: progress.username || "",
+            phoneNumber: progress.phone || "",
+            email: progress.email || "",
+          }));
+        }
+      } catch (error) {
+        console.error("Progress check failed:", error);
       }
-    } catch (error) {
-      console.error("Progress check failed:", error);
-    }
-  };
+    };
 
-  checkProgress(); 
-}, []); 
-
+    checkProgress();
+  }, []);
 
   const handleResendPhoneOtp = async () => {
     if (isPhoneActive) return;
@@ -195,12 +194,12 @@ useEffect(() => {
         <img
           src={imgd}
           alt="Signup Background"
-          className="absolute z-0 w-full mx-auto h-dvh"
+          className="absolute z-0 w-full mx-auto h-dvh pl-3"
         />
       )}
 
       <div className="flex flex-col px-0.5 z-10 pt-[130px]">
-        <form onSubmit={handleSubmit} className="w-[340px]">
+        <form onSubmit={handleSubmit} className="w-[300px]">
           {registrationStep === 1 && (
             <>
               <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
