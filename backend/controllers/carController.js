@@ -41,6 +41,8 @@ export const bookCar = async (req, res) => {
 
   try {
     const carInstance = await CarInstance.findById(carInstanceId);
+    console.log("carInstanceId:", carInstanceId);
+
     if (!carInstance || !carInstance.isAvailable) {
       return res.status(400).json({ message: "Car is not available" });
     }
@@ -55,7 +57,7 @@ export const bookCar = async (req, res) => {
       dropoffLocation,
       pickupTime,
       dropoffTime,
-      userId,
+      userId:userId,
     });
 
     await booking.save();

@@ -1,4 +1,3 @@
-// backend/models/carBookings.model.js
 import mongoose from "mongoose";
 
 const bookingSchema = new mongoose.Schema({
