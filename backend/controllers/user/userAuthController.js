@@ -284,7 +284,7 @@ const userAuthController = {
         await clearFromSession(req.session, SESSION_REGISTRATION_KEY);
         nodemailer
           .sendEmail(
-            user.email,
+            driver.email,
             "Welcome to Our Service",
             "Your account has been successfully created!"
           )
@@ -395,43 +395,7 @@ const userAuthController = {
       }
       return res.json({ status: "complete", ...response });
     },
-    registerAsDriverController: async (req, res) => {
-      try {
-        const userId = req.user._id;
 
-        // Check if user already has a driver profile
-        const existingDriver = await Model.findOne({ user: userId });
-        if (existingDriver) {
-          return res
-            .status(400)
-            .json({ message: "You have already registered as a driver." });
-        }
-
-        if (!req.files || req.files.length === 0) {
-          return validationError(res, "No documents uploaded");
-        }
-
-        const documentPaths = req.files.map((file) =>
-          file.path.replace(/\\/g, "/").replace("backend/uploads", "/uploads")
-        );
-
-        const newDriver = new Model({
-          user: userId,
-          driverDocuments: documentPaths,
-          driverVerified: "pending",
-          isAccountVerified: true,
-        });
-
-        await newDriver.save();
-
-        return res
-          .status(201)
-          .json({ message: "Driver profile submitted for approval." });
-      } catch (err) {
-        console.error("Error in registerAsDriver:", err);
-        return res.status(500).json({ message: "Something went wrong." });
-      }
-    },
     isAuthenticated: async (req, res) => {
       try {
         if (req.body.userId) {
