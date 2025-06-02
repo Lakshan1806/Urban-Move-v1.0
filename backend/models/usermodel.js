@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema(
     phone: {
       type: String,
       unique: true,
-      sparse:true,
+      sparse: true,
     },
     email: {
       type: String,
@@ -40,6 +40,10 @@ const userSchema = new mongoose.Schema(
     resetPasswordExpiresAt: Date,
     verificationToken: String,
     verificationTokenExpiresAt: Date,
+    role: {
+      type: String,
+      default: "user",
+    }
   },
   { timestamps: true }
 );

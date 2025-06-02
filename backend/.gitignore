@@ -1,6 +1,10 @@
 uploads/admin/*
 uploads/cars/*
 uploads/user/*
+uploads/driver/*
+uploads/driverDocuments/*
 !uploads/admin/.gitkeep
 !uploads/cars/.gitkeep
 !uploads/user/.gitkeep
+!uploads/driver/.gitkeep
+!uploads/driverDocuments/.gitkeep
