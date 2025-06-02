@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext"; // <-- use auth context
+import { useAuth } from "../context/AuthContext"; 
 import myImage from "../assets/rent.image.1.png";
 import myImage2 from "../assets/rent.image.2.png";
 import myImage3 from "../assets/rent.image.3.png";
@@ -9,12 +9,12 @@ import myImage4 from "../assets/rent.image.4.png";
 import RentNowForm from "../components/Rent/RentNowForm";
 
 function Rent() {
-  const { isAuthenticated } = useAuth(); // use context auth state
+  const { isAuthenticated } = useAuth(); 
   const [showForm, setShowForm] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Open form automatically if redirected with ?showForm=true
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     if (params.get("showForm") === "true" && isAuthenticated) {
@@ -25,11 +25,11 @@ function Rent() {
 
   const handleShowForm = () => {
     if (!isAuthenticated) {
-      // Redirect to signin with redirect path
+      
       navigate(`/signin?redirect=/rent?showForm=true`);
     } else {
       setShowForm(true);
-      document.body.style.overflow = "hidden";
+      document.body.style.overflow = "auto";
     }
   };
 
@@ -152,7 +152,7 @@ function Slideshow() {
   if (slideshowPath.length === 0) return <div>Loading slideshow...</div>;
 
   return (
-    <div className="w-full h-64 flex justify-center items-center bg-gray-200 rounded-xl overflow-hidden shadow-md mt-12 ">
+    <div className="w-full h-full flex justify-center items-center bg-gray-200 rounded-xl overflow-hidden shadow-md mt-12 ">
       <img
         src={slideshowPath[current]}
         alt="slideshow"
