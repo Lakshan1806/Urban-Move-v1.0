@@ -86,6 +86,7 @@ console.log("Current Working Directory:", process.cwd());
 app.use("/api/admin", adminRoutes);
 app.use("/api/rideRoute",RideRoute);
 app.use('/api/schedule', scheduleRoutes);
+//app.use("/api/location",locationRoutes);
 
 async function startServer() {
   await connectDB();

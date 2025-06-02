@@ -5,6 +5,7 @@ import Earnings from "./Earnings";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
+import DriverRide from "./DriverRide";
 
 const MapPinIcon = () => (
   <svg
@@ -1067,6 +1068,8 @@ function Ride() {
           </div>
         </div>
       </div>
+
+      <DriverRide />
     </div>
   );
 }

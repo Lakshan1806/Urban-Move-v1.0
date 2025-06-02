@@ -1,25 +1,27 @@
 //live tracing implements
+import express from "express";
+const rideRoutes = express.Router();
+
 import { 
   createRide,
   startTracking, 
   getRideStatus, 
   updateDriverLocation,
   completeRide 
-} from '../controllers/rideController.js';
+} from '../controllers/rideCountroller.js';
 import userAuth from '../middlewares/userAuth.js';
 
 // Create ride endpoint
-router.post('/', userAuth, createRide);
+rideRoutes.post('/', userAuth, createRide);
 
 // Corrected endpoints with proper base path
-router.post('/api/rides/start-tracking', userAuth, startTracking);
-router.get('/api/rides/status/:rideId', userAuth, getRideStatus);
-router.post('/api/rides/update-location', userAuth, updateDriverLocation);
-router.post('/api/rides/complete', userAuth, completeRide);
+rideRoutes.post('/start-tracking', userAuth, startTracking);
+rideRoutes.get('/status/:rideId', userAuth, getRideStatus);
+rideRoutes.post('/update-location', userAuth, updateDriverLocation);
+rideRoutes.post('/complete', userAuth, completeRide);
 
-// In your routes file
-router.post('/schedule', ridesController.scheduleRide);
-router.get('/scheduled', ridesController.getScheduledRides);
-router.delete('/scheduled/:id', ridesController.cancelScheduledRide);
 
-export default router;
+
+
+
+export default rideRoutes;
