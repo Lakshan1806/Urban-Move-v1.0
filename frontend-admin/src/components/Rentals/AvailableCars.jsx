@@ -24,7 +24,19 @@ function AvailableCars({ onCarSelect, onAddCars }) {
   };
 
   return (
-    <div className="col-span-4 row-span-12 pt-4 px-4 pb-0 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-4 row-span-12 px-4 pb-0 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+      <div className="sticky top-0 w-full z-20 bg-white/30 backdrop-blur-md px-4 py-5">
+        <div className="button-wrapper">
+          <button
+            type="button"
+            className="button-primary"
+            onClick={handleButtonClick}
+          >
+            Add Cars
+          </button>
+        </div>
+      </div>
+
       {car.map((cars) => {
         console.log("data :", cars);
         console.log("data :", cars.images);
@@ -54,18 +66,6 @@ function AvailableCars({ onCarSelect, onAddCars }) {
           </div>
         );
       })}
-
-      <div className="sticky bottom-0 z-20 bg-white/30 backdrop-blur-md px-4 py-5">
-        <div className="button-wrapper">
-          <button
-            type="button"
-            className="button-primary"
-            onClick={handleButtonClick}
-          >
-            Add Cars
-          </button>
-        </div>
-      </div>
     </div>
   );
 }
