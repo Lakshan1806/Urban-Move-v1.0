@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 import { useState, useEffect, useRef } from "react";
 
 const OtpInput = ({ length = 4, onOtpSubmit = () => {} }) => {
@@ -12,19 +11,17 @@ const OtpInput = ({ length = 4, onOtpSubmit = () => {} }) => {
   }, []);
 
   const handleChange = (index, e) => {
-    const value = e.target.value.replace(/\D/g, ""); // Only allow digits
+    const value = e.target.value.replace(/\D/g, "");
 
-    if (value.length > 1) return; // Prevent multiple digit input
+    if (value.length > 1) return;
 
     const newOtp = [...otp];
     newOtp[index] = value;
     setOtp(newOtp);
 
-    // Submit OTP when all fields are filled
     const combinedOtp = newOtp.join("");
     if (combinedOtp.length === length) onOtpSubmit(combinedOtp);
 
-    // Move to next input if current field is filled
     if (value && index < length - 1) {
       inputRefs.current[index + 1]?.focus();
     }
@@ -32,7 +29,6 @@ const OtpInput = ({ length = 4, onOtpSubmit = () => {} }) => {
 
   const handleKeyDown = (index, e) => {
     if (e.key === "Backspace" && !otp[index] && index > 0) {
-      // Move focus to the previous input field on backspace
       inputRefs.current[index - 1]?.focus();
     }
   };

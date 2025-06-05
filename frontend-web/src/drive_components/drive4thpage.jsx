@@ -1,12 +1,12 @@
 function Drive4thpage() {
-  const styles3 = "text-center text-[32px] font-[700] p-2  ";
-  const styles4 = " text-left text-[20px] font-[500] ";
   return (
-    <div className="grid grid-cols-3 gap-[100px] items-start">
-      <div>
-        <p className={styles3}>Protection on every trip</p>
-        <div className={styles4}>
-          <ul className="list-disc list-outside ">
+    <div className="justify-center items-center col-span-12 row-span-6">
+      <div className="col-span-12 row-start-5 row-span-7 grid grid-cols-3 gap-8 pt-6 ">
+        <div className="flex flex-col">
+          <h3 className="text-[24px] font-semibold mb-4 text-center">
+            Protection on every trip
+          </h3>
+          <ul className="space-y-3 list-disc list-outside font-medium px-6">
             <li>
               For every trip you complete using the Driver app, we provide auto
               insurance coverage to ensure the safety and protection of both you
@@ -14,11 +14,11 @@ function Drive4thpage() {
             </li>
           </ul>
         </div>
-      </div>
-      <div>
-        <p className={styles3}>Help if you need it</p>
-        <div className={styles4}>
-          <ul className="list-disc list-outside">
+        <div className="flex flex-col">
+          <h3 className="text-[24px] font-semibold mb-4 text-center ">
+            Help if you need it
+          </h3>
+          <ul className="space-y-3  list-disc list-outside font-medium px-6">
             <li>
               The Emergency Button connects you directly to 119, allowing you to
               get help quickly.
@@ -29,11 +29,11 @@ function Drive4thpage() {
             </li>
           </ul>
         </div>
-      </div>
-      <div>
-        <p className={styles3}> Community Guidelines</p>
-        <div className={styles4}>
-          <ul className="list-disc list-outside">
+        <div className="flex flex-col">
+          <h3 className="text-[24px] font-semibold mb-4 text-center ">
+            Community Guidelines
+          </h3>
+          <ul className=" space-y-3 list-disc list-outside px-6 font-medium">
             <li>
               Our standards are designed to ensure safe connections and foster
               positive interactions for everyone.
