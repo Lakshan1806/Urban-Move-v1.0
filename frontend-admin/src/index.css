@@ -2,7 +2,7 @@
 @import "primereact/resources/themes/saga-blue/theme.css" layer(prime);
 @import "primeicons/primeicons.css" layer(prime);
 
-@utility debug-outline {
+@utility debug-outlines {
   & * {
     outline: 1px solid rgba(255, 0, 0, 0.5);
   }

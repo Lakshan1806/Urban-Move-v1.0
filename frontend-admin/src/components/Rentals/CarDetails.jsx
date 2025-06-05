@@ -65,6 +65,7 @@ function CarDetails({ car, onUpdate }) {
         const response = await axios.get("/admin/get_all_car_units", {
           params: { id: car._id },
         });
+        console.log("units:", response);
         if (!isEditableUnit) {
           setUnit(response.data);
         }

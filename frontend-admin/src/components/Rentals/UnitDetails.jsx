@@ -9,13 +9,13 @@ function UnitDetails({ unit, onEdit }) {
   const [isEditableUnit, setIsEditableUnit] = useState(false);
 
   useEffect(() => {
-    if (unit && isEditableUnit) {
+    if (unit) {
       setVin(unit.vin);
       setLicensePlate(unit.licensePlate);
       setColor(unit.color);
       setLocation(unit.location);
     }
-  }, [unit, isEditableUnit]);
+  }, [unit]);
 
   const onEditUnit = () => {
     setIsEditableUnit(true);
