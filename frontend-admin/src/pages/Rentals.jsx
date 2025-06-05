@@ -3,6 +3,7 @@ import AvailableCars from "../components/Rentals/AvailableCars";
 import CarDetails from "../components/Rentals/CarDetails";
 import AddCars from "../components/Rentals/AddCars";
 import RecentlyDeletedCars from "../components/Rentals/RecentlyDeletedCars";
+import RecentlyDeletedUnits from "../components/Rentals/RecentlyDeletedUnits";
 import CurrentActivity from "../components/Rentals/CurrentActivity";
 
 function Rentals() {
@@ -31,9 +32,9 @@ function Rentals() {
           <CarDetails car={carDetails} onUpdate={setCarDetails} />
         </div>
         <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
-          <RecentlyDeletedCars />
           <CurrentActivity />
           <RecentlyDeletedCars />
+          <RecentlyDeletedUnits />
         </div>
       </div>
     </div>
