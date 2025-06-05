@@ -1,6 +1,8 @@
 import jwt from "jsonwebtoken";
 import CarModel from "../../../models/carModel.model.js";
+import CarInstance from "../../../models/carInstance.model.js";
 import RecentlyDeletedCar from "../../../models/recentlyDeletedCar.model.js";
+import RecentlyDeletedUnit from "../../../models/recentlyDeletedUnit.model.js";
 
 const deleteController = {
   deleteCarImage: async (req, res) => {
@@ -61,6 +63,7 @@ const deleteController = {
     try {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
       const deletedModel = await CarModel.findByIdAndDelete(carId);
+      const deletedUnit = await CarInstance.find({ carID: carId });
       if (!deletedModel) {
         return res.status(404).json({ error: "Car not found" });
       }
@@ -68,10 +71,73 @@ const deleteController = {
       const modelObject = deletedModel.toObject();
       await RecentlyDeletedCar.create(modelObject);
 
+      const unitArray = deletedUnit.map((unitObject) => unitObject.toObject());
+      await RecentlyDeletedUnit.insertMany(unitArray);
+
+      await CarInstance.deleteMany({ carID: carId });
+
       return res
         .status(200)
         .json({ message: "Car deleted and moved to recently_deleted" });
     } catch (error) {}
+  },
+
+  restoreCarModel: async (req, res) => {
+    const { token } = req.cookies;
+    const { id } = req.query;
+
+    if (token) {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
+        if (err) {
+          return res.status(403).json({ error: "Token verification failed" });
+        }
+      });
+    }
+    const deletedCar = await RecentlyDeletedCar.findById(id);
+    if (!deletedCar) {
+      return res.status(404).json({ error: "No such recently‐deleted car" });
+    }
+
+    const dataToRestore = deletedCar.toObject();
+    const recreated = await CarModel.create(dataToRestore);
+    await RecentlyDeletedCar.findByIdAndDelete(id);
+
+    return res
+      .status(200)
+      .json({ message: "Restored successfully", car: recreated });
+  },
+
+  restoreCarUnit: async (req, res) => {
+    const { token } = req.cookies;
+    const { unitID, carID } = req.query;
+    console.log(carID);
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+    try {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      const car = await CarModel.findById(carID);
+      console.log(car);
+      if (car) {
+        const deletedUnit = await RecentlyDeletedUnit.findById(unitID);
+        if (!deletedUnit) {
+          return res
+            .status(404)
+            .json({ error: "No such recently‐deleted car" });
+        }
+
+        const dataToRestore = deletedUnit.toObject();
+        const recreated = await CarInstance.create(dataToRestore);
+        await RecentlyDeletedUnit.findByIdAndDelete(unitID);
+        return res
+          .status(200)
+          .json({ message: "Restored successfully", car: recreated });
+      } else {
+        return res.status(401).json({ message: "Car model not found" });
+      }
+    } catch (error) {
+      console.log(error);
+    }
   },
 };
 
