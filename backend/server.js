@@ -9,6 +9,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import session from "express-session";
 import userRoutes from "./routes/userRoute.js";
+import RideRoute from "./routes/rideRoutes.js";
+import scheduleRoutes from "./routes/scheduleRoutes.js"
 import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
@@ -26,7 +28,7 @@ const app = express();
 app.use(
   cors({
     credentials: true,
-    origin: ["http://localhost:5173", "http://localhost:5174"]
+    origin: ["http://localhost:5173", "http://localhost:5174"],
   })
 );
 
@@ -70,7 +72,6 @@ const __dirname = path.dirname(__filename);
 app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 console.log(path.join(__dirname, "/uploads"));
 
-
 app.use(express.json());
 
 app.use(cookieParser());
@@ -84,17 +85,16 @@ console.log("Current Working Directory:", process.cwd());
 
 //app.use("/api/auth", userRoutes);
 app.use("/api/admin", adminRoutes);
-app.use("/api/rideRoute",RideRoute);
-app.use('/api/schedule', scheduleRoutes);
+app.use("/api/rideRoute", RideRoute);
+app.use("/api/schedule", scheduleRoutes);
 //app.use("/api/location",locationRoutes);
 
 async function startServer() {
   await connectDB();
   await checkAndCreateAdmin();
-  
-  httpServer.listen(5000, () => {
+
+  app.listen(5000, () => {
     console.log("Server started at http://localhost:5000");
-    //console.log("WebSocket server ready for communication");
   });
 }
 
