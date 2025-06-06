@@ -38,6 +38,7 @@
     "express": "^4.21.2",
     "express-session": "^1.18.1",
     "googleapis": "^148.0.0",
+    "http": "^0.0.1-security",
     "jsonwebtoken": "^9.0.2",
     "mongoose": "^8.14.0",
     "multer": "^1.4.5-lts.1",

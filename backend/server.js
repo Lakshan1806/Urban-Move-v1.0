@@ -1,5 +1,5 @@
 import express from "express";
-import dotenv, { config } from "dotenv";
+import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import cors from "cors";
 import adminRoutes from "./routes/adminRoute.js";
@@ -12,7 +12,6 @@ import userRoutes from "./routes/userRoute.js";
 import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
-import fs from "fs";
 
 const PORT = 5000;
 dotenv.config();
@@ -85,12 +84,17 @@ console.log("Current Working Directory:", process.cwd());
 
 //app.use("/api/auth", userRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/rideRoute",RideRoute);
+app.use('/api/schedule', scheduleRoutes);
+//app.use("/api/location",locationRoutes);
 
 async function startServer() {
   await connectDB();
   await checkAndCreateAdmin();
-  app.listen(5000, () => {
+  
+  httpServer.listen(5000, () => {
     console.log("Server started at http://localhost:5000");
+    //console.log("WebSocket server ready for communication");
   });
 }
 
