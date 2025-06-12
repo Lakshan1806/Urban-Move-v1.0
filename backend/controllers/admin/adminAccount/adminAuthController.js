@@ -14,7 +14,7 @@ const adminAuthController = {
       const admin = await Admin.findOne({ username }).select({
         password: 1,
         username: 1,
-        role: 1,
+        role: 1, 
       });
       if (!admin) {
         return res.status(404).json({ message: "Admin not found" });
