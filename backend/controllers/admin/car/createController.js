@@ -7,7 +7,7 @@ const createController = {
     const { token } = req.cookies;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
-    } 
+    }
 
     try {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
@@ -15,9 +15,13 @@ const createController = {
       console.log(req.body);
       const filePaths = [];
       let keyImage = null;
+      let logo = null;
       if (req.files) {
         if (req.files.keyImage) {
           keyImage = req.files.keyImage[0].path;
+        }
+        if (req.files.logo) {
+          keyImage = req.files.logo[0].path;
         }
         if (req.files.photos && req.files.photos.length > 0) {
           req.files.photos.forEach((file) => filePaths.push(file.path));
@@ -29,6 +33,7 @@ const createController = {
         ...req.body,
         images: filePaths,
         keyImage,
+        logo,
       });
       await newCarModel.save();
 
