@@ -110,25 +110,26 @@ const deleteController = {
   restoreCarUnit: async (req, res) => {
     const { token } = req.cookies;
     const { unitID, carID } = req.query;
-    console.log(carID);
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
     }
     try {
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
       const car = await CarModel.findById(carID);
-      console.log(car);
       if (car) {
         const deletedUnit = await RecentlyDeletedUnit.findById(unitID);
         if (!deletedUnit) {
           return res
             .status(404)
-            .json({ error: "No such recently‐deleted car" });
+            .json({ error: "No such recently‐deleted unit" });
+        }
+        const dataToRestore = deletedUnit.toObject();
+        const unit = await CarInstance.findById(unitID);
+        if (!unit) {
+          const recreated = await CarInstance.create(dataToRestore);
+          await RecentlyDeletedUnit.findByIdAndDelete(unitID);
         }
 
-        const dataToRestore = deletedUnit.toObject();
-        const recreated = await CarInstance.create(dataToRestore);
-        await RecentlyDeletedUnit.findByIdAndDelete(unitID);
         return res
           .status(200)
           .json({ message: "Restored successfully", car: recreated });
