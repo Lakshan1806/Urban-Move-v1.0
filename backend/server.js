@@ -14,6 +14,7 @@ import scheduleRoutes from "./routes/scheduleRoutes.js"
 import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
+import carRoutes from "./routes/carRoutes.js"
 
 const PORT = 5000;
 dotenv.config();
