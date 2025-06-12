@@ -29,6 +29,11 @@ const getController = {
           .replace(/\\/g, "/")
           .replace("backend/uploads", "/uploads");
       }
+      if (car.logo) {
+        car.logo = car.logo
+          .replace(/\\/g, "/")
+          .replace("backend/uploads", "/uploads");
+      }
     });
     res.json(cars);
   },
