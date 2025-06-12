@@ -63,6 +63,7 @@ adminRoutes.patch(
     { name: "keyImage", maxCount: 1 },
     { name: "image", maxCount: 1 },
     { name: "newImage", maxCount: 1 },
+    { name: "logo", maxCount: 1 },
   ]),
   adminController.car.update.updateKeyImage
 );

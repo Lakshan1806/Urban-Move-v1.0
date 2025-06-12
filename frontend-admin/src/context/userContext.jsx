@@ -16,7 +16,7 @@ export function UserContextProvider({ children }) {
         setUser(data);
       } catch (error) {
         console.error("Session validation failed:", error);
-        localStorage.removeItem("userData");
+        localStorage.removeItem("userData"); 
         setUser(null);
       } finally {
         setLoading(false);

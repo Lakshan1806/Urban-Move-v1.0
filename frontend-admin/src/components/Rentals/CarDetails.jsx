@@ -12,6 +12,7 @@ function CarDetails({ car, onUpdate }) {
   const [carImage, setCarImage] = useState(null);
   const [editingImagePath, setEditingImagePath] = useState(null);
   const [editingKeyImagePath, setEditingKeyImagePath] = useState(null);
+  const [editingLogoPath, setEditingLogoPath] = useState(null);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [addImagePath, setAddImagePath] = useState(null);
   const [addUnit, setAddUnit] = useState(false);
@@ -36,7 +37,7 @@ function CarDetails({ car, onUpdate }) {
   const [description, setDescription] = useState("");
 
   useEffect(() => {
-    if (car && car.images && car.images.length > 0) {
+    if (car && car.keyImage) {
       setCarImage(car.keyImage);
     }
   }, [car]);
@@ -83,8 +84,6 @@ function CarDetails({ car, onUpdate }) {
     setAvailableUnit(unit.length);
   }, [unit]);
 
-  console.log("car:", car);
-
   if (!car) {
     return (
       <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
@@ -111,8 +110,12 @@ function CarDetails({ car, onUpdate }) {
     setIsEditable(true);
   };
 
-  const handleKeyEditImage = (keyImagePath) => {
+  const handleEditKeyImage = (keyImagePath) => {
     setEditingKeyImagePath(keyImagePath);
+    fileInputRef.current.click();
+  };
+  const handleEditLogo = (logoPath) => {
+    setEditingLogoPath(logoPath);
     fileInputRef.current.click();
   };
 
@@ -132,7 +135,7 @@ function CarDetails({ car, onUpdate }) {
         imagePath,
       },
     });
-    console.log("Deleted:", response.data);
+    // console.log("Deleted:", response.data);
   };
 
   const handleDeleteCar = async () => {
@@ -141,7 +144,7 @@ function CarDetails({ car, onUpdate }) {
         carId: car._id,
       },
     });
-    console.log("Deleted:", response.data);
+    //console.log("Deleted:", response.data);
     setIsEditable(false);
     onUpdate(null);
   };
@@ -156,10 +159,16 @@ function CarDetails({ car, onUpdate }) {
       formData.append("imagePath", editingImagePath);
     }
     if (editingKeyImagePath) {
+      console.log("editingKeyImagePath:", editingKeyImagePath);
       formData.append("keyImage", file);
     }
     if (addImagePath) {
       formData.append("newImage", file);
+    }
+
+    if (editingLogoPath != null) {
+      console.log(editingLogoPath);
+      formData.append("logo", file);
     }
     formData.append("carId", car._id);
 
@@ -171,6 +180,8 @@ function CarDetails({ car, onUpdate }) {
       setEditingImagePath(null);
       setEditingKeyImagePath(null);
       setAddImagePath(null);
+      setEditingLogoPath(null);
+      fileInputRef.current.value = "";
     }
   };
 
@@ -222,7 +233,7 @@ function CarDetails({ car, onUpdate }) {
             {isEditable && (
               <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
                 <button
-                  onClick={() => handleKeyEditImage(car.keyImage)}
+                  onClick={() => handleEditKeyImage(car.keyImage)}
                   className="bg-white rounded-full p-1"
                 >
                   ✏️
@@ -262,6 +273,25 @@ function CarDetails({ car, onUpdate }) {
 
         <div className="flex justify-between">
           <div>
+            <div>
+              <div className="relative group">
+                <img
+                  src={car.logo}
+                  alt="logo"
+                  className="w-50 rounded-lg object-cover"
+                />
+                {isEditable && (
+                  <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
+                    <button
+                      onClick={() => handleEditLogo(car.logo ?? "")}
+                      className="bg-white rounded-full p-1"
+                    >
+                      ✏️
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
             {isEditable ? (
               <>
                 <div>
@@ -311,10 +341,9 @@ function CarDetails({ car, onUpdate }) {
                 <h3 className="text-sm font-bold">
                   {car.make} {car.model}
                 </h3>
+                <p>Available :{availableUnit} Units</p>
               </>
             )}
-
-            <p>Available :{availableUnit} Units</p>
           </div>
           <div>
             <div className="flex gap-2">
