@@ -1,16 +1,15 @@
 import { Link } from "react-router-dom";
 import axios from "axios";
 import Logo from "../assets/Urban_Move_Colour.svg";
-import HomeIcon from "../assets/Home.svg";
-import RideIcon from "../assets/Ride.svg";
-import RentalIcon from "../assets/Rental.svg";
-import CustomerIcon from "../assets/Customer.svg";
-import DriverIcon from "../assets/Driver.svg";
-import FinancialIcon from "../assets/Financial.svg";
-import MessageIcon from "../assets/Message.svg";
-import AccountIcon from "../assets/Account.svg";
-import SettingIcon from "../assets/Setting.svg";
-import { MdSupervisorAccount } from "react-icons/md";
+import { MdOutlineMapsHomeWork } from "react-icons/md";
+import { FaTaxi } from "react-icons/fa6";
+import { TbCarSuvFilled } from "react-icons/tb";
+import { BsPersonBadge } from "react-icons/bs";
+import { BsPersonBadgeFill } from "react-icons/bs";
+import { MdOutlineAttachMoney } from "react-icons/md";
+import { BiMessageRoundedDetail } from "react-icons/bi";
+import { IoPersonCircleOutline } from "react-icons/io5";
+import { FaUserShield } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
 import { useContext } from "react";
@@ -29,23 +28,35 @@ function Navbar() {
   }
 
   const navItems = [
-    { path: "/dashboard", label: "Home", icon: HomeIcon },
-    { path: "/dashboard/rides", label: "Rides", icon: RideIcon },
-    { path: "/dashboard/rentals", label: "Rentals", icon: RentalIcon },
-    { path: "/dashboard/customers", label: "Customers", icon: CustomerIcon },
-    { path: "/dashboard/drivers", label: "Drivers", icon: DriverIcon },
-    { path: "/dashboard/financials", label: "Financials", icon: FinancialIcon },
-    { path: "/dashboard/messages", label: "Messages", icon: MessageIcon },
-    { path: "/dashboard/account", label: "Account", icon: AccountIcon },
+    { path: "/dashboard", label: "Home", Icon: MdOutlineMapsHomeWork },
+    { path: "/dashboard/rides", label: "Rides", Icon: FaTaxi },
+    { path: "/dashboard/rentals", label: "Rentals", Icon: TbCarSuvFilled },
+    { path: "/dashboard/customers", label: "Customers", Icon: BsPersonBadge },
+    { path: "/dashboard/drivers", label: "Drivers", Icon: BsPersonBadgeFill },
+    {
+      path: "/dashboard/financials",
+      label: "Financials",
+      Icon: MdOutlineAttachMoney,
+    },
+    {
+      path: "/dashboard/messages",
+      label: "Messages",
+      Icon: BiMessageRoundedDetail,
+    },
+    {
+      path: "/dashboard/account",
+      label: "Account",
+      Icon: IoPersonCircleOutline,
+    },
     {
       path: "/dashboard/settings",
       label: "Administration",
-      icon: SettingIcon,
+      Icon: FaUserShield,
       allowedRole: Roles.SUPER_ADMIN,
     },
   ];
   const linkstyles =
-    "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex gap-[10px]";
+    "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex items-center gap-[10px]";
 
   return (
     <nav className="bg-black h-dvh flex flex-col items-center py-5 justify-between top-0 bottom-0 sticky">
@@ -59,11 +70,11 @@ function Navbar() {
             (item) =>
               !item.allowedRole || (user && user.role === item.allowedRole)
           )
-          .map((item) => {
+          .map(({ path, label, Icon }) => {
             return (
-              <Link to={item.path} key={item.path} className={linkstyles}>
-                <img src={item.icon} alt={item.label} />
-                {item.label}
+              <Link to={path} key={path} className={linkstyles}>
+                <Icon className="[&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
+                {label}
               </Link>
             );
           })}

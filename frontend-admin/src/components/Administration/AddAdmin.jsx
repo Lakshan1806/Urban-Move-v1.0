@@ -2,7 +2,7 @@ import Logo from "../../assets/Urban_Move.svg";
 import Line from "../../assets/Line.svg";
 import { useState } from "react";
 import axios from "axios";
-import { IoAddCircle } from "react-icons/io5";
+import { GoPlusCircle } from "react-icons/go";
 
 function AddAdmin() {
   const [username, setUsername] = useState("");
@@ -93,7 +93,7 @@ function AddAdmin() {
               type="submit"
               className="button-primary flex flex-row items-center gap-2"
             >
-              <IoAddCircle className="fill-[#FF7C1D]" />
+              <GoPlusCircle className="[&>path]:fill-[url(#icon-gradient)]" />
               ADD ADMIN
             </button>
           </div>

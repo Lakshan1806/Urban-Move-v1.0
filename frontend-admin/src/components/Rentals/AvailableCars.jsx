@@ -1,5 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { GoPlusCircle } from "react-icons/go";
 
 function AvailableCars({ onCarSelect, onAddCars }) {
   const [car, setCar] = useState([]);
@@ -29,9 +30,10 @@ function AvailableCars({ onCarSelect, onAddCars }) {
         <div className="button-wrapper">
           <button
             type="button"
-            className="button-primary"
+            className="button-primary flex flex-row items-center gap-2"
             onClick={handleButtonClick}
           >
+            <GoPlusCircle className="[&>path]:fill-[url(#icon-gradient)]" />
             Add Cars
           </button>
         </div>
