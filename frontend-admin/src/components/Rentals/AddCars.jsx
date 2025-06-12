@@ -4,6 +4,7 @@ import axios from "axios";
 function AddCars({ onSaveForm }) {
   const fileInputRef = useRef(null);
   const keyImageInputRef = useRef(null);
+  const logoInputRef = useRef(null);
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
@@ -21,6 +22,8 @@ function AddCars({ onSaveForm }) {
   const [tempImage, setTempImage] = useState(null);
   const [keyImageUrl, setKeyImageUrl] = useState();
   const [keyTempImage, setKeyTempImage] = useState(null);
+  const [logoUrl, setLogoUrl] = useState();
+  const [logoTempImage, setLogoTempImage] = useState(null);
 
   const handleImageClick = () => {
     fileInputRef.current.click();
@@ -28,6 +31,10 @@ function AddCars({ onSaveForm }) {
 
   const handleKeyImageClick = () => {
     keyImageInputRef.current.click();
+  };
+
+  const handlelogoImageClick = () => {
+    logoInputRef.current.click();
   };
 
   const handleFileChange = async (e) => {
@@ -51,6 +58,17 @@ function AddCars({ onSaveForm }) {
       const previewUrl = URL.createObjectURL(file);
       setKeyImageUrl(previewUrl);
       setKeyTempImage(file);
+    }
+  };
+
+  const handleLogoChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    } else {
+      const previewUrl = URL.createObjectURL(file);
+      setLogoUrl(previewUrl);
+      setLogoTempImage(file);
     }
   };
 
@@ -79,6 +97,9 @@ function AddCars({ onSaveForm }) {
     if (keyTempImage) {
       formData.append("keyImage", keyTempImage);
     }
+    if (logoTempImage) {
+      formData.append("logo", logoTempImage);
+    }
 
     try {
       const response = await axios.post("/admin/add_car_model", formData);
@@ -87,7 +108,7 @@ function AddCars({ onSaveForm }) {
     }
   };
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col h-full">
+    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col h-full overflow-auto">
       <div className="flex flex-col">
         <div>
           <h2>Add Car Details</h2>
@@ -107,6 +128,11 @@ function AddCars({ onSaveForm }) {
                 />
               ))}
             </div>
+            <img
+              src={logoUrl}
+              alt={"preview"}
+              className="w-50 rounded-lg object-cover"
+            />
           </div>
           <input
             type="file"
@@ -120,6 +146,13 @@ function AddCars({ onSaveForm }) {
             ref={fileInputRef}
             className="hidden"
             onChange={handleFileChange}
+          />
+          <input
+            type="file"
+            multiple
+            ref={logoInputRef}
+            className="hidden"
+            onChange={handleLogoChange}
           />
           <div className="flex flex-col gap-1">
             <div className="button-wrapper">
@@ -140,7 +173,15 @@ function AddCars({ onSaveForm }) {
                 Upload Image
               </button>
             </div>
-            v
+            <div className="button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={handlelogoImageClick}
+              >
+                Upload Logo
+              </button>
+            </div>
           </div>
 
           <div>
