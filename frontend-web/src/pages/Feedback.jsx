@@ -18,7 +18,7 @@ function FeedbackForm() {
 
       if (response.data.success) {
         alert("Thank you for your feedback! 😊");
-        reset(); // Clear form
+        reset(); 
       } else {
         alert("Failed to submit feedback. Please try again.");
       }

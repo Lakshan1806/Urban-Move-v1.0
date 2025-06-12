@@ -77,7 +77,7 @@ app.use(express.json());
 app.use(cookieParser());
 app.use("/admin", adminRoutes);
 app.use("/user", userRoutes);
-//app.use ("/cars", carRoutes);
+app.use("/api/cars", carRoutes);
 
 console.log(process.env.MONGO_URI);
 console.log("server is ready");
