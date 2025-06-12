@@ -1,19 +1,19 @@
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
-import { useAuth } from "../context/AuthContext"; 
+import { useAuth } from "../context/AuthContext";
 import myImage from "../assets/rent.image.1.png";
 import myImage2 from "../assets/rent.image.2.png";
 import myImage3 from "../assets/rent.image.3.png";
 import myImage4 from "../assets/rent.image.4.png";
 import RentNowForm from "../components/Rent/RentNowForm";
+import Footer from "../components/Footer";
 
 function Rent() {
-  const { isAuthenticated } = useAuth(); 
+  const { isAuthenticated } = useAuth();
   const [showForm, setShowForm] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
 
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -25,7 +25,6 @@ function Rent() {
 
   const handleShowForm = () => {
     if (!isAuthenticated) {
-      
       navigate(`/signin?redirect=/rent?showForm=true`);
     } else {
       setShowForm(true);
@@ -39,32 +38,48 @@ function Rent() {
   };
 
   return (
-    <div className="p-4 relative">
-      <h1 className="text-2xl font-bold text-center">RENT</h1>
+    <div className="h-full flex flex-col ">
+      <div className="flex flex-row">RENT</div>
 
-      <div className="flex flex-col items-center md:flex-row md:justify-between mt-10">
-        <Image1 />
-        <Text1 />
-      </div>
+      <div className="flex-1 flex flex-col overflow-y-auto  min-h-0 snap-y snap-mandatory scroll-smooth">
+        <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
+          <div className="h-full col-span-6 row-span-12 flex flex-col">
+            <h1>
+              Browse our fleet and pick the perfect car for a day, a week, or
+              even a month.
+            </h1>
+            {!showForm && (
+              <div className="button-wrapper">
+                <button
+                onClick={handleShowForm}
+                className="button-primary"
+              >
+                Rent Now
+              </button></div>
+            )}
+          </div>
 
-      {!showForm && (
-        <div className="flex justify-center mt-6">
-          <button
-            onClick={handleShowForm}
-            className="bg-blue-600 text-white px-6 py-2 rounded-md hover:bg-blue-700 transition"
-          >
-            Rent Now
-          </button>
+          <img
+            src={myImage}
+            alt="Car Rental"
+            className="h-full col-span-6 row-span-12"
+          />
         </div>
-      )}
 
-      <div className="flex justify-center gap-12 mt-12">
-        <Image src={myImage2} />
-        <Image src={myImage3} />
-        <Image src={myImage4} />
+        <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
+          <Image src={myImage2} />
+          <Image src={myImage3} />
+          <Image src={myImage4} />
+        </div>
+
+        <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
+          <Slideshow />
+        </div>
+
+        <div className=" h-[180px] shrink-0 snap-start">
+          <Footer />
+        </div>
       </div>
-
-      <Slideshow />
 
       {showForm && (
         <>
@@ -87,37 +102,14 @@ function Rent() {
   );
 }
 
-function Image1() {
-  return (
-    <div className="w-full md:w-1/2 flex justify-center">
-      <img
-        src={myImage}
-        alt="Car Rental"
-        className="w-full max-w-sm md:max-w-md lg:max-w-lg"
-      />
-    </div>
-  );
-}
-
-function Text1() {
-  return (
-    <div className="text-center md:text-left md:w-1/2 p-4">
-      <h1 className="text-2xl md:text-4xl font-bold">
-        Browse our fleet and pick the perfect car for a day, a week, or even a
-        month.
-      </h1>
-    </div>
-  );
-}
-
 function Image({ src }) {
   return (
-    <div className="w-1/3 flex justify-center">
-      <img
+    <div className="h-full col-span-4 row-span-12">
+      <div className="flex h-full items-center justify-center"><img
         src={src}
         alt="Rental Car"
-        className="w-full max-w-xs md:max-w-sm lg:max-w-md"
-      />
+        className="h-3/4 w-2/3 md:max-w-sm lg:max-w-md"
+      /></div>
     </div>
   );
 }
@@ -152,12 +144,12 @@ function Slideshow() {
   if (slideshowPath.length === 0) return <div>Loading slideshow...</div>;
 
   return (
-    <div className="w-full h-full flex justify-center items-center bg-gray-200 rounded-xl overflow-hidden shadow-md mt-12 ">
-      <img
+    <div className="h-full col-span-12 row-span-12 ">
+      <div className="flex h-full w-full items-center justify-center" ><img
         src={slideshowPath[current]}
         alt="slideshow"
-        className="w-full h-full object-cover transition-all duration-500"
-      />
+        className=" h-3/4 object-cover transition-all duration-500"
+      /></div>
     </div>
   );
 }
