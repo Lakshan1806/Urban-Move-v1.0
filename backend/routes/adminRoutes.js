@@ -76,12 +76,16 @@ adminRoutes.delete(
   "/delete_car_model",
   adminController.car.delete.deleteCarModel
 );
+adminRoutes.delete(
+  "/delete_car_unit",
+  adminController.car.delete.deleteCarUnit
+);
 adminRoutes.post(
   "/restore_car_models",
   adminController.car.delete.restoreCarModel
 );
 
-adminRoutes.post(
+adminRoutes.post( 
   "/restore_car_units",
   adminController.car.delete.restoreCarUnit
 );
