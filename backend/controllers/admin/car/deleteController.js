@@ -82,6 +82,30 @@ const deleteController = {
     } catch (error) {}
   },
 
+  deleteCarUnit: async (req, res) => {
+    const { token } = req.cookies;
+    const { unitId } = req.body;
+
+    console.log(req.body);
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+    try {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      const deletedUnit = await CarInstance.findByIdAndDelete(unitId);
+      if (!deletedUnit) {
+        return res.status(404).json({ error: "Unit not found" });
+      }
+
+      const unitObject = deletedUnit.toObject();
+      await RecentlyDeletedUnit.create(unitObject);
+
+      return res
+        .status(200)
+        .json({ message: "Unit deleted and moved to recently_deleted" });
+    } catch (error) {}
+  },
+
   restoreCarModel: async (req, res) => {
     const { token } = req.cookies;
     const { id } = req.query;
