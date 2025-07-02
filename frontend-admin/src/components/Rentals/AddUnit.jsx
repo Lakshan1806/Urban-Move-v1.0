@@ -61,27 +61,24 @@ function AddUnit({ onSaveForm, carID }) {
           placeholder="Enter Location"
         />
       </div>
+      <div className="flex flex-row items-center justify-center gap-5">
+        <div className="button-wrapper">
+          <button type="button" className="button-primary" onClick={handleSave}>
+            Save
+          </button>
+        </div>
 
-      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-        <button
-          type="button"
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-          onClick={handleSave}
-        >
-          save
-        </button>
-      </div>
-
-      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-        <button
-          type="button"
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-          onClick={() => {
-            onSaveForm(false);
-          }}
-        >
-          done
-        </button>
+        <div className="button-wrapper">
+          <button
+            type="button"
+            className="button-primary"
+            onClick={() => {
+              onSaveForm(false);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );
