@@ -3,6 +3,8 @@ import { GiGearStickPattern } from "react-icons/gi";
 import { PiSeatbelt, PiPath, PiSpeedometer } from "react-icons/pi";
 import { BsFuelPump } from "react-icons/bs";
 import { RiSteering2Line } from "react-icons/ri";
+import { FaRegEdit } from "react-icons/fa";
+import { ImBin } from "react-icons/im";
 import AddUnit from "./AddUnit";
 import UnitDetails from "./UnitDetails";
 import axios from "axios";
@@ -40,6 +42,11 @@ function CarDetails({ car, onUpdate }) {
     if (car && car.keyImage) {
       setCarImage(car.keyImage);
     }
+  }, [car]);
+
+  useEffect(() => {
+    setIsEditable(false);
+    setIsEditableUnit(false);
   }, [car]);
 
   useEffect(() => {
@@ -234,9 +241,9 @@ function CarDetails({ car, onUpdate }) {
               <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
                 <button
                   onClick={() => handleEditKeyImage(car.keyImage)}
-                  className="bg-white rounded-full p-1"
+                  className="bg-white rounded-full p-2"
                 >
-                  ✏️
+                  <FaRegEdit className="w-6 h-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                 </button>
               </div>
             )}
@@ -254,15 +261,15 @@ function CarDetails({ car, onUpdate }) {
                   <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
                     <button
                       onClick={() => handleEditImage(image)}
-                      className="bg-white rounded-full p-1"
+                      className="bg-white rounded-full p-2"
                     >
-                      ✏️
+                      <FaRegEdit className="w-6 h-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                     </button>
                     <button
                       onClick={() => handleDeleteImage(image)}
-                      className="bg-white rounded-full p-1"
+                      className="bg-white rounded-full p-2"
                     >
-                      🗑️
+                      <ImBin className="w-6 h-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                     </button>
                   </div>
                 )}
@@ -284,9 +291,9 @@ function CarDetails({ car, onUpdate }) {
                   <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
                     <button
                       onClick={() => handleEditLogo(car.logo ?? "")}
-                      className="bg-white rounded-full p-1"
+                      className="bg-white rounded-full p-2"
                     >
-                      ✏️
+                      <FaRegEdit className="w-6 h-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                     </button>
                   </div>
                 )}
@@ -425,7 +432,7 @@ function CarDetails({ car, onUpdate }) {
             )}
           </div>
         </div>
-        <div>
+        <div className="flex flex-row gap-4 flex-none overflow-auto px-4">
           {unit.map((unit) => {
             return (
               <UnitDetails
@@ -578,9 +585,7 @@ function CarDetails({ car, onUpdate }) {
         {showConfirmDelete && (
           <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
             <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
-              <p className="mb-4">
-                Really delete this car? This cannot be undone.
-              </p>
+              <p className="mb-4">Really delete this car?</p>
               <div className="flex justify-end gap-2">
                 <button
                   className="px-4 py-2 bg-gray-200 rounded"
