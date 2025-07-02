@@ -55,8 +55,7 @@ function Navbar() {
       allowedRole: Roles.SUPER_ADMIN,
     },
   ];
-  const linkstyles =
-    "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text flex items-center gap-[10px]";
+  
 
   return (
     <nav className="bg-black h-dvh flex flex-col items-center py-5 justify-between top-0 bottom-0 sticky">
@@ -72,7 +71,7 @@ function Navbar() {
           )
           .map(({ path, label, Icon }) => {
             return (
-              <Link to={path} key={path} className={linkstyles}>
+              <Link to={path} key={path} className="button-primary flex items-center gap-4">
                 <Icon className="[&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                 {label}
               </Link>
@@ -81,7 +80,7 @@ function Navbar() {
       </div>
 
       <div
-        className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text pt-[20px] cursor-pointer"
+        className="button-primary flex justify-center"
         onClick={handleSignout}
       >
         Sign out
