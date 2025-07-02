@@ -1,5 +1,5 @@
 import Logo from "../assets/Urban_Move.svg";
-import Line from "../assets/Line.svg";
+import { TfiLayoutLineSolid } from "react-icons/tfi";
 import { Toast } from "primereact/toast";
 import { useState, useRef } from "react";
 import { UserContext } from "../context/userContext";
@@ -72,13 +72,27 @@ function SignIn() {
   return (
     <div className="flex items-center justify-center h-svh">
       <div className="max-w-[340px] flex flex-col items-center gap-[42px]">
-        <div className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
-          <h1>Administrator</h1>
-          <h1>Sign In</h1>
+        <div className="flex flex-col items-center font-[700] text-[36px]">
+          <h1
+            className="text-grad-stroke"
+            data-text="Administrator"
+          >
+            Administrator
+          </h1>
+          <h1
+            className="text-grad-stroke"
+            data-text="Sign In"
+          >
+            Sign In
+          </h1>
         </div>
 
         <img src={Logo} className="w-[200px] h-[200px]" />
-        <img src={Line} />
+
+        <TfiLayoutLineSolid
+          className="h-12 w-full block [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]"
+          preserveAspectRatio="none"
+        />
 
         <div>
           <form
