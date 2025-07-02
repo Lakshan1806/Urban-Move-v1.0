@@ -7,6 +7,7 @@ function UnitDetails({ unit, onEdit }) {
   const [color, setColor] = useState("");
   const [location, setLocation] = useState("");
   const [isEditableUnit, setIsEditableUnit] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
 
   useEffect(() => {
     if (unit) {
@@ -22,7 +23,7 @@ function UnitDetails({ unit, onEdit }) {
     onEdit(true);
   };
   const onSaveUnit = async () => {
-    const formData = { vin, licensePlate, color,location, _id: unit._id };
+    const formData = { vin, licensePlate, color, location, _id: unit._id };
 
     try {
       const response = await axios.post("/admin/update_car_unit", formData);
@@ -32,13 +33,28 @@ function UnitDetails({ unit, onEdit }) {
     setIsEditableUnit(false);
     onEdit(false);
   };
+
+  const handleDeleteUnit = async () => {
+    try {
+      const response = await axios.delete("/admin/delete_car_unit", {
+        data: {
+          unitId: unit._id,
+        },
+      });
+    } catch (error) {
+      console.error("failed:", error);
+    }
+    setIsEditableUnit(false);
+    onEdit(false);
+  };
   const onCancelUnit = () => {
     setIsEditableUnit(false);
+    onEdit(false);
   };
 
   return (
-    <div className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row items-center gap-4">
-      <div className="flex flex-col w-1/2">
+    <div className="p-4 my-2 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row items-center gap-4 flex-none">
+      <div className="flex flex-col">
         {isEditableUnit ? (
           <>
             <div>
@@ -110,18 +126,7 @@ function UnitDetails({ unit, onEdit }) {
             <button
               type="button"
               className="button-primary"
-              onClick={onCancelUnit}
-            >
-              Cancel
-            </button>
-          </div>
-        </>
-      ) : (
-        <>
-          <div className="button-wrapper">
-            <button
-              type="button"
-              className="button-primary"
+              onClick={() => setShowConfirmDelete(true)}
             >
               Delete
             </button>
@@ -130,12 +135,44 @@ function UnitDetails({ unit, onEdit }) {
             <button
               type="button"
               className="button-primary"
-              onClick={onEditUnit}
+              onClick={onCancelUnit}
             >
-              Edit
+              Cancel
             </button>
           </div>
         </>
+      ) : (
+        <div className="button-wrapper">
+          <button type="button" className="button-primary" onClick={onEditUnit}>
+            Edit
+          </button>
+        </div>
+      )}
+      {showConfirmDelete && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+            <p className="mb-4">Really delete this unit?</p>
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded"
+                onClick={() => setShowConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <div className="button-wrapper">
+                <button
+                  className="button-primary"
+                  onClick={() => {
+                    handleDeleteUnit();
+                    setShowConfirmDelete(false);
+                  }}
+                >
+                  Yes, delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );
