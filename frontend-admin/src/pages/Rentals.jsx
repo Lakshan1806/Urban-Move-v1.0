@@ -22,7 +22,10 @@ function Rentals() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row justify-between flex-none">
-        <h1 className="[-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
+        <h1
+          className="text-grad-stroke font-[700] text-[36px]"
+          data-text="Rentals"
+        >
           Rentals
         </h1>
       </div>
