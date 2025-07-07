@@ -7,7 +7,7 @@ import {
   Polyline,
 } from "@react-google-maps/api";
 import { io } from "socket.io-client";
-
+import axios from "axios";
 const DriverRide = () => {
   // State management
   const [socket, setSocket] = useState(null);
@@ -119,6 +119,8 @@ const DriverRide = () => {
 
     setSocket(socketInstance);
 
+    
+
     socketInstance.on("connect", () => {
       console.log("Connected to server");
     });
@@ -133,6 +135,7 @@ const DriverRide = () => {
       }
     };
   }, []);
+  
 
   // Initialize geolocation tracking
   useEffect(() => {
@@ -287,6 +290,26 @@ const DriverRide = () => {
     );
   }, [currentRide, currentLocation, rideStatus, mapLoaded]);
 
+  useEffect(() => {
+  if (!currentLocation || !pickupInput || !window.google || !directionsServiceRef.current) return;
+
+  directionsServiceRef.current.route(
+    {
+      origin: currentLocation,
+      destination: pickupInput,
+      travelMode: window.google.maps.TravelMode.DRIVING,
+    },
+    (result, status) => {
+      if (status === window.google.maps.DirectionsStatus.OK) {
+        setDirections(result); // already used for rendering
+      } else {
+        console.error("Failed to fetch route to pickup location:", status);
+      }
+    }
+  );
+}, [pickupInput, currentLocation]);
+
+
   const handleMapLoad = (map) => {
     mapRef.current = map;
     setMapLoaded(true);
@@ -362,13 +385,50 @@ const DriverRide = () => {
       setRideStatus("completed");
     }
   };
+  const userId="680f384d4c417b3a83f65278";
+  useEffect(() => {
+    const fetchPickup = async () => {
+      try {
+        const res = await axios.get(`/api/driver/pickup/${userId}`);
+          console.log(res);
+        if (res.data.success) {
+          setPickupInput(res.data.pickup || '');
+        } else {
+          console.error('Pickup fetch failed:', res.data.message);
+        }
+      } catch (err) {
+        console.error('Error fetching pickup location', err);
+      }
+    };
+
+    const fetchDropoff = async () => {
+      try {
+        const res = await axios.get(`/api/driver/dropoff/${userId}`);
+        console.log(res);
+        if (res.data.success) {
+          setDropoffInput(res.data.dropoff || '');
+        } else {
+          console.error('Dropoff fetch failed:', res.data.message);
+        }
+      } catch (err) {
+        console.error('Error fetching drop-off location', err);
+      }
+    };
+
+    if (userId) {
+      fetchPickup();
+      fetchDropoff();
+    }
+  }, []);
+  
+
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       {/* Header */}
       <header className="bg-blue-600 text-white p-4 shadow-md">
         <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">Driver Ride Dashboard - Sri Lanka</h1>
+          <h1 className="text-xl font-bold">Driver Ride Dashboard</h1>
         </div>
       </header>
 
@@ -406,12 +466,12 @@ const DriverRide = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pickup Location (Sri Lanka)
+                Pickup Location 
               </label>
               <input
                 id="pickup-input"
                 type="text"
-                placeholder="Enter pickup location"
+                placeholder=""
                 className="w-full p-2 border border-gray-300 rounded"
                 value={pickupInput}
                 onChange={(e) => setPickupInput(e.target.value)}
@@ -420,12 +480,12 @@ const DriverRide = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Drop-off Location (Sri Lanka)
+                Drop-off Location 
               </label>
               <input
                 id="dropoff-input"
                 type="text"
-                placeholder="Enter drop-off location"
+                placeholder=""
                 className="w-full p-2 border border-gray-300 rounded"
                 value={dropoffInput}
                 onChange={(e) => setDropoffInput(e.target.value)}

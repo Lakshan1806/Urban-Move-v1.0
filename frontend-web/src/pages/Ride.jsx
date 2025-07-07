@@ -81,7 +81,6 @@ function Ride() {
   const dropoffRef = useRef(null);
   const navigate = useNavigate();
 
-  // Handle click outside to close suggestions
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (pickupRef.current && !pickupRef.current.contains(event.target)) {
@@ -96,7 +95,6 @@ function Ride() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  // Check geolocation permissions on component mount
   useEffect(() => {
     if (navigator.permissions) {
       navigator.permissions
@@ -113,7 +111,6 @@ function Ride() {
     fetchScheduledRides();
   }, []);
 
-  // Clean up tracking interval on unmount
   useEffect(() => {
     return () => {
       if (trackingInterval) {
@@ -122,7 +119,6 @@ function Ride() {
     };
   }, [trackingInterval]);
 
-  // Change the fetchScheduledRides function to match the correct endpoint:
   const fetchScheduledRides = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/schedule", {
@@ -138,7 +134,6 @@ function Ride() {
     }
   };
 
-  // Fetch location suggestions
   const fetchSuggestions = async (input, isPickup) => {
     if (input.length < 2) {
       isPickup ? setPickupSuggestions([]) : setDropoffSuggestions([]);
@@ -148,7 +143,7 @@ function Ride() {
     setIsFetchingSuggestions(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/location/autocomplete?input=${encodeURIComponent(input)}`
+        `http://localhost:5000/api/location/autocomplete?input=${encodeURIComponent(input)}`
       );
 
       if (response.data.suggestions) {
@@ -164,7 +159,6 @@ function Ride() {
     }
   };
 
-  // Debounce the autocomplete requests
   useEffect(() => {
     const timer = setTimeout(() => {
       if (activeInput === "pickup" && pickup) {
@@ -177,7 +171,6 @@ function Ride() {
     return () => clearTimeout(timer);
   }, [pickup, dropoff, activeInput]);
 
-  // Get current location and address
   const getCurrentLocation = async () => {
     if (!navigator.geolocation) {
       setLocationError("Geolocation is not supported by your browser");
@@ -211,7 +204,7 @@ function Ride() {
           },
           {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 30000,
             maximumAge: 0,
           }
         );
@@ -220,9 +213,8 @@ function Ride() {
       const { latitude, longitude } = position.coords;
       console.log("Got coordinates:", latitude, longitude);
 
-      // Get address from coordinates
       const response = await axios.get(
-        `http://localhost:5000/location/reverse-geocode?lat=${latitude}&lng=${longitude}`
+        `http://localhost:5000/api/location/reverse-geocode?lat=${latitude}&lng=${longitude}`
       );
 
       if (response.data.status === "SUCCESS") {
@@ -259,7 +251,7 @@ function Ride() {
   const startLiveTracking = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:5000/location/start-tracking",
+        "http://localhost:5000/api/location/start-tracking",
         {
           rideId,
         }
@@ -291,7 +283,6 @@ function Ride() {
         setDriverLocation(rideData.driverLocation);
         setProgress(rideData.progress || 0);
 
-        // Update map URL with current driver location
         if (rideData.driverLocation && routeDetails) {
           const apiKey = process.env.GOOGLE_MAPS_API_KEY;
           const newMapUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${rideData.driverLocation.lat},${rideData.driverLocation.lng}&destination=${encodeURIComponent(dropoff)}&zoom=13`;
@@ -300,62 +291,6 @@ function Ride() {
       }
     } catch (err) {
       console.error("Error fetching ride status:", err);
-    }
-  };
-
-  const simulateDriverMovement = async (rideId) => {
-    try {
-      // Get current ride data
-      const response = await axios.get(
-        `http://localhost:5000/api/rides/${rideId}`
-      );
-
-      if (response.data.success) {
-        const ride = response.data.data;
-        const steps = ride.steps || [];
-
-        if (steps.length > 0) {
-          // Find the next step towards destination
-          const nextStep =
-            steps.find((step) => {
-              if (!ride.driverLocation || !step.end_location) return false;
-              return (
-                getDistanceFromLatLonInKm(
-                  ride.driverLocation.lat,
-                  ride.driverLocation.lng,
-                  step.end_location.lat,
-                  step.end_location.lng
-                ) > 0.1
-              );
-            }) || steps[0];
-
-          if (nextStep && nextStep.end_location) {
-            // Calculate midpoint between current location and next step
-            const currentLat =
-              ride.driverLocation?.lat || ride.startLocation.lat;
-            const currentLng =
-              ride.driverLocation?.lng || ride.startLocation.lng;
-
-            const latDiff = nextStep.end_location.lat - currentLat;
-            const lngDiff = nextStep.end_location.lng - currentLng;
-
-            // Move 25% towards the next step
-            const newLat = currentLat + latDiff * 0.25;
-            const newLng = currentLng + lngDiff * 0.25;
-
-            // Update driver location in backend
-            await axios.put(
-              `http://localhost:5000/api/rides/${rideId}/location`,
-              {
-                lat: newLat,
-                lng: newLng,
-              }
-            );
-          }
-        }
-      }
-    } catch (err) {
-      console.error("Error simulating movement:", err);
     }
   };
 
@@ -378,7 +313,7 @@ function Ride() {
 
     try {
       const response = await axios.post(
-        "http://localhost:5000/location/track",
+        "http://localhost:5000/api/location/track",
         {
           pickup: pickup.trim(),
           dropoff: dropoff.trim(),
@@ -387,6 +322,7 @@ function Ride() {
 
       if (response.data.status === "SUCCESS") {
         setRouteDetails(response.data);
+        console.log(response.data)
         setMapUrl(response.data.map_embed_url);
         setRideId(response.data.rideId);
         const distanceKm = parseFloat(response.data.distance.split(" ")[0]);
@@ -449,7 +385,7 @@ function Ride() {
       setIsScheduling(false);
     }
   };
-  //database
+
   const handleStartRide = async () => {
     try {
       setLoading(true);
@@ -458,15 +394,13 @@ function Ride() {
         throw new Error("Route details are missing");
       }
 
-      // Calculate fare based on distance
       const distanceKm = routeDetails
         ? parseFloat(routeDetails.distance.split(" ")[0])
         : 0;
       const calculatedFare = Math.round(distanceKm * 68);
 
-      // First create the ride in database
       const createRideResponse = await axios.post(
-        "http://localhost:5000/api/rides",
+        "http://localhost:5000/api/rideRoute",
         {
           userId: "65a1b2c3d4e5f6a7b8c9d0e1", 
           pickup,
@@ -492,13 +426,12 @@ function Ride() {
       const rideId = createRideResponse.data.data._id;
       setRideId(rideId);
 
-      // Start live tracking
       const startTrackingResponse = await axios.post(
-        "http://localhost:5000/api/rides/start-tracking",
+        "http://localhost:5000/api/rideRoute/start-tracking",
         { rideId }
       );
 
-      if (!startTrackingResponse.data?.success) {
+      if (startTrackingResponse.data.status !== "SUCCESS") {
         throw new Error(
           startTrackingResponse.data?.message || "Failed to start tracking"
         );
@@ -506,31 +439,27 @@ function Ride() {
 
       setIsTracking(true);
 
-      // Start polling for ride updates
       const fetchAndUpdateRideStatus = async () => {
         try {
           const statusResponse = await axios.get(
-            `http://localhost:5000/api/rides/status/${rideId}`
+            `http://localhost:5000/api/rideRoute/status/${rideId}`
           );
 
-          if (statusResponse.data?.success) {
-            const updatedRide = statusResponse.data.data;
+          if (statusResponse.data?.status === "SUCCESS") {
+            const updatedRide = statusResponse.data.ride;
             setDriverLocation(updatedRide.driverLocation);
             setProgress(updatedRide.progress || 0);
 
-            // Update map URL with current driver location
             if (updatedRide.driverLocation && routeDetails) {
               const apiKey = process.env.GOOGLE_MAPS_API_KEY;
               const newMapUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${updatedRide.driverLocation.lat},${updatedRide.driverLocation.lng}&destination=${encodeURIComponent(dropoff)}&zoom=13`;
               setMapUrl(newMapUrl);
             }
 
-            // If progress is 100%, complete the ride
             if (updatedRide.progress >= 100) {
               clearInterval(updateInterval);
               clearInterval(simulationInterval);
               setIsTracking(false);
-              // Optionally mark ride as completed in backend
             }
           }
         } catch (err) {
@@ -538,14 +467,11 @@ function Ride() {
         }
       };
 
-      // Initial fetch
       await fetchAndUpdateRideStatus();
 
-      // Set up interval for updates (every 3 seconds)
       const updateInterval = setInterval(fetchAndUpdateRideStatus, 3000);
       setTrackingInterval(updateInterval);
 
-      // Start driver simulation (for demo purposes)
       const simulateMovement = async () => {
         try {
           await simulateDriverMovement(rideId);
@@ -556,7 +482,6 @@ function Ride() {
 
       const simulationInterval = setInterval(simulateMovement, 5000);
 
-      // Cleanup function
       return () => {
         clearInterval(updateInterval);
         clearInterval(simulationInterval);
@@ -566,8 +491,6 @@ function Ride() {
       setError(
         error.response?.data?.message || error.message || "Failed to start ride"
       );
-
-      // Reset tracking state if failed
       setIsTracking(false);
       if (trackingInterval) {
         clearInterval(trackingInterval);
@@ -575,6 +498,58 @@ function Ride() {
       }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const simulateDriverMovement = async (rideId) => {
+    try {
+      const response = await axios.get(
+        `http://localhost:5000/api/rideRoute/status/${rideId}`
+      );
+
+      if (response.data.status === "SUCCESS") {
+        const ride = response.data.ride;
+        const steps = ride.steps || [];
+
+        if (steps.length > 0) {
+          const nextStep =
+            steps.find((step) => {
+              if (!ride.driverLocation || !step.end_location) return false;
+              return (
+                getDistanceFromLatLonInKm(
+                  ride.driverLocation.lat,
+                  ride.driverLocation.lng,
+                  step.end_location.lat,
+                  step.end_location.lng
+                ) > 0.1
+              );
+            }) || steps[0];
+
+          if (nextStep && nextStep.end_location) {
+            const currentLat =
+              ride.driverLocation?.lat || ride.startLocation.lat;
+            const currentLng =
+              ride.driverLocation?.lng || ride.startLocation.lng;
+
+            const latDiff = nextStep.end_location.lat - currentLat;
+            const lngDiff = nextStep.end_location.lng - currentLng;
+
+            const newLat = currentLat + latDiff * 0.25;
+            const newLng = currentLng + lngDiff * 0.25;
+
+            await axios.post(
+              "http://localhost:5000/api/rideRoute/update-location",
+              {
+                rideId,
+                lat: newLat,
+                lng: newLng,
+              }
+            );
+          }
+        }
+      }
+    } catch (err) {
+      console.error("Error simulating movement:", err);
     }
   };
 
@@ -600,11 +575,14 @@ function Ride() {
       alert(err.response?.data?.message || "Failed to cancel ride");
     }
   };
+
   return (
     <div className="bg-white min-h-screen overflow-x-hidden w-full max-w-screen">
       <Earnings />
 
-      <div className="flex flex-col lg:flex-row items-center justify-center gap-8 px-4 py-8 md:px-8">
+      {/* Top Section - Form and Image Side by Side */}
+      <div className="flex flex-col lg:flex-row items-start justify-center gap-8 px-4 py-8 md:px-8">
+        {/* Left Side - Form and Scheduled Rides */}
         <div className="w-full lg:w-1/2 max-w-xl">
           <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-transparent">
             Request a ride for immediate pickup or schedule one for later
@@ -936,7 +914,6 @@ function Ride() {
                   ) : (
                     <button
                       type="button"
-                      onClick={() => navigate(`/ride/${rideId}`)}
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-full hover:opacity-90 transition-opacity"
                     >
                       LIVE TRACKING ACTIVE
@@ -992,12 +969,66 @@ function Ride() {
           </div>
         </div>
 
-        <div className="w-full lg:w-1/2 flex justify-center mt-8 lg:mt-0">
-          <div className="w-full h-[500px] rounded-xl overflow-hidden border border-gray-200 shadow-md relative">
-            {loading && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-                <div className="text-white text-lg flex items-center gap-2">
-                  <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24">
+        {/* Right Side - Ride Illustration Image */}
+        <div className="w-full lg:w-1/2 flex justify-center items-center mt-8 lg:mt-0">
+          <div className="w-full h-full flex items-center justify-center">
+            <img
+              src={ridecar}
+              alt="Ride illustration"
+              className="w-full max-w-md object-contain"
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Section - Map (Full Width) */}
+      <div className="w-full px-4 pb-8">
+        <div className="w-full h-[500px] rounded-xl overflow-hidden border border-gray-200 shadow-md relative">
+          {loading && (
+            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
+              <div className="text-white text-lg flex items-center gap-2">
+                <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24">
+                  <circle
+                    className="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    strokeWidth="4"
+                    fill="none"
+                  />
+                  <path
+                    className="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                  />
+                </svg>
+                Loading map...
+              </div>
+            </div>
+          )}
+          {mapUrl ? (
+            <iframe
+              title="Route Map"
+              width="100%"
+              height="100%"
+              style={{ border: 0 }}
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={mapUrl}
+              onError={() =>
+                setError("Failed to load map. Please try again.")
+              }
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+              {loading || isGettingLocation ? (
+                <div className="flex flex-col items-center gap-2">
+                  <svg
+                    className="animate-spin h-8 w-8 text-[#FF7C1D]"
+                    viewBox="0 0 24 24"
+                  >
                     <circle
                       className="opacity-25"
                       cx="12"
@@ -1013,63 +1044,20 @@ function Ride() {
                       d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
                     />
                   </svg>
-                  Loading map...
+                  <p className="text-gray-600">Loading map...</p>
                 </div>
-              </div>
-            )}
-            {mapUrl ? (
-              <iframe
-                title="Route Map"
-                width="100%"
-                height="100%"
-                style={{ border: 0 }}
-                loading="lazy"
-                allowFullScreen
-                referrerPolicy="no-referrer-when-downgrade"
-                src={mapUrl}
-                onError={() =>
-                  setError("Failed to load map. Please try again.")
-                }
-              />
-            ) : (
-              <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                {loading || isGettingLocation ? (
-                  <div className="flex flex-col items-center gap-2">
-                    <svg
-                      className="animate-spin h-8 w-8 text-[#FF7C1D]"
-                      viewBox="0 0 24 24"
-                    >
-                      <circle
-                        className="opacity-25"
-                        cx="12"
-                        cy="12"
-                        r="10"
-                        stroke="currentColor"
-                        strokeWidth="4"
-                        fill="none"
-                      />
-                      <path
-                        className="opacity-75"
-                        fill="currentColor"
-                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                      />
-                    </svg>
-                    <p className="text-gray-600">Loading map...</p>
-                  </div>
-                ) : (
-                  <img
-                    src={ridecar}
-                    alt="Ride illustration"
-                    className="w-1/2 h-1/2 object-contain opacity-50"
-                  />
-                )}
-              </div>
-            )}
-          </div>
+              ) : (
+                <div className="text-center">
+                  <p className="text-gray-500 mb-4">Enter locations to see the route map</p>
+                  
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
 
-      <DriverRide />
+      {/*<DriverRide />*/}
     </div>
   );
 }
