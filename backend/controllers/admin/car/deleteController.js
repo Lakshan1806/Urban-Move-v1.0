@@ -1,4 +1,6 @@
 import jwt from "jsonwebtoken";
+import path from "path";
+import fs from "fs/promises";
 import CarModel from "../../../models/carModel.model.js";
 import CarInstance from "../../../models/carInstance.model.js";
 import RecentlyDeletedCar from "../../../models/recentlyDeletedCar.model.js";
@@ -45,7 +47,23 @@ const deleteController = {
         console.warn("File deletion error:", unlinkErr);
       }
 
-      return res.status(200).json({ success: "success" });
+      if (updatedCar.images) {
+        updatedCar.images = updatedCar.images.map((image) =>
+          image.replace(/\\/g, "/").replace("backend/uploads", "/uploads")
+        );
+      }
+      if (updatedCar.keyImage) {
+        updatedCar.keyImage = updatedCar.keyImage
+          .replace(/\\/g, "/")
+          .replace("backend/uploads", "/uploads");
+      }
+      if (updatedCar.logo) {
+        updatedCar.logo = updatedCar.logo
+          .replace(/\\/g, "/")
+          .replace("backend/uploads", "/uploads");
+      }
+
+      return res.status(200).json({ success: "success", updatedCar });
     } catch (error) {
       console.log(error);
       return res.status(403).json({ error: "Token verification failed" });
