@@ -54,7 +54,11 @@ adminRoutes.get(
 adminRoutes.get("/get_all_car_units", adminController.car.get.getAllCarUnits);
 adminRoutes.get(
   "/get_all_promotions",
-  adminController.promotion.getAllPromotion
+  adminController.promotion.getAllPromotions
+);
+adminRoutes.get(
+  "/get_all_Expired_promotions",
+  adminController.promotion.getAllExpiredPromotions
 );
 
 adminRoutes.patch(
@@ -66,6 +70,11 @@ adminRoutes.patch(
     { name: "logo", maxCount: 1 },
   ]),
   adminController.car.update.updateKeyImage
+);
+
+adminRoutes.patch(
+  "/deactivate_promotion",
+  adminController.promotion.deactivatePromotion
 );
 
 adminRoutes.delete(
@@ -85,7 +94,7 @@ adminRoutes.post(
   adminController.car.delete.restoreCarModel
 );
 
-adminRoutes.post( 
+adminRoutes.post(
   "/restore_car_units",
   adminController.car.delete.restoreCarUnit
 );
