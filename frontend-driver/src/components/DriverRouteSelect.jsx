@@ -1,7 +1,8 @@
 import { Routes, Route } from "react-router-dom";
 import DriverProtectedRoute from "./DriverProtectedRoute";
-import DriverHome from "../pages/driverHome";
+import DriverHome from "../pages/DriverRide.jsx";
 import Profile from "../pages/profile.jsx";
+import DriverRide from "../pages/DriverRide.jsx";
 
 function DriverRouteSelect() {
   return (
@@ -12,7 +13,7 @@ function DriverRouteSelect() {
             path="/"
             element={
               <DriverProtectedRoute>
-                <DriverHome />
+                <DriverRide />
               </DriverProtectedRoute>
             }
           />

@@ -15,6 +15,9 @@ import passport from "passport";
 import MongoStore from "connect-mongo";
 import "./config/passport.js";
 import carRoutes from "./routes/carRoutes.js"
+import locationRoutes from "./routes/locationRoute.js"
+import DriverfetchRoutes from "./routes/DriverfetchRoute.js"
+
 
 const PORT = 5000;
 dotenv.config();
@@ -88,7 +91,8 @@ console.log("Current Working Directory:", process.cwd());
 app.use("/api/admin", adminRoutes);
 app.use("/api/rideRoute", RideRoute);
 app.use("/api/schedule", scheduleRoutes);
-//app.use("/api/location",locationRoutes);
+app.use("/api/location",locationRoutes);
+app.use("/api/driver",DriverfetchRoutes);
 
 async function startServer() {
   await connectDB();
@@ -98,5 +102,8 @@ async function startServer() {
     console.log("Server started at http://localhost:5000");
   });
 }
+
+
+
 
 startServer();

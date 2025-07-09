@@ -35,26 +35,40 @@ const DriverRide = () => {
     height: "100%",
   };
 
+  // Default center - Colombo, Sri Lanka
   const defaultCenter = {
     lat: 6.9271,
     lng: 79.8612,
   };
 
-  // Initialize Google Maps Autocomplete
+  // Sri Lanka bounds
+  const sriLankaBounds = {
+    north: 10,    // Northernmost point
+    south: 5,     // Southernmost point
+    east: 82,     // Easternmost point
+    west: 79      // Westernmost point
+  };
+
+  // Initialize Google Maps Autocomplete with Sri Lanka restriction
   const initAutocomplete = () => {
     if (window.google && window.google.maps) {
       autocompleteRef.current.pickup =
         new window.google.maps.places.Autocomplete(
           document.getElementById("pickup-input"),
-          { types: ["geocode"] }
+          { 
+            types: ["geocode"],
+            componentRestrictions: { country: "lk" } // Sri Lanka only
+          }
         );
       autocompleteRef.current.dropoff =
         new window.google.maps.places.Autocomplete(
           document.getElementById("dropoff-input"),
-          { types: ["geocode"] }
+          { 
+            types: ["geocode"],
+            componentRestrictions: { country: "lk" } // Sri Lanka only
+          }
         );
 
-      // Add event listeners to update state when place changes
       autocompleteRef.current.pickup.addListener("place_changed", () => {
         const place = autocompleteRef.current.pickup.getPlace();
         if (place.formatted_address) {
@@ -71,12 +85,15 @@ const DriverRide = () => {
     }
   };
 
-  // Get address from coordinates
+  // Get address from coordinates with Sri Lanka bias
   const getAddressFromCoordinates = (lat, lng) => {
     if (!geocoderRef.current) return;
     
     geocoderRef.current.geocode(
-      { location: { lat, lng } },
+      { 
+        location: { lat, lng },
+        region: "lk" // Sri Lanka region bias
+      },
       (results, status) => {
         if (status === "OK") {
           if (results[0]) {
@@ -102,7 +119,6 @@ const DriverRide = () => {
 
     setSocket(socketInstance);
 
-    // Connection events
     socketInstance.on("connect", () => {
       console.log("Connected to server");
     });
@@ -118,7 +134,7 @@ const DriverRide = () => {
     };
   }, []);
 
-  // Initialize geolocation tracking with enhanced accuracy
+  // Initialize geolocation tracking
   useEffect(() => {
     if (navigator.geolocation) {
       const options = {
@@ -140,10 +156,8 @@ const DriverRide = () => {
           setCurrentLocation(newLocation);
           getAddressFromCoordinates(latitude, longitude);
 
-          // Update location history for path tracing
           setLocationHistory((prev) => [...prev.slice(-50), newLocation]);
 
-          // Send location update to server if in a ride
           if (currentRide && socket) {
             socket.emit("driver:location", {
               rideId: currentRide._id,
@@ -155,7 +169,6 @@ const DriverRide = () => {
         },
         (error) => {
           console.error("Geolocation error:", error);
-          // Fallback to less accurate positioning if high accuracy fails
           navigator.geolocation.getCurrentPosition(
             (position) => {
               const { latitude, longitude } = position.coords;
@@ -191,7 +204,6 @@ const DriverRide = () => {
       directionsServiceRef.current = new window.google.maps.DirectionsService();
       geocoderRef.current = new window.google.maps.Geocoder();
       
-      // Get initial address if we already have location
       if (currentLocation) {
         getAddressFromCoordinates(currentLocation.lat, currentLocation.lng);
       }
@@ -301,7 +313,7 @@ const DriverRide = () => {
       (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK) {
           const distance = result.routes[0].legs[0].distance.value; // in meters
-          const price = (distance * 0.002).toFixed(2); // 0.002 per meter
+          const price = (distance * 0.002).toFixed(2); // Sri Lanka pricing (adjust as needed)
           setPriceEstimate(price);
         } else {
           console.error("Directions request failed:", status);
@@ -356,7 +368,7 @@ const DriverRide = () => {
       {/* Header */}
       <header className="bg-blue-600 text-white p-4 shadow-md">
         <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">Driver Ride Dashboard</h1>
+          <h1 className="text-xl font-bold">Driver Ride Dashboard - Sri Lanka</h1>
         </div>
       </header>
 
@@ -394,12 +406,12 @@ const DriverRide = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Pickup Location
+                Pickup Location (Sri Lanka)
               </label>
               <input
                 id="pickup-input"
                 type="text"
-                placeholder=""
+                placeholder="Enter pickup location"
                 className="w-full p-2 border border-gray-300 rounded"
                 value={pickupInput}
                 onChange={(e) => setPickupInput(e.target.value)}
@@ -408,12 +420,12 @@ const DriverRide = () => {
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
-                Drop-off Location
+                Drop-off Location (Sri Lanka)
               </label>
               <input
                 id="dropoff-input"
                 type="text"
-                placeholder=""
+                placeholder="Enter drop-off location"
                 className="w-full p-2 border border-gray-300 rounded"
                 value={dropoffInput}
                 onChange={(e) => setDropoffInput(e.target.value)}
@@ -425,7 +437,7 @@ const DriverRide = () => {
               <div className="bg-blue-50 p-3 rounded-lg">
                 <p className="font-medium text-gray-700">
                   Estimated Price:{" "}
-                  <span className="text-green-600">LKR {priceEstimate}</span>
+                  <span className="text-green-600">Rs. {priceEstimate}</span>
                 </p>
               </div>
             )}
@@ -457,8 +469,12 @@ const DriverRide = () => {
                   <span className="font-medium">Fare:</span>
                   <span className="text-green-600 font-bold">
                     {" "}
-                    LKR {currentRide.fare?.toFixed(2) || "0.00"}
+                    Rs. {currentRide.fare?.toFixed(2) || "0.00"}
                   </span>
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Distance:</span>{" "}
+                  {(currentRide.distance / 1000).toFixed(1)} km
                 </p>
 
                 {rideStatus === "accepted" && (
@@ -519,6 +535,10 @@ const DriverRide = () => {
                 disableDefaultUI: true,
                 zoomControl: true,
                 gestureHandling: "greedy",
+                restriction: {
+                  latLngBounds: sriLankaBounds,
+                  strictBounds: false
+                }
               }}
               onDragEnd={() => {}}
               onZoomChanged={() => {}}
@@ -606,20 +626,20 @@ const DriverRide = () => {
               </h2>
 
               <div className="space-y-3 mb-6 bg-blue-50 p-4 rounded-lg">
-                 <p className="text-gray-700">
-            <span className="font-medium">From:</span> {currentRide.pickup}
-          </p>
-          <p className="text-gray-700">
-            <span className="font-medium">To:</span> {currentRide.dropoff}
-          </p>
-          <p className="text-gray-700">
-            <span className="font-medium">Distance:</span> {currentRide.distance}
-          </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">From:</span> {currentRide.pickup}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">To:</span> {currentRide.dropoff}
+                </p>
+                <p className="text-gray-700">
+                  <span className="font-medium">Distance:</span> {(currentRide.distance / 1000).toFixed(1)} km
+                </p>
                 <p className="text-gray-700">
                   <span className="font-medium">Fare:</span>
                   <span className="text-green-600 font-bold">
                     {" "}
-                    LKR {currentRide.fare?.toFixed(2) || "0.00"}
+                    Rs. {currentRide.fare?.toFixed(2) || "0.00"}
                   </span>
                 </p>
               </div>
