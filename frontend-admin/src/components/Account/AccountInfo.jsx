@@ -104,7 +104,7 @@ function AccountInfo() {
       </div>
       <p>Personal info</p>
       <div className="flex flex-col">
-        <div className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4 justify-around">
+        <div className="p-4 my-2  rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4 justify-around">
           <div>
             <RiAccountCircleFill className="w-[30px] h-[30px]" />
             {isEditable ? (
