@@ -6,6 +6,7 @@ import { RiSteering2Line } from "react-icons/ri";
 import { FaRegEdit } from "react-icons/fa";
 import { ImBin } from "react-icons/im";
 import AddUnit from "./AddUnit";
+import SecondaryLoadingScreen from "../SecondaryLoadingScreen";
 import UnitDetails from "./UnitDetails";
 import axios from "axios";
 
@@ -37,6 +38,7 @@ function CarDetails({ car, onUpdate }) {
   const [imageUrl, setImageUrl] = useState([]);
   const [tempImage, setTempImage] = useState(null);
   const [description, setDescription] = useState("");
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (car && car.keyImage) {
@@ -136,12 +138,19 @@ function CarDetails({ car, onUpdate }) {
   };
 
   const handleDeleteImage = async (imagePath) => {
-    const response = await axios.delete("/admin/delete_car_image", {
-      data: {
-        carId: car._id,
-        imagePath,
-      },
-    });
+    setLoading(true);
+    try {
+      const response = await axios.delete("/admin/delete_car_image", {
+        data: { carId: car._id, imagePath },
+      });
+      const { updatedCar } = response.data;
+      onUpdate(updatedCar);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      await new Promise((res) => setTimeout(res, 2000));
+      setLoading(false);
+    }
     // console.log("Deleted:", response.data);
   };
 
@@ -225,12 +234,12 @@ function CarDetails({ car, onUpdate }) {
   };
 
   return (
-    <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
-      <div className="flex flex-col gap-5 h-full">
+    <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] relative">
+      <div className="flex flex-col gap-5 h-full overflow-auto">
         <div className="flex flex-col gap-5">
           <input
             type="file"
-            accept="image/*"
+            accept="image/*" 
             ref={fileInputRef}
             className="hidden"
             onChange={onImageSelected}
@@ -582,33 +591,38 @@ function CarDetails({ car, onUpdate }) {
           </div>
         </div>
         <div>car Features</div>
-        {showConfirmDelete && (
-          <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
-              <p className="mb-4">Really delete this car?</p>
-              <div className="flex justify-end gap-2">
+      </div>
+      {showConfirmDelete && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+            <p className="mb-4">Really delete this car?</p>
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded"
+                onClick={() => setShowConfirmDelete(false)}
+              >
+                Cancel
+              </button>
+              <div className="button-wrapper">
                 <button
-                  className="px-4 py-2 bg-gray-200 rounded"
-                  onClick={() => setShowConfirmDelete(false)}
+                  className="button-primary"
+                  onClick={() => {
+                    handleDeleteCar();
+                    setShowConfirmDelete(false);
+                  }}
                 >
-                  Cancel
+                  Yes, delete
                 </button>
-                <div className="button-wrapper">
-                  <button
-                    className="button-primary"
-                    onClick={() => {
-                      handleDeleteCar();
-                      setShowConfirmDelete(false);
-                    }}
-                  >
-                    Yes, delete
-                  </button>
-                </div>
               </div>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+      {loading && (
+        <div className="absolute inset-0 backdrop-blur-sm rounded-lg bg-opacity-50  flex justify-center items-center gap-2 transition-opacity">
+          <SecondaryLoadingScreen />
+        </div>
+      )}
     </div>
   );
 }
