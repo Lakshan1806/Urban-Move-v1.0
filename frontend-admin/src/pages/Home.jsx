@@ -1,7 +1,8 @@
 import ActivePromotions from "../components/Home/ActivePromotions";
 import CarTypes from "../components/Home/CarTypes";
-import RecentActivities from "../components/Home/RecentActivities";
+import ExpiredPromotions from "../components/Home/ExpiredPromotions";
 import YearlyIncome from "../components/Home/YearlyIncome";
+import AddPromotions from "../components/Home/AddPromotions";
 
 function Home() {
   return (
@@ -19,13 +20,8 @@ function Home() {
           <YearlyIncome />
           <ActivePromotions />
           <CarTypes />
-          <RecentActivities />
-        </div>
-        <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
-          <YearlyIncome />
-          <ActivePromotions />
-          <CarTypes />
-          <RecentActivities />
+          <AddPromotions />
+          <ExpiredPromotions />
         </div>
       </div>
     </div>
