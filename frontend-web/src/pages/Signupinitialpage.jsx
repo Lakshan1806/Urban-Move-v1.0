@@ -13,8 +13,8 @@ function Signupinitialpage() {
     navigate("/dregister");
   };
   return (
-    <div className="flex justify-between px-14 h-full">
-      <div className="flex flex-col items-center justify-center  gap-[20px]">
+    <div className="flex flex-col lg:flex-row items-center justify-between w-full h-full px-4 lg:px-14 py-50 gap-10 ">
+      <div className="flex flex-col items-center gap-4 text-center">
         <p className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
           Create a driver account
         </p>
@@ -33,12 +33,19 @@ function Signupinitialpage() {
         </p>
       </div>
 
-      <img src={vector1} className="h-full py-10" />
+      <img
+        src={vector1}
+        alt="divider"
+        className="hidden lg:block h-full w-auto object-contain"
+      />
 
-      <div className="flex flex-col items-center justify-center  gap-[20px]">
+      <hr className="block lg:hidden border-t border-gray-300 w-full my-4" />
+
+      <div className="flex flex-col items-center gap-4 text-center">
         <p className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
           Create a customer account
         </p>
+
         <img src={Line} />
         <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center px-[22px] py-[10px] text-[20px]">
           <button

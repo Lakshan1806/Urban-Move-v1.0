@@ -13,8 +13,8 @@ function Signininitialpage() {
     navigate("/dlogin");
   };
   return (
-    <div className="flex justify-between h-full px-14">
-      <div className="flex flex-col items-center justify-center  gap-[20px]">
+    <div className="flex flex-col lg:flex-row items-center justify-between w-full h-full px-4 lg:px-14 py-50 gap-10 ">
+      <div className="flex flex-col items-center gap-4 text-center">
         <p className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
           Sign in to driver
         </p>
@@ -32,10 +32,14 @@ function Signininitialpage() {
           <Link to="/register">Don't have an account? Sign up</Link>
         </p>
       </div>
+      <img
+        src={vector1}
+        alt="divider"
+        className="hidden lg:block h-full w-auto object-contain"
+      />
+      <hr className="block lg:hidden border-t border-gray-300 w-full my-4" />
 
-      <img src={vector1} className="h-full py-10" />
-
-      <div className="flex flex-col items-center justify-center  gap-[20px]">
+      <div className="flex flex-col items-center gap-4 text-center">
         <p className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
           Sign in to ride / rent
         </p>
