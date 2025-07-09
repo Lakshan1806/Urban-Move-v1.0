@@ -1,12 +1,13 @@
 import { useContext } from "react";
 import { Navigate } from "react-router-dom";
 import { UserContext } from "../context/userContext";
+import PrimaryLoadingScreen from "./PrimaryLoadingScreen";
 
 function ProtectedRoute({ children, allowedRoles = [] }) {
   const { user, loading } = useContext(UserContext);
 
   if (loading) {
-    return null;
+    return <PrimaryLoadingScreen />;
   }
 
   if (!user) {
