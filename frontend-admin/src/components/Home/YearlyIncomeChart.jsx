@@ -7,7 +7,7 @@ function YearlyIncomeChart() {
 
   useEffect(() => {
     const documentStyle = getComputedStyle(document.documentElement);
-    const data = {
+    const data = { 
       labels: ["A", "B", "C"],
       datasets: [
         {
