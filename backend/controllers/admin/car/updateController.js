@@ -48,7 +48,7 @@ const updateController = {
         },
         { new: true }
       ).select({
-        createdAt: 0,
+        createdAt: 0, 
         updatedAt: 0,
       });
       if (updatedCar.images) {
@@ -62,7 +62,7 @@ const updateController = {
           .replace("backend/uploads", "/uploads");
       }
       if (updatedCar.logo) {
-        updatedCar.logo = updatedCar.logo
+        updatedCar.logo = updatedCar.logo 
           .replace(/\\/g, "/")
           .replace("backend/uploads", "/uploads");
       }
