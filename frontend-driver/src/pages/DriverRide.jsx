@@ -10,7 +10,6 @@ import { io } from "socket.io-client";
 import axios from "axios";
 
 const DriverRide = () => {
-  // State management
   const [socket, setSocket] = useState(null);
   const [currentRide, setCurrentRide] = useState(null);
   const [rideStatus, setRideStatus] = useState("available");
@@ -28,24 +27,22 @@ const DriverRide = () => {
     distance: "",
     duration: "",
     fare: "",
-    status: "available",
+    status: "",
     scheduleTime: "",
   });
-  const [manualRideAccepted, setManualRideAccepted] = useState(false); // New state for manual acceptance
+  const [manualRideAccepted, setManualRideAccepted] = useState(false);
+  const [tripStarted, setTripStarted] = useState(false);
 
   const mapRef = useRef(null);
   const watchIdRef = useRef(null);
-  const autocompleteRef = useRef({ pickup: null, dropoff: null });
   const directionsServiceRef = useRef(null);
   const geocoderRef = useRef(null);
 
-  // Map configuration
   const mapContainerStyle = {
     width: "100%",
     height: "100%",
   };
 
-  // Sri Lanka bounds
   const sriLankaBounds = {
     north: 10,
     south: 5,
@@ -53,7 +50,24 @@ const DriverRide = () => {
     west: 79,
   };
 
-  // Get current location with proper error handling
+  const resetRideData = () => {
+    setCurrentRide(null);
+    setRideStatus("available");
+    setDirections(null);
+    setRideDetails({
+      distance: "",
+      duration: "",
+      fare: "",
+      status: "",
+      scheduleTime: "",
+    });
+    setShowAcceptModal(false);
+    setPickupInput("");
+    setDropoffInput("");
+    setManualRideAccepted(false);
+    setTripStarted(false);
+  };
+
   const getCurrentLocation = async () => {
     if (!navigator.geolocation) {
       setLocationError("Geolocation is not supported by your browser");
@@ -103,7 +117,6 @@ const DriverRide = () => {
       setCurrentLocation(newLocation);
       setLocationHistory((prev) => [...prev.slice(-50), newLocation]);
       
-      // Get address from coordinates
       try {
         const response = await axios.get(
           `http://localhost:5000/api/location/reverse-geocode?lat=${latitude}&lng=${longitude}`
@@ -135,41 +148,30 @@ const DriverRide = () => {
     }
   };
 
-  // Initialize Google Maps Autocomplete with Sri Lanka restriction
-  const initAutocomplete = () => {
-    if (window.google && window.google.maps) {
-      autocompleteRef.current.pickup = new window.google.maps.places.Autocomplete(
-        document.getElementById("pickup-input"),
-        {
-          types: ["geocode"],
-          componentRestrictions: { country: "lk" },
-        }
-      );
-      autocompleteRef.current.dropoff = new window.google.maps.places.Autocomplete(
-        document.getElementById("dropoff-input"),
-        {
-          types: ["geocode"],
-          componentRestrictions: { country: "lk" },
-        }
-      );
-
-      autocompleteRef.current.pickup.addListener("place_changed", () => {
-        const place = autocompleteRef.current.pickup.getPlace();
-        if (place.formatted_address) {
-          setPickupInput(place.formatted_address);
-        }
-      });
-
-      autocompleteRef.current.dropoff.addListener("place_changed", () => {
-        const place = autocompleteRef.current.dropoff.getPlace();
-        if (place.formatted_address) {
-          setDropoffInput(place.formatted_address);
-        }
-      });
+  const startTrip = () => {
+    if (!pickupInput || !dropoffInput || !directionsServiceRef.current) {
+      return;
     }
+
+    setTripStarted(true);
+
+    directionsServiceRef.current.route(
+      {
+        origin: pickupInput,
+        destination: dropoffInput,
+        travelMode: window.google.maps.TravelMode.DRIVING,
+      },
+      (result, status) => {
+        if (status === window.google.maps.DirectionsStatus.OK) {
+          setDirections(result);
+        } else {
+          console.error("Directions request failed:", status);
+          setDirections(null);
+        }
+      }
+    );
   };
 
-  // Initialize socket connection
   useEffect(() => {
     const socketInstance = io("http://localhost:5000", {
       reconnection: true,
@@ -194,11 +196,9 @@ const DriverRide = () => {
     };
   }, []);
 
-  // Initialize geolocation tracking
   useEffect(() => {
     getCurrentLocation();
 
-    // Set up watch position for continuous updates
     if (navigator.geolocation) {
       watchIdRef.current = navigator.geolocation.watchPosition(
         (position) => {
@@ -230,40 +230,41 @@ const DriverRide = () => {
     };
   }, []);
 
-  // Initialize map, autocomplete, and services when loaded
   useEffect(() => {
     if (mapLoaded && window.google) {
-      initAutocomplete();
       directionsServiceRef.current = new window.google.maps.DirectionsService();
       geocoderRef.current = new window.google.maps.Geocoder();
     }
   }, [mapLoaded]);
 
-  // Listen for ride events
   useEffect(() => {
     if (!socket) return;
 
     const handleNewRide = (ride) => {
-      setCurrentRide(ride);
-      setRideDetails({
-        distance: (ride.distance / 1000).toFixed(1) + " km",
-        duration: formatDuration(ride.duration),
-        fare: "Rs. " + ride.fare?.toFixed(2) || "0.00",
-        status: "requested",
-        scheduleTime: ride.scheduleTime || "ASAP",
-      });
-      setShowAcceptModal(true);
-      setRideStatus("requested");
-      setManualRideAccepted(false); // Reset manual acceptance
+      if (!currentRide) {
+        setCurrentRide(ride);
+        setRideDetails({
+          distance: (ride.distance / 1000).toFixed(1) + " km",
+          duration: formatDuration(ride.duration),
+          fare: "Rs. " + ride.fare?.toFixed(2) || "0.00",
+          status: "requested",
+          scheduleTime: ride.scheduleTime || "ASAP",
+        });
+        setShowAcceptModal(true);
+        setRideStatus("requested");
+        setManualRideAccepted(false);
+      }
     };
 
     const handleRideUpdate = (updatedRide) => {
-      setCurrentRide(updatedRide);
-      setRideDetails(prev => ({
-        ...prev,
-        status: updatedRide.status,
-        scheduleTime: updatedRide.scheduleTime || prev.scheduleTime,
-      }));
+      if (currentRide && currentRide._id === updatedRide._id) {
+        setCurrentRide(updatedRide);
+        setRideDetails(prev => ({
+          ...prev,
+          status: updatedRide.status,
+          scheduleTime: updatedRide.scheduleTime || prev.scheduleTime,
+        }));
+      }
     };
 
     const handleRideCompletion = () => {
@@ -273,31 +274,29 @@ const DriverRide = () => {
         status: "completed"
       }));
       setTimeout(() => {
-        setCurrentRide(null);
-        setRideStatus("available");
-        setDirections(null);
-        setRideDetails({
-          distance: "",
-          duration: "",
-          fare: "",
-          status: "available",
-          scheduleTime: "",
-        });
+        resetRideData();
       }, 3000);
+    };
+
+    const handleRideCanceled = (rideId) => {
+      if (currentRide && currentRide._id === rideId) {
+        resetRideData();
+      }
     };
 
     socket.on("ride:requested", handleNewRide);
     socket.on("ride:updated", handleRideUpdate);
     socket.on("ride:completed", handleRideCompletion);
+    socket.on("ride:canceled", handleRideCanceled);
 
     return () => {
       socket.off("ride:requested", handleNewRide);
       socket.off("ride:updated", handleRideUpdate);
       socket.off("ride:completed", handleRideCompletion);
+      socket.off("ride:canceled", handleRideCanceled);
     };
-  }, [socket]);
+  }, [socket, currentRide]);
 
-  // Helper function to format duration
   const formatDuration = (seconds) => {
     if (!seconds) return "N/A";
     const hours = Math.floor(seconds / 3600);
@@ -309,7 +308,6 @@ const DriverRide = () => {
     return result || "<1 min";
   };
 
-  // Calculate route when ride or location changes
   useEffect(() => {
     if (
       !currentLocation ||
@@ -330,11 +328,11 @@ const DriverRide = () => {
       } else {
         return;
       }
-    } 
-    // New: Calculate route for manual acceptance
-    else if (manualRideAccepted && pickupInput) {
+    } else if (manualRideAccepted && pickupInput) {
       origin = currentLocation;
       destination = pickupInput;
+    } else if (tripStarted && pickupInput && dropoffInput) {
+      return;
     } else {
       return;
     }
@@ -358,7 +356,7 @@ const DriverRide = () => {
         }
       }
     );
-  }, [currentRide, currentLocation, rideStatus, mapLoaded, manualRideAccepted, pickupInput]);
+  }, [currentRide, currentLocation, rideStatus, mapLoaded, manualRideAccepted, pickupInput, tripStarted, dropoffInput]);
 
   const handleMapLoad = (map) => {
     mapRef.current = map;
@@ -369,66 +367,25 @@ const DriverRide = () => {
     console.error("Google Maps failed to load");
   };
 
-  // const acceptRide = () => {
-  //   if (socket && currentRide) {
-  //     socket.emit("ride:accept", {
-  //       rideId: currentRide._id,
-  //       driverLocation: currentLocation,
-  //     });
-  //     setRideStatus("accepted");
-  //     setRideDetails(prev => ({
-  //       ...prev,
-  //       status: "accepted"
-  //     }));
-  //     setShowAcceptModal(false);
-  //   }
-  // };
-
   const declineRide = () => {
     if (socket && currentRide) {
       socket.emit("ride:decline", { rideId: currentRide._id });
     }
-    setCurrentRide(null);
-    setShowAcceptModal(false);
-    setRideStatus("available");
-    setRideDetails({
-      distance: "",
-      duration: "",
-      fare: "",
-      status: "available",
-      scheduleTime: "",
-    });
+    resetRideData();
   };
 
-  // const startRide = () => {
-  //   if (socket && currentRide) {
-  //     socket.emit("ride:start", {
-  //       rideId: currentRide._id,
-  //       driverLocation: currentLocation,
-  //     });
-  //     setRideStatus("in_progress");
-  //     setRideDetails(prev => ({
-  //       ...prev,
-  //       status: "in_progress"
-  //     }));
-  //   }
-  // };
+  const acceptRide = () => {
+    if (socket && currentRide) {
+      socket.emit("ride:accept", { rideId: currentRide._id });
+      setRideStatus("accepted");
+      setRideDetails(prev => ({
+        ...prev,
+        status: "accepted"
+      }));
+      setShowAcceptModal(false);
+    }
+  };
 
-  // const completeRide = () => {
-  //   if (socket && currentRide) {
-  //     socket.emit("ride:complete", {
-  //       rideId: currentRide._id,
-  //       endLocation: currentLocation,
-  //     });
-  //     setRideStatus("completed");
-  //     setRideDetails(prev => ({
-  //       ...prev,
-  //       status: "completed"
-  //     }));
-  //   }
-  // };
-
-  // New: Handle manual ride acceptance
   const handleManualAccept = () => {
     if (pickupInput) {
       setManualRideAccepted(true);
@@ -439,21 +396,14 @@ const DriverRide = () => {
     }
   };
 
-  // New: Handle manual ride decline
   const handleManualDecline = () => {
-    setManualRideAccepted(false);
-    setDirections(null);
-    setRideDetails(prev => ({
-      ...prev,
-      status: "available"
-    }));
+    resetRideData();
   };
 
   const userId = "680f384d4c417b3a83f65278";
   useEffect(() => {
     const fetchInitialData = async () => {
       try {
-        // Fetch all data in parallel
         const [pickupRes, dropoffRes, detailsRes] = await Promise.all([
           axios.get(`/api/driver/pickup/${userId}`),
           axios.get(`/api/driver/dropoff/${userId}`),
@@ -486,7 +436,6 @@ const DriverRide = () => {
     }
   }, []);
 
-  // Location Status Component
   const LocationStatus = () => {
     if (isLocating) {
       return (
@@ -525,26 +474,12 @@ const DriverRide = () => {
         <p className="text-gray-700 mb-2">
           <span className="font-medium">Address:</span> {currentAddress}
         </p>
-        {/*<p className="text-gray-700">
-          <span className="font-medium">Coordinates:</span>{" "}
-          {currentLocation.lat.toFixed(6)}, {currentLocation.lng.toFixed(6)}
-        </p>
-        {currentLocation.accuracy && (
-          <p className="text-gray-700">
-            <span className="font-medium">Accuracy:</span>{" "}
-            {Math.round(currentLocation.accuracy)} meters
-            {currentLocation.accuracy > 100 && (
-              <span className="text-yellow-600 ml-1">(Low accuracy)</span>
-            )}
-          </p>
-        )}*/}
       </div>
     );
   };
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      {/* Header */}
       <header className="bg-blue-600 text-white p-4 shadow-md">
         <div className="flex justify-between items-center">
           <h1 className="text-xl font-bold">Driver Ride Dashboard</h1>
@@ -557,9 +492,7 @@ const DriverRide = () => {
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Side - Form */}
         <div className="w-1/3 bg-white p-4 border-r border-gray-200 overflow-y-auto">
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-gray-800">
@@ -658,31 +591,46 @@ const DriverRide = () => {
               />
             </div>
 
-            {/* New: Accept/Decline buttons */}
             {!currentRide && (
-              <div className="flex gap-4 mt-4">
-                <button
-                  onClick={handleManualAccept}
-                  disabled={!pickupInput}
-                  className={`px-4 py-2 rounded-lg font-medium ${
-                    !pickupInput
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-green-600 text-white hover:bg-green-700"
-                  }`}
-                >
-                  Accept
-                </button>
-                <button
-                  onClick={handleManualDecline}
-                  disabled={!manualRideAccepted}
-                  className={`px-4 py-2 rounded-lg font-medium ${
-                    !manualRideAccepted
-                      ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                      : "bg-red-600 text-white hover:bg-red-700"
-                  }`}
-                >
-                  Decline
-                </button>
+              <div className="flex flex-col gap-4 mt-4">
+                <div className="flex gap-4">
+                  <button
+                    onClick={handleManualAccept}
+                    disabled={!pickupInput}
+                    className={`px-4 py-2 rounded-lg font-medium ${
+                      !pickupInput
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-green-600 text-white hover:bg-green-700"
+                    }`}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    onClick={handleManualDecline}
+                    disabled={!manualRideAccepted}
+                    className={`px-4 py-2 rounded-lg font-medium ${
+                      !manualRideAccepted
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-red-600 text-white hover:bg-red-700"
+                    }`}
+                  >
+                    Decline
+                  </button>
+                </div>
+
+                {pickupInput && dropoffInput && (
+                  <button
+                    onClick={startTrip}
+                    disabled={tripStarted}
+                    className={`w-full py-2 rounded-lg font-medium ${
+                      tripStarted
+                        ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+                        : "bg-blue-600 text-white hover:bg-blue-700"
+                    }`}
+                  >
+                    Start Trip
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -729,31 +677,10 @@ const DriverRide = () => {
                   {rideDetails.scheduleTime}
                 </p>
               </div>
-
-              <div className="flex justify-center gap-4 mt-4">
-                {/* {rideStatus === "accepted" && (
-                  <button
-                    onClick={startRide}
-                    className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors shadow-md"
-                  >
-                    Start Trip
-                  </button>
-                )} */}
-
-                {/* {rideStatus === "in_progress" && (
-                  <button
-                    onClick={completeRide}
-                    className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md"
-                  >
-                    Complete Ride
-                  </button>
-                )} */}
-              </div>
             </div>
           )}
         </div>
 
-        {/* Right Side - Map */}
         <div className="w-2/3 relative">
           <LoadScript
             googleMapsApiKey="AIzaSyBzy5MB38A69NzcnngmihjBajzg0eNZsTk"
@@ -899,7 +826,7 @@ const DriverRide = () => {
                 <button
                   onClick={acceptRide}
                   className="flex-1 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors shadow-md"
-                  >
+                >
                   Accept
                 </button>
               </div>
