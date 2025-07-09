@@ -172,6 +172,24 @@ const DriverRide = () => {
     );
   };
 
+  const finishTrip = () => {
+    if (socket && currentRide) {
+      socket.emit("ride:complete", { rideId: currentRide._id });
+      setRideStatus("completed");
+      setRideDetails(prev => ({
+        ...prev,
+        status: "completed"
+      }));
+      setTimeout(() => {
+        resetRideData();
+      }, 3000);
+    } else if (tripStarted) {
+      // For manual trips
+      setTripStarted(false);
+      resetRideData();
+    }
+  };
+
   useEffect(() => {
     const socketInstance = io("http://localhost:5000", {
       reconnection: true,
@@ -632,6 +650,16 @@ const DriverRide = () => {
                   </button>
                 )}
               </div>
+            )}
+
+            {/* Finish Trip Button - Positioned below Start Trip button */}
+            {(currentRide || tripStarted) && (
+              <button
+                onClick={finishTrip}
+                className="w-full py-2 bg-red-600 text-white font-medium rounded-lg hover:bg-red-700 mt-4"
+              >
+                Finish Trip
+              </button>
             )}
           </div>
 

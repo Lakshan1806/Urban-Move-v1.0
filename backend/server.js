@@ -17,6 +17,7 @@ import "./config/passport.js";
 import carRoutes from "./routes/carRoutes.js"
 import locationRoutes from "./routes/locationRoute.js"
 import DriverfetchRoutes from "./routes/DriverfetchRoute.js"
+import driverRideRoutes from './routes/driverRideRoutes.js';
 
 
 const PORT = 5000;
@@ -93,6 +94,7 @@ app.use("/api/rideRoute", RideRoute);
 app.use("/api/schedule", scheduleRoutes);
 app.use("/api/location",locationRoutes);
 app.use("/api/driver",DriverfetchRoutes);
+app.use('/api/driver-rides', driverRideRoutes);
 
 async function startServer() {
   await connectDB();
