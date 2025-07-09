@@ -42,27 +42,27 @@ function Rent() {
       <div className="flex flex-row">RENT</div>
 
       <div className="flex-1 flex flex-col overflow-y-auto  min-h-0 snap-y snap-mandatory scroll-smooth">
-        <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          <div className="h-full col-span-6 row-span-12 flex flex-col">
+        <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start ">
+          <div className="h-full col-span-6 row-span-12 flex flex-col text-5xl font-bold justify-center items-center">
             <h1>
               Browse our fleet and pick the perfect car for a day, a week, or
               even a month.
             </h1>
-            {!showForm && (
-              <div className="button-wrapper">
-                <button
-                onClick={handleShowForm}
-                className="button-primary"
-              >
-                Rent Now
-              </button></div>
-            )}
+            <div className="p-6">
+              {!showForm && (
+                <div className="button-wrapper w-full sm:w-48 px-4 py-2 text-base justify-center">
+                  <button onClick={handleShowForm} className="button-primary ">
+                    Rent Now
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
 
           <img
             src={myImage}
             alt="Car Rental"
-            className="h-full col-span-6 row-span-12"
+            className=" h-full col-span-6 row-span-12 px-30"
           />
         </div>
 
@@ -105,11 +105,13 @@ function Rent() {
 function Image({ src }) {
   return (
     <div className="h-full col-span-4 row-span-12">
-      <div className="flex h-full items-center justify-center"><img
-        src={src}
-        alt="Rental Car"
-        className="h-3/4 w-2/3 md:max-w-sm lg:max-w-md"
-      /></div>
+      <div className="flex h-full items-center justify-center">
+        <img
+          src={src}
+          alt="Rental Car"
+          className="h-3/4 w-2/3 md:max-w-sm lg:max-w-md rounded-xl shadow-2xl border-4 border-gray-600 rounded-xl transition-transform duration-300 hover:scale-105 hover:shadow-xl rounded-lg "
+        />
+      </div>
     </div>
   );
 }
@@ -145,11 +147,13 @@ function Slideshow() {
 
   return (
     <div className="h-full col-span-12 row-span-12 ">
-      <div className="flex h-full w-full items-center justify-center" ><img
-        src={slideshowPath[current]}
-        alt="slideshow"
-        className=" h-3/4 object-cover transition-all duration-500"
-      /></div>
+      <div className="flex h-full w-full items-center justify-center">
+        <img
+          src={slideshowPath[current]}
+          alt="slideshow"
+          className=" h-3/4 object-cover transition-all duration-500 overflow-hidden rounded-lg shadow-lg border-4 border-gray-600 rounded-xl transition-transform duration-300 hover:scale-105 hover:shadow-xl rounded-lg "
+        />
+      </div>
     </div>
   );
 }
