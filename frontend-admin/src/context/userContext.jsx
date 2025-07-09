@@ -16,9 +16,10 @@ export function UserContextProvider({ children }) {
         setUser(data);
       } catch (error) {
         console.error("Session validation failed:", error);
-        localStorage.removeItem("userData"); 
+        localStorage.removeItem("userData");
         setUser(null);
       } finally {
+        await new Promise((res) => setTimeout(res, 5000));
         setLoading(false);
       }
     }
