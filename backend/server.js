@@ -2,8 +2,9 @@ import express from "express";
 import dotenv from "dotenv";
 import { connectDB } from "./config/db.js";
 import cors from "cors";
-import adminRoutes from "./routes/adminRoute.js";
+import adminRoutes from "./routes/adminRoutes.js";
 import checkAndCreateAdmin from "./utils/adminInitialSetup.js";
+import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -26,7 +27,7 @@ if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
   console.error(" Missing SESSION_SECRET or MONGO_URI in .env file");
   process.exit(1);
 }
-
+ 
 const app = express();
 
 app.use(
@@ -37,7 +38,7 @@ app.use(
 );
 
 app.use(
-  session({
+  session({ 
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
@@ -97,7 +98,7 @@ app.use("/api/driver",DriverfetchRoutes);
 async function startServer() {
   await connectDB();
   await checkAndCreateAdmin();
-
+  schedulePromoCleanup();
   app.listen(5000, () => {
     console.log("Server started at http://localhost:5000");
   });

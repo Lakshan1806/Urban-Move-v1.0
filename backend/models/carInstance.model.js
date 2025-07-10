@@ -13,10 +13,11 @@ const carInstanceSchema = new mongoose.Schema(
     },
     createdAt: { type: Date },
     updatedAt: { type: Date },
-    isAvailable: { type: Boolean, default: true },
+    //isAvailable: { type: Boolean, default: true },
     location: { type: String, required: true },
   },
   { timestamps: true }
 );
 
 export default mongoose.model("CarInstance", carInstanceSchema);
+ 

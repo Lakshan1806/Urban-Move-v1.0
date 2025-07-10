@@ -1,13 +1,14 @@
-import axios from "axios";
 import { useState } from "react";
+import axios from "axios";
 
 function AddUnit({ onSaveForm, carID }) {
   const [vin, setVin] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [color, setColor] = useState("");
+  const [location, setLocation] = useState("");
 
   const handleSave = async () => {
-    const newCarData = { vin, licensePlate, color, carID };
+    const newCarData = { vin, licensePlate, color, location, carID };
     console.log("New Car Data:", newCarData);
     const response = await axios.post("/admin/add_unit", newCarData);
   };
@@ -49,26 +50,35 @@ function AddUnit({ onSaveForm, carID }) {
         />
       </div>
 
-      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-        <button
-          type="button"
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-          onClick={handleSave}
-        >
-          save
-        </button>
+      <div>
+        <label htmlFor="vin">Location:</label>
+        <input
+          type="text"
+          id="location"
+          value={location}
+          onChange={(e) => setLocation(e.target.value)}
+          required
+          placeholder="Enter Location"
+        />
       </div>
+      <div className="flex flex-row items-center justify-center gap-5">
+        <div className="button-wrapper">
+          <button type="button" className="button-primary" onClick={handleSave}>
+            Save
+          </button>
+        </div>
 
-      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-        <button
-          type="button"
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-          onClick={() => {
-            onSaveForm(false);
-          }}
-        >
-          done
-        </button>
+        <div className="button-wrapper">
+          <button
+            type="button"
+            className="button-primary"
+            onClick={() => {
+              onSaveForm(false);
+            }}
+          >
+            Cancel
+          </button>
+        </div>
       </div>
     </div>
   );

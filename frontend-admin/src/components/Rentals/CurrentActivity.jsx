@@ -1,5 +1,9 @@
 function CurrentActivity() {
-  return <div>CurrentActivity</div>;
+  return (
+    <div className="col-span-12 row-span-6 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
+      CurrentActivity
+    </div>
+  );
 }
 
 export default CurrentActivity;

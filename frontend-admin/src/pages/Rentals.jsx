@@ -2,6 +2,8 @@ import { useState } from "react";
 import AvailableCars from "../components/Rentals/AvailableCars";
 import CarDetails from "../components/Rentals/CarDetails";
 import AddCars from "../components/Rentals/AddCars";
+import RecentlyDeletedCars from "../components/Rentals/RecentlyDeletedCars";
+import RecentlyDeletedUnits from "../components/Rentals/RecentlyDeletedUnits";
 import CurrentActivity from "../components/Rentals/CurrentActivity";
 
 function Rentals() {
@@ -20,15 +22,22 @@ function Rentals() {
   return (
     <div className="h-full flex flex-col">
       <div className="flex flex-row justify-between flex-none">
-        <h1 className="[-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px]">
+        <h1
+          className="text-grad-stroke font-[700] text-[36px]"
+          data-text="Rentals"
+        >
           Rentals
         </h1>
       </div>
-      <div className="grid grid-cols-12 grid-rows-12 gap-3 flex-1 min-h-0">
-        {component}
-
-        <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
+      <div className="flex-1 flex flex-col gap-3 overflow-y-auto min-h-0 snap-y snap-mandatory scroll-smooth">
+        <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
+          {component}
           <CarDetails car={carDetails} onUpdate={setCarDetails} />
+        </div>
+        <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
+          <CurrentActivity />
+          <RecentlyDeletedCars />
+          <RecentlyDeletedUnits />
         </div>
       </div>
     </div>

@@ -1,11 +1,12 @@
-import Admin from "../../models/admin.model.js";
+import Admin from "../../../models/admin.model.js";
 import jwt from "jsonwebtoken";
-import generateRandomPassword from "../../utils/passwordGenerator.js";
-import sendWelcomeMail from "../../utils/mailer.js";
+import generateRandomPassword from "../../../utils/passwordGenerator.js";
+import sendWelcomeMail from "../../../utils/mailer.js";
 
 const adminAccountManagementController = {
   changePassword: (req, res) => {
-    res.send("Server is ready");
+    // To Be Implemented
+    res.send("To Be Implemented");
   },
 
   addAdmin: async (req, res) => {
@@ -50,8 +51,10 @@ const adminAccountManagementController = {
       username: 1,
       email: 1,
       photo: 1,
+      role: 1,
     });
     admins.map((admin) => {
+      //console.log(admin.photo)
       if (admin.photo) {
         admin.photo = admin.photo
           .replace(/\\/g, "/")
@@ -61,7 +64,7 @@ const adminAccountManagementController = {
     res.json(admins);
   },
 
-  accountInfo: async (req, res) => {
+  accountInfo: async (req, res) => {   
     const { token } = req.cookies;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
