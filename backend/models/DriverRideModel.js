@@ -1,58 +1,72 @@
-import { Schema, model } from 'mongoose';
+import mongoose from 'mongoose';
 
-const rideSchema = new Schema({
-  passengerId: {
-    type: Schema.Types.ObjectId,
-    ref: 'User',
+const driverRideSchema = new mongoose.Schema({
+  rideId: {
+    type: String,
     required: true
   },
   driverId: {
-    type: Schema.Types.ObjectId,
-    ref: 'Driver'
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Driver',
+    required: true
   },
-  pickupLocation: {
-    address: String,
-    coordinates: {
-      lat: Number,
-      lng: Number
-    }
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',
+    required: true
   },
-  dropoffLocation: {
-    address: String,
-    coordinates: {
-      lat: Number,
-      lng: Number
-    }
+  pickup: {
+    type: String,
+    required: true
   },
-  driverLocation: {
-    coordinates: {
-      lat: Number,
-      lng: Number
-    },
-    timestamp: Date
+  dropoff: {
+    type: String,
+    required: true
+  },
+  startLocation: {
+    lat: Number,
+    lng: Number,
+    address: String
+  },
+  endLocation: {
+    lat: Number,
+    lng: Number,
+    address: String
+  },
+  driverLocationUpdates: [{
+    lat: Number,
+    lng: Number,
+    accuracy: Number,
+    timestamp: Date,
+    address: String
+  }],
+  distance: String,
+  duration: String,
+  fare: {
+    type: Number,
+    required: true,
+    min: 0
+  },
+  driverEarnings: {
+    type: Number,
+    required: true,
+    min: 0
   },
   status: {
     type: String,
     enum: ['requested', 'accepted', 'in_progress', 'completed', 'cancelled'],
     default: 'requested'
   },
-  fare: {
-    type: Number,
-    min: 0
-  },
-  distance: Number,
-  duration: Number,
-  route: Object,
+  route: [{
+    lat: Number,
+    lng: Number
+  }],
   createdAt: {
     type: Date,
     default: Date.now
-  },
-  updatedAt: Date
+  }
 });
 
-rideSchema.index({ passengerId: 1 });
-rideSchema.index({ driverId: 1 });
-rideSchema.index({ status: 1 });
-rideSchema.index({ 'pickupLocation.coordinates': '2dsphere' });
+const DriverRide = mongoose.model('DriverRide', driverRideSchema);
 
-export default model('Ride', rideSchema);
+export default DriverRide;

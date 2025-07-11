@@ -32,6 +32,7 @@ const DriverRide = () => {
   });
   const [manualRideAccepted, setManualRideAccepted] = useState(false);
   const [tripStarted, setTripStarted] = useState(false);
+  const [isFinishingTrip, setIsFinishingTrip] = useState(false);
 
   const mapRef = useRef(null);
   const watchIdRef = useRef(null);
@@ -171,6 +172,94 @@ const DriverRide = () => {
       }
     );
   };
+
+const finishTrip = async () => {
+  setIsFinishingTrip(true);
+  try {
+    if (socket && currentRide) {
+      // First emit the completion event
+      socket.emit("ride:complete", { rideId: currentRide._id });
+      
+      // Parse fare amount correctly
+      const fareAmount = parseFloat(rideDetails.fare.replace(/[^0-9.]/g, '')) || 0;
+      
+      // Prepare ride data for saving
+      const rideData = {
+        rideId: currentRide._id,
+        driverId: "680f384d4c417b3a83f65278", // Replace with actual driver ID
+        userId: currentRide.userId || "unknown",
+        pickup: currentRide.pickup || pickupInput,
+        dropoff: currentRide.dropoff || dropoffInput,
+        startLocation: {
+          lat: currentLocation.lat,
+          lng: currentLocation.lng,
+          address: currentAddress
+        },
+        endLocation: {
+          lat: currentLocation.lat,
+          lng: currentLocation.lng,
+          address: currentAddress
+        },
+        driverLocationUpdates: locationHistory.map(loc => ({
+          lat: loc.lat,
+          lng: loc.lng,
+          accuracy: loc.accuracy,
+          timestamp: loc.timestamp,
+          address: currentAddress
+        })),
+        distance: rideDetails.distance,
+        duration: rideDetails.duration,
+        fare: fareAmount,
+        driverEarnings: fareAmount * 0.8, // 80% of fare
+        status: "completed",
+        route: directions?.routes[0]?.overview_path?.map(point => ({
+          lat: point.lat(),
+          lng: point.lng()
+        })) || []
+      };
+
+      // Save ride history to database
+      const response = await axios.post(
+        "http://localhost:5000/api/driver-rides/save",
+        rideData,
+        {
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
+      );
+
+      if (response.data && response.data.success) {
+        setRideStatus("completed");
+        setRideDetails(prev => ({
+          ...prev,
+          status: "completed"
+        }));
+        
+        setTimeout(() => {
+          resetRideData();
+        }, 3000);
+      } else {
+        console.error("Failed to save ride history:", response.data?.message || "Unknown error");
+        alert("Failed to save ride history: " + (response.data?.message || "Unknown error"));
+      }
+    } else if (tripStarted) {
+      // For manual trips
+      setTripStarted(false);
+      resetRideData();
+    }
+  } catch (error) {
+    console.error("Error completing trip:", error);
+    if (error.response) {
+      console.error("Server responded with:", error.response.data);
+      alert("Error: " + (error.response.data.message || error.message));
+    } else {
+      alert("Error completing trip: " + error.message);
+    }
+  } finally {
+    setIsFinishingTrip(false);
+  }
+};
 
   useEffect(() => {
     const socketInstance = io("http://localhost:5000", {
@@ -632,6 +721,18 @@ const DriverRide = () => {
                   </button>
                 )}
               </div>
+            )}
+
+            {(currentRide || tripStarted) && (
+              <button
+                onClick={finishTrip}
+                disabled={isFinishingTrip}
+                className={`w-full py-2 text-white font-medium rounded-lg hover:bg-red-700 mt-4 ${
+                  isFinishingTrip ? "bg-red-400" : "bg-red-600"
+                }`}
+              >
+                {isFinishingTrip ? "Finishing..." : "Finish Trip"}
+              </button>
             )}
           </div>
 

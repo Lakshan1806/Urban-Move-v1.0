@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { getRouteDetails } from '../utils/getRouteDetails.js';
-import Ride from '../models/RideModel.js';
+//import Ride from '../models/RideModel.js';
 import { calculateFare } from '../utils/distanceCalculations.js';
 
 export const autocomplete = async (req, res) => {
@@ -97,31 +97,10 @@ export const trackRoute = async (req, res) => {
   
     const fare = calculateFare(routeDetails.distance);
 
-    const newRide = new Ride({
-      userId: req.user.id,
-      pickup,
-      dropoff,
-      startLocation: routeDetails.start_location,
-      endLocation: routeDetails.end_location,
-      driverLocation: routeDetails.start_location,
-      distance: routeDetails.distance,
-      duration: routeDetails.duration,
-      fare,
-      status: 'pending',
-      steps: routeDetails.steps.map(step => ({
-        travel_mode: step.travel_mode,
-        instructions: step.html_instructions,
-        distance: step.distance,
-        duration: step.duration,
-        polyline: typeof step.polyline === 'string' ? step.polyline : step.polyline.points
-      })),
-      lastUpdated: new Date()
-    });
-
-    const savedRide = await newRide.save();
+    
 
     res.json({
-      rideId: savedRide._id,
+      
       distance: routeDetails.distance,
       duration: routeDetails.duration,
       start_address: routeDetails.start_address,
