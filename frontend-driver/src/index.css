@@ -1,5 +1,59 @@
-@import "tailwindcss";
+@import "tailwindcss" layer(tw);
+@import "primereact/resources/themes/saga-blue/theme.css" layer(prime);
+@import "primeicons/primeicons.css" layer(prime);
 
-.debug-outlines *{
-  outline: 1px solid rgba(255, 0, 0, 0.5);
+@utility debug-outline {
+  & * {
+    outline: 1px solid rgba(255, 0, 0, 0.5);
+  }
+}
+
+@utility button-wrapper {
+  background-color: #000;
+  border-radius: 50px;
+  display: flex;
+  justify-content: center;
+  font-size: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.3s;
+  &:hover {
+    box-shadow: 0 0 10px 2px #ff7c1d;
+  }
+}
+
+@utility button-primary {
+  font-family: var(--tw-font-sans);
+  background-image: linear-gradient(to right, #ff7c1d, #ffd12e);
+  color: transparent;
+  padding: 5px 22px;
+  background-clip: text;
+  -webkit-background-clip: text;
+  cursor: pointer;
+  width: 100%;
+}
+
+@utility button-warning {
+  font-family: var(--tw-font-sans);
+  background-image: linear-gradient(to right, #ff7c1d, #ffd12e);
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  cursor: pointer;
+}
+
+@utility text-grad-stroke {
+  position: relative;
+  display: inline-block;
+  color: #000;
+
+  &::before {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    -webkit-text-stroke: 3px transparent;
+    background: linear-gradient(to right, #ff7c1d, #ffd12e);
+    -webkit-background-clip: text;
+    background-clip: text;
+  }
 }
