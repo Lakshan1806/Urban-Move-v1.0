@@ -576,6 +576,29 @@ function Ride() {
     }
   };
 
+  // Function to cancel the current trip and reset the form
+  const handleCancelTrip = () => {
+    // Reset all state variables
+    setPickup("");
+    setDropoff("");
+    setRouteDetails(null);
+    setMapUrl(null);
+    setRideId(null);
+    setIsTracking(false);
+    setDriverLocation(null);
+    setProgress(0);
+    setFare(null);
+    
+    // Clear any active intervals
+    if (trackingInterval) {
+      clearInterval(trackingInterval);
+      setTrackingInterval(null);
+    }
+    
+    // Refresh the page to ensure a clean state
+    window.location.reload();
+  };
+
   return (
     <div className="bg-white min-h-screen overflow-x-hidden w-full max-w-screen">
       <Earnings />
@@ -904,13 +927,22 @@ function Ride() {
               ) : (
                 <>
                   {!isTracking ? (
-                    <button
-                      type="button"
-                      onClick={handleStartRide}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity"
-                    >
-                      START RIDE
-                    </button>
+                    <>
+                      <button
+                        type="button"
+                        onClick={handleStartRide}
+                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity"
+                      >
+                        START RIDE
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleCancelTrip}
+                        className="flex-1 px-6 py-3 bg-red-600 text-white font-medium rounded-full hover:bg-red-700 transition-colors"
+                      >
+                        CANCEL TRIP
+                      </button>
+                    </>
                   ) : (
                     <button
                       type="button"

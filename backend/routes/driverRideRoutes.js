@@ -1,10 +1,9 @@
-// routes/driverRideRoutes.js
 import express from 'express';
-import { saveRideHistory, getDriverRideHistory } from '../controllers/DriverRideController.js';
+import { saveRide, getDriverRides } from '../controllers/DriverRideController.js';
 
 const router = express.Router();
 
-router.post('/save', saveRideHistory);
-router.get('/history/:driverId', getDriverRideHistory);
+router.post('/save', saveRide);
+router.get('/:driverId', getDriverRides);
 
 export default router;

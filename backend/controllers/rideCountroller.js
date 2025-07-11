@@ -1,6 +1,7 @@
 //live tracking implements
 import Ride from '../models/RideModel.js';
 import { calculateRouteProgress } from '../utils/distanceCalculations.js';
+import { getRouteDetails } from '../utils/getRouteDetails.js';
 
 // Start tracking a ride
 export const startTracking = async (req, res) => {
@@ -174,6 +175,13 @@ export const completeRide = async (req, res) => {
 export const createRide = async (req, res) => {
   try {
     const { userId, pickup, dropoff, startLocation, endLocation, distance, duration, scheduledTime, steps, ridestatus, fare } = req.body;
+      const routeDetails = await getRouteDetails(pickup, dropoff);
+        
+        const mapEmbedUrl = `https://www.google.com/maps/embed/v1/directions?key=${process.env.GOOGLE_MAPS_API_KEY}&origin=${encodeURIComponent(pickup)}&destination=${encodeURIComponent(dropoff)}&zoom=10`;
+      
+        
+    
+
     
     // Determine status based on whether scheduledTime is provided
     const status = scheduledTime ? 'scheduled' : 'pending';
@@ -182,8 +190,9 @@ export const createRide = async (req, res) => {
       userId,
       pickup,
       dropoff,
-      startLocation,
-      endLocation,
+      startLocation: routeDetails.start_location,
+      endLocation: routeDetails.end_location,
+
       distance,
       duration,
       fare,
@@ -204,6 +213,35 @@ export const createRide = async (req, res) => {
       success: false,
       message: 'Failed to create ride',
       error: error.message
+    });
+  }
+};
+
+// In your backend controller
+export const trackRoute = async (req, res) => {
+  try {
+    const { pickup, dropoff, calculateOnly } = req.body;
+    
+    // Your existing route calculation logic here...
+    const routeDetails = await calculateRoute(pickup, dropoff);
+    
+    // Only save to DB if calculateOnly is not true
+    if (!calculateOnly) {
+      const newRide = new Ride({
+        // your ride creation logic
+      });
+      await newRide.save();
+    }
+
+    res.json({
+      status: "SUCCESS",
+      ...routeDetails,
+      rideId: calculateOnly ? null : newRide._id
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: "ERROR",
+      message: error.message
     });
   }
 };

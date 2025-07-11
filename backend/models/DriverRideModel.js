@@ -1,10 +1,8 @@
-// models/DriverRideModel.js
 import mongoose from 'mongoose';
 
 const driverRideSchema = new mongoose.Schema({
   rideId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Ride',
+    type: String,
     required: true
   },
   driverId: {
@@ -39,17 +37,11 @@ const driverRideSchema = new mongoose.Schema({
     lat: Number,
     lng: Number,
     accuracy: Number,
-    timestamp: { type: Date, default: Date.now },
+    timestamp: Date,
     address: String
   }],
-  distance: {
-    type: String,
-    required: true
-  },
-  duration: {
-    type: String,
-    required: true
-  },
+  distance: String,
+  duration: String,
   fare: {
     type: Number,
     required: true,
@@ -62,43 +54,18 @@ const driverRideSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['requested', 'accepted', 'arrived', 'in_progress', 'completed', 'cancelled'],
-    default: 'requested',
-    required: true
+    enum: ['requested', 'accepted', 'in_progress', 'completed', 'cancelled'],
+    default: 'requested'
   },
-  cancellationReason: String,
-  cancelledBy: {
-    type: String,
-    enum: ['driver', 'user', 'system']
-  },
-  scheduledTime: Date,
-  actualPickupTime: Date,
-  actualDropoffTime: Date,
   route: [{
     lat: Number,
     lng: Number
   }],
-  feedback: {
-    rating: { type: Number, min: 1, max: 5 },
-    comment: String
-  },
   createdAt: {
     type: Date,
     default: Date.now
-  },
-  updatedAt: {
-    type: Date,
-    default: Date.now
   }
-}, {
-  timestamps: true
 });
-
-driverRideSchema.index({ rideId: 1 });
-driverRideSchema.index({ driverId: 1 });
-driverRideSchema.index({ userId: 1 });
-driverRideSchema.index({ status: 1 });
-driverRideSchema.index({ createdAt: 1 });
 
 const DriverRide = mongoose.model('DriverRide', driverRideSchema);
 

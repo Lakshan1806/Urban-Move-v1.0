@@ -1,7 +1,6 @@
-// controllers/DriverRideController.js
 import DriverRide from '../models/DriverRideModel.js';
 
-export const saveRideHistory = async (req, res) => {
+export const saveRide = async (req, res) => {
   try {
     const {
       rideId,
@@ -20,7 +19,15 @@ export const saveRideHistory = async (req, res) => {
       route
     } = req.body;
 
-    const newRideHistory = new DriverRide({
+    // Validate required fields
+    if (!rideId || !driverId || !userId || !pickup || !dropoff || fare === undefined) {
+      return res.status(400).json({
+        success: false,
+        message: 'Missing required fields'
+      });
+    }
+
+    const newRide = new DriverRide({
       rideId,
       driverId,
       userId,
@@ -33,35 +40,32 @@ export const saveRideHistory = async (req, res) => {
       duration,
       fare,
       driverEarnings,
-      status,
-      route,
-      actualDropoffTime: status === 'completed' ? new Date() : null
+      status: status || 'completed',
+      route
     });
 
-    await newRideHistory.save();
+    const savedRide = await newRide.save();
 
     res.status(201).json({
       success: true,
-      message: 'Ride history saved successfully',
-      data: newRideHistory
+      message: 'Ride saved successfully',
+      data: savedRide
     });
   } catch (error) {
+    console.error('Error saving ride:', error);
     res.status(500).json({
       success: false,
-      message: 'Error saving ride history',
+      message: 'Error saving ride',
       error: error.message
     });
   }
 };
 
-export const getDriverRideHistory = async (req, res) => {
+export const getDriverRides = async (req, res) => {
   try {
     const { driverId } = req.params;
-
-    const rides = await DriverRide.find({ driverId })
-      .sort({ createdAt: -1 })
-      .populate('userId', 'name email phone');
-
+    const rides = await DriverRide.find({ driverId }).sort({ createdAt: -1 });
+    
     res.status(200).json({
       success: true,
       data: rides
@@ -69,7 +73,7 @@ export const getDriverRideHistory = async (req, res) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      message: 'Error fetching ride history',
+      message: 'Error fetching rides',
       error: error.message
     });
   }
