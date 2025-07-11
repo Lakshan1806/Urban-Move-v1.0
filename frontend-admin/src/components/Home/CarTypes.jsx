@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-
+  
 function CarTypes() {
   const [car, setCar] = useState([]);
   useEffect(() => {
@@ -19,13 +19,16 @@ function CarTypes() {
   }, []);
 
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
-      <h3 className="text-sm font-bold sticky top-0">Car Types</h3>
+    <div className="col-span-4 row-span-12  rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col gap-4 overflow-auto ">
+      <div className="sticky top-0 z-20 bg-white/30 rounded-t-xl backdrop-blur-md px-4 py-4 flex justify-center">
+        <h3 className="text-sm font-bold uppercase">Car Types</h3>
+      </div>
+
       {car.map((cars) => {
         return (
           <div
             key={cars._id}
-            className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4"
+            className="p-4 mx-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4 "
           >
             <img
               src={cars.keyImage}

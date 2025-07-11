@@ -4,6 +4,7 @@ import axios from "axios";
 function AddCars({ onSaveForm }) {
   const fileInputRef = useRef(null);
   const keyImageInputRef = useRef(null);
+  const logoInputRef = useRef(null);
   const [make, setMake] = useState("");
   const [model, setModel] = useState("");
   const [year, setYear] = useState("");
@@ -21,6 +22,8 @@ function AddCars({ onSaveForm }) {
   const [tempImage, setTempImage] = useState(null);
   const [keyImageUrl, setKeyImageUrl] = useState();
   const [keyTempImage, setKeyTempImage] = useState(null);
+  const [logoUrl, setLogoUrl] = useState();
+  const [logoTempImage, setLogoTempImage] = useState(null);
 
   const handleImageClick = () => {
     fileInputRef.current.click();
@@ -28,6 +31,10 @@ function AddCars({ onSaveForm }) {
 
   const handleKeyImageClick = () => {
     keyImageInputRef.current.click();
+  };
+
+  const handlelogoImageClick = () => {
+    logoInputRef.current.click();
   };
 
   const handleFileChange = async (e) => {
@@ -54,6 +61,17 @@ function AddCars({ onSaveForm }) {
     }
   };
 
+  const handleLogoChange = async (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    } else {
+      const previewUrl = URL.createObjectURL(file);
+      setLogoUrl(previewUrl);
+      setLogoTempImage(file);
+    }
+  };
+
   const handleSave = async (e) => {
     const formData = new FormData();
     formData.append("make", make);
@@ -68,8 +86,8 @@ function AddCars({ onSaveForm }) {
     formData.append("seat", seat);
     formData.append("speed", speed);
     formData.append("description", description);
-    console.log(tempImage); 
-    console.log(tempImage.constructor.name); 
+    console.log(tempImage);
+    console.log(tempImage.constructor.name);
 
     if (tempImage) {
       Array.from(tempImage).forEach((file) => {
@@ -79,6 +97,9 @@ function AddCars({ onSaveForm }) {
     if (keyTempImage) {
       formData.append("keyImage", keyTempImage);
     }
+    if (logoTempImage) {
+      formData.append("logo", logoTempImage);
+    }
 
     try {
       const response = await axios.post("/admin/add_car_model", formData);
@@ -87,58 +108,78 @@ function AddCars({ onSaveForm }) {
     }
   };
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col h-full overflow-auto">
       <div className="flex flex-col">
         <div>
           <h2>Add Car Details</h2>
-          <img
-            src={keyImageUrl}
-            alt={"preview"}
-            className="w-24 h-24 rounded-lg object-cover"
-          />
-
-          <div className="flex flex-row">
-            <input
-              type="file"
-              ref={keyImageInputRef}
-              style={{ display: "none" }}
-              onChange={handleKeyFileChange}
+          <div className="flex flex-col gap-2">
+            <img
+              src={keyImageUrl}
+              alt={"preview"}
+              className="w-50 rounded-lg object-cover"
             />
-
-            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+            <div className="flex flex-row overflow-auto gap-2">
+              {imageUrl.map((url, index) => (
+                <img
+                  key={index}
+                  src={url}
+                  alt={`Preview ${index}`}
+                  className="w-50 rounded-lg object-cover"
+                />
+              ))}
+            </div>
+            <img
+              src={logoUrl}
+              alt={"preview"}
+              className="w-50 rounded-lg object-cover"
+            />
+          </div>
+          <input
+            type="file"
+            ref={keyImageInputRef}
+            className="hidden"
+            onChange={handleKeyFileChange}
+          />
+          <input
+            type="file"
+            multiple
+            ref={fileInputRef}
+            className="hidden"
+            onChange={handleFileChange}
+          />
+          <input
+            type="file"
+            multiple
+            ref={logoInputRef}
+            className="hidden"
+            onChange={handleLogoChange}
+          />
+          <div className="flex flex-col gap-1">
+            <div className="button-wrapper">
               <button
                 type="button"
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                className="button-primary"
                 onClick={handleKeyImageClick}
               >
-                Upload Key photo
+                Upload Key Image
               </button>
             </div>
-
-            {imageUrl.map((url, index) => (
-              <img
-                key={index}
-                src={url}
-                alt={`Preview ${index}`}
-                className="w-24 h-24 rounded-lg object-cover"
-              />
-            ))}
-
-            <input
-              type="file"
-              multiple
-              ref={fileInputRef}
-              style={{ display: "none" }}
-              onChange={handleFileChange}
-            />
-
-            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+            <div className="button-wrapper">
               <button
                 type="button"
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+                className="button-primary"
                 onClick={handleImageClick}
               >
-                Upload new photo
+                Upload Image
+              </button>
+            </div>
+            <div className="button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={handlelogoImageClick}
+              >
+                Upload Logo
               </button>
             </div>
           </div>
@@ -267,28 +308,29 @@ function AddCars({ onSaveForm }) {
               placeholder="Short description or highlights"
             />
           </div>
-
-          <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-            <button
-              type="button"
-              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-              onClick={handleSave}
-            >
-              save
-            </button>
+          <div className="flex flex-row items-center justify-center gap-5">
+            <div className="button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={handleSave}
+              >
+                Save
+              </button>
+            </div>
+            <div className="button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={() => {
+                  onSaveForm(false);
+                }}
+              >
+                Done
+              </button>
+            </div>
           </div>
         </div>
-      </div>
-      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px] cursor-pointer">
-        <button
-          type="button"
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-          onClick={() => {
-            onSaveForm(false);
-          }}
-        >
-          done
-        </button>
       </div>
     </div>
   );

@@ -20,6 +20,7 @@ async function checkAndCreateAdmin() {
         password: temporaryPassword,
         age: 0,
         firstLogin: true,
+        role: "Super Admin",
       });
 
       await newAdmin.save();
@@ -33,6 +34,6 @@ async function checkAndCreateAdmin() {
   } catch (error) {
     console.error("Error creating admin:", error);
   }
-}
+} 
 
 export default checkAndCreateAdmin;
