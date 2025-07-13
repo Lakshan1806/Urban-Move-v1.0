@@ -109,7 +109,7 @@ function Image({ src }) {
         <img
           src={src}
           alt="Rental Car"
-          className="h-3/4 w-2/3 md:max-w-sm lg:max-w-md rounded-xl shadow-2xl border-4 border-gray-600 rounded-xl transition-transform duration-300 hover:scale-105 hover:shadow-xl rounded-lg "
+          className="h-3/4 w-2/3 md:max-w-sm lg:max-w-md rounded-xl shadow-2xl border-4 border-gray-600 transition-transform duration-300 hover:scale-105 hover:shadow-xl"
         />
       </div>
     </div>
@@ -151,7 +151,7 @@ function Slideshow() {
         <img
           src={slideshowPath[current]}
           alt="slideshow"
-          className=" h-3/4 object-cover transition-all duration-500 overflow-hidden rounded-lg shadow-lg border-4 border-gray-600 rounded-xl transition-transform duration-300 hover:scale-105 hover:shadow-xl rounded-lg "
+          className=" h-3/4 object-cover transition-all duration-500 overflow-hidden  shadow-lg border-4 border-gray-600 rounded-xl  hover:scale-105 hover:shadow-xl"
         />
       </div>
     </div>
