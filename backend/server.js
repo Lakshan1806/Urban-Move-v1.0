@@ -21,6 +21,9 @@ import DriverfetchRoutes from "./routes/DriverfetchRoute.js"
 import driverRideRoutes from './routes/driverRideRoutes.js';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
+import liveTrackingRoutes from './routes/liveTrackingRoutes.js';
+
+
 
 const PORT = 5000;
 dotenv.config();
@@ -75,6 +78,7 @@ app.use("/api/schedule", scheduleRoutes);
 app.use("/api/location", locationRoutes);
 app.use("/api/driver", DriverfetchRoutes);
 app.use('/api/driver-rides', driverRideRoutes);
+app.use('/api/live-tracking', liveTrackingRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is ready");

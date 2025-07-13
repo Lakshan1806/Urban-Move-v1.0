@@ -64,17 +64,15 @@ function Ride() {
   const [activeInput, setActiveInput] = useState(null);
   const [isGettingLocation, setIsGettingLocation] = useState(false);
   const [locationError, setLocationError] = useState(null);
-  const [rideId, setRideId] = useState(null);
-  const [isTracking, setIsTracking] = useState(false);
-  const [driverLocation, setDriverLocation] = useState(null);
-  const [progress, setProgress] = useState(0);
-  const [trackingInterval, setTrackingInterval] = useState(null);
   const [showScheduleForm, setShowScheduleForm] = useState(false);
   const [scheduledTime, setScheduledTime] = useState(new Date());
   const [isScheduling, setIsScheduling] = useState(false);
   const [scheduledRides, setScheduledRides] = useState([]);
   const [showScheduledRides, setShowScheduledRides] = useState(false);
   const [fare, setFare] = useState(null);
+  const [rideStatus, setRideStatus] = useState(null);
+  const [rideId, setRideId] = useState(null);
+  const [pollingInterval, setPollingInterval] = useState(null);
 
   const pickupRef = useRef(null);
   const dropoffRef = useRef(null);
@@ -108,15 +106,13 @@ function Ride() {
         });
     }
     fetchScheduledRides();
-  }, []);
 
-  useEffect(() => {
     return () => {
-      if (trackingInterval) {
-        clearInterval(trackingInterval);
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
       }
     };
-  }, [trackingInterval]);
+  }, []);
 
   const fetchScheduledRides = async () => {
     try {
@@ -247,52 +243,6 @@ function Ride() {
     }
   };
 
-  const startLiveTracking = async () => {
-    try {
-      const response = await axios.post(
-        "http://localhost:5000/api/location/start-tracking",
-        {
-          rideId,
-        }
-      );
-
-      if (response.data.status === "SUCCESS") {
-        setIsTracking(true);
-        const interval = setInterval(fetchDriverLocation, 5000);
-        setTrackingInterval(interval);
-      } else {
-        throw new Error(response.data.message || "Failed to start tracking");
-      }
-    } catch (err) {
-      console.error("Tracking error:", err);
-      setError(
-        err.response?.data?.message || err.message || "Failed to start tracking"
-      );
-    }
-  };
-
-  const fetchDriverLocation = async () => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/rides/status/${rideId}`
-      );
-
-      if (response.data.success) {
-        const rideData = response.data.data;
-        setDriverLocation(rideData.driverLocation);
-        setProgress(rideData.progress || 0);
-
-        if (rideData.driverLocation && routeDetails) {
-          const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-          const newMapUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${rideData.driverLocation.lat},${rideData.driverLocation.lng}&destination=${encodeURIComponent(dropoff)}&zoom=13`;
-          setMapUrl(newMapUrl);
-        }
-      }
-    } catch (err) {
-      console.error("Error fetching ride status:", err);
-    }
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!pickup.trim() || !dropoff.trim()) {
@@ -304,11 +254,7 @@ function Ride() {
     setError(null);
     setRouteDetails(null);
     setMapUrl(null);
-    setIsTracking(false);
-    if (trackingInterval) {
-      clearInterval(trackingInterval);
-      setTrackingInterval(null);
-    }
+    setRideStatus(null);
 
     try {
       const response = await axios.post(
@@ -321,9 +267,7 @@ function Ride() {
 
       if (response.data.status === "SUCCESS") {
         setRouteDetails(response.data);
-        console.log(response.data)
         setMapUrl(response.data.map_embed_url);
-        setRideId(response.data.rideId);
         const distanceKm = parseFloat(response.data.distance.split(" ")[0]);
         const calculatedFare = Math.round(distanceKm * 68);
         setFare(calculatedFare);
@@ -351,9 +295,9 @@ function Ride() {
     }
 
     if (scheduledTime <= new Date()) {
-    setError("Please select a future time for scheduling");
-    return;
-  }
+      setError("Please select a future time for scheduling");
+      return;
+    }
 
     setIsScheduling(true);
     setError(null);
@@ -390,6 +334,38 @@ function Ride() {
     }
   };
 
+  const startRidePolling = (rideId) => {
+    const interval = setInterval(async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:5000/api/rideRoute/status/${rideId}`
+        );
+        
+        if (response.data?.success) {
+          const newStatus = response.data.data.status;
+          setRideStatus(newStatus);
+
+          // Handle different statuses
+          if (newStatus === "accepted") {
+            clearInterval(interval);
+            setPollingInterval(null);
+            alert("Driver has accepted your ride!");
+          } else if (newStatus === "cancelled" || newStatus === "completed") {
+            clearInterval(interval);
+            setPollingInterval(null);
+            handleCancelTrip();
+          }
+        }
+      } catch (err) {
+        console.error("Error polling ride status:", err);
+        clearInterval(interval);
+        setPollingInterval(null);
+      }
+    }, 3000); // Poll every 3 seconds
+
+    setPollingInterval(interval);
+  };
+
   const handleStartRide = async () => {
     try {
       setLoading(true);
@@ -403,10 +379,10 @@ function Ride() {
         : 0;
       const calculatedFare = Math.round(distanceKm * 68);
 
-      const createRideResponse = await axios.post(
+      const response = await axios.post(
         "http://localhost:5000/api/rideRoute",
         {
-          userId: "65a1b2c3d4e5f6a7b8c9d0e1", 
+          userId: "", 
           pickup,
           dropoff,
           startLocation: routeDetails?.start_location || { lat: 0, lng: 0 },
@@ -414,148 +390,58 @@ function Ride() {
           distance: routeDetails?.distance || "0 km",
           duration: routeDetails?.duration || "0 mins",
           fare: calculatedFare,
-          status: "pending",
+          status: "searching",
           scheduledTime: showScheduleForm ? scheduledTime.toISOString() : null,
           steps: routeDetails.steps,
-          driverLocation: routeDetails.start_location,
         }
       );
 
-      if (!createRideResponse.data?.success) {
-        throw new Error(
-          createRideResponse.data?.message || "Failed to create ride"
-        );
+      if (response.data?.success) {
+        setRideId(response.data.data._id);
+        setRideStatus("searching");
+        startRidePolling(response.data.data._id);
+      } else {
+        throw new Error(response.data?.message || "Failed to create ride");
       }
-
-      const rideId = createRideResponse.data.data._id;
-      setRideId(rideId);
-
-      const startTrackingResponse = await axios.post(
-        "http://localhost:5000/api/rideRoute/start-tracking",
-        { rideId }
-      );
-
-      if (startTrackingResponse.data.status !== "SUCCESS") {
-        throw new Error(
-          startTrackingResponse.data?.message || "Failed to start tracking"
-        );
-      }
-
-      setIsTracking(true);
-
-      const fetchAndUpdateRideStatus = async () => {
-        try {
-          const statusResponse = await axios.get(
-            `http://localhost:5000/api/rideRoute/status/${rideId}`
-          );
-
-          if (statusResponse.data?.status === "SUCCESS") {
-            const updatedRide = statusResponse.data.ride;
-            setDriverLocation(updatedRide.driverLocation);
-            setProgress(updatedRide.progress || 0);
-
-            if (updatedRide.driverLocation && routeDetails) {
-              const apiKey = process.env.GOOGLE_MAPS_API_KEY;
-              const newMapUrl = `https://www.google.com/maps/embed/v1/directions?key=${apiKey}&origin=${updatedRide.driverLocation.lat},${updatedRide.driverLocation.lng}&destination=${encodeURIComponent(dropoff)}&zoom=13`;
-              setMapUrl(newMapUrl);
-            }
-
-            if (updatedRide.progress >= 100) {
-              clearInterval(updateInterval);
-              clearInterval(simulationInterval);
-              setIsTracking(false);
-            }
-          }
-        } catch (err) {
-          console.error("Error fetching ride status:", err);
-        }
-      };
-
-      await fetchAndUpdateRideStatus();
-
-      const updateInterval = setInterval(fetchAndUpdateRideStatus, 3000);
-      setTrackingInterval(updateInterval);
-
-      const simulateMovement = async () => {
-        try {
-          await simulateDriverMovement(rideId);
-        } catch (err) {
-          console.error("Error in driver simulation:", err);
-        }
-      };
-
-      const simulationInterval = setInterval(simulateMovement, 5000);
-
-      return () => {
-        clearInterval(updateInterval);
-        clearInterval(simulationInterval);
-      };
     } catch (error) {
       console.error("Error starting ride:", error);
       setError(
         error.response?.data?.message || error.message || "Failed to start ride"
       );
-      setIsTracking(false);
-      if (trackingInterval) {
-        clearInterval(trackingInterval);
-        setTrackingInterval(null);
-      }
-    } finally {
       setLoading(false);
     }
   };
 
-  const simulateDriverMovement = async (rideId) => {
-    try {
-      const response = await axios.get(
-        `http://localhost:5000/api/rideRoute/status/${rideId}`
-      );
-
-      if (response.data.status === "SUCCESS") {
-        const ride = response.data.ride;
-        const steps = ride.steps || [];
-
-        if (steps.length > 0) {
-          const nextStep =
-            steps.find((step) => {
-              if (!ride.driverLocation || !step.end_location) return false;
-              return (
-                getDistanceFromLatLonInKm(
-                  ride.driverLocation.lat,
-                  ride.driverLocation.lng,
-                  step.end_location.lat,
-                  step.end_location.lng
-                ) > 0.1
-              );
-            }) || steps[0];
-
-          if (nextStep && nextStep.end_location) {
-            const currentLat =
-              ride.driverLocation?.lat || ride.startLocation.lat;
-            const currentLng =
-              ride.driverLocation?.lng || ride.startLocation.lng;
-
-            const latDiff = nextStep.end_location.lat - currentLat;
-            const lngDiff = nextStep.end_location.lng - currentLng;
-
-            const newLat = currentLat + latDiff * 0.25;
-            const newLng = currentLng + lngDiff * 0.25;
-
-            await axios.post(
-              "http://localhost:5000/api/rideRoute/update-location",
-              {
-                rideId,
-                lat: newLat,
-                lng: newLng,
-              }
-            );
-          }
-        }
-      }
-    } catch (err) {
-      console.error("Error simulating movement:", err);
+const handleCancelTrip = async () => {
+  try {
+    if (rideId) {
+      // Update to send a POST request to cancel the ride
+      await axios.post(`http://localhost:5000/api/rideRoute/cancel/${rideId}`, null, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
     }
-  };
+  } catch (err) {
+    console.error("Error cancelling ride:", err);
+  } finally {
+    // Reset all state
+    setPickup("");
+    setDropoff("");
+    setRouteDetails(null);
+    setMapUrl(null);
+    setFare(null);
+    setShowScheduleForm(false);
+    setRideStatus(null);
+    setRideId(null);
+    setLoading(false);
+    
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+      setPollingInterval(null);
+    }
+  }
+};
 
   const cancelScheduledRide = async (rideId) => {
     try {
@@ -580,36 +466,11 @@ function Ride() {
     }
   };
 
-  // Function to cancel the current trip and reset the form
-  const handleCancelTrip = () => {
-    // Reset all state variables
-    setPickup("");
-    setDropoff("");
-    setRouteDetails(null);
-    setMapUrl(null);
-    setRideId(null);
-    setIsTracking(false);
-    setDriverLocation(null);
-    setProgress(0);
-    setFare(null);
-    
-    // Clear any active intervals
-    if (trackingInterval) {
-      clearInterval(trackingInterval);
-      setTrackingInterval(null);
-    }
-    
-    // Refresh the page to ensure a clean state
-    window.location.reload();
-  };
-
   return (
     <div className="bg-white min-h-screen overflow-x-hidden w-full max-w-screen">
       <Earnings />
 
-      {/* Top Section - Form and Image Side by Side */}
       <div className="flex flex-col lg:flex-row items-start justify-center gap-8 px-4 py-8 md:px-8">
-        {/* Left Side - Form and Scheduled Rides */}
         <div className="w-full lg:w-1/2 max-w-xl">
           <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-transparent">
             Request a ride for immediate pickup or schedule one for later
@@ -662,19 +523,6 @@ function Ride() {
                       </>
                     )}
                   </button>
-
-                  {locationError && (
-                    <div className="p-2 bg-red-100 text-red-700 rounded-lg text-sm mt-2">
-                      <p className="font-medium">Location Error</p>
-                      <p>{locationError}</p>
-                      <button
-                        onClick={() => setLocationError(null)}
-                        className="text-blue-600 hover:underline mt-1"
-                      >
-                        Dismiss
-                      </button>
-                    </div>
-                  )}
                 </div>
 
                 <input
@@ -859,27 +707,6 @@ function Ride() {
                     </p>
                   )}
                 </div>
-
-                {isTracking && (
-                  <div className="mt-4">
-                    <div className="flex justify-between text-sm text-gray-300 mb-1">
-                      <span>Driver is on the way</span>
-                      <span>{Math.round(progress)}%</span>
-                    </div>
-                    <div className="w-full bg-gray-700 rounded-full h-2.5">
-                      <div
-                        className="bg-[#FF7C1D] h-2.5 rounded-full"
-                        style={{ width: `${progress}%` }}
-                      ></div>
-                    </div>
-                    {driverLocation && (
-                      <p className="text-sm text-gray-400 mt-1">
-                        Driver location: {driverLocation.lat.toFixed(4)},{" "}
-                        {driverLocation.lng.toFixed(4)}
-                      </p>
-                    )}
-                  </div>
-                )}
               </div>
             )}
 
@@ -930,31 +757,46 @@ function Ride() {
                 </>
               ) : (
                 <>
-                  {!isTracking ? (
-                    <>
-                      <button
-                        type="button"
-                        onClick={handleStartRide}
-                        className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity"
-                      >
-                        START RIDE
-                      </button>
-                      <button
-                        type="button"
-                        onClick={handleCancelTrip}
-                        className="flex-1 px-6 py-3 bg-red-600 text-white font-medium rounded-full hover:bg-red-700 transition-colors"
-                      >
-                        CANCEL TRIP
-                      </button>
-                    </>
+                  {rideStatus === "searching" ? (
+                    <button
+                      type="button"
+                      disabled
+                      className="flex items-center justify-center  px-3 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-full"
+                    >
+                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                          fill="none"
+                        />
+                        <path
+                          className="opacity-75"
+                          fill="currentColor"
+                          d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                        />
+                      </svg>
+                      SEARCHING FOR DRIVERS...
+                    </button>
                   ) : (
                     <button
                       type="button"
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-full hover:opacity-90 transition-opacity"
+                      onClick={handleStartRide}
+                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity"
                     >
-                      LIVE TRACKING ACTIVE
+                      START RIDE
                     </button>
                   )}
+                  <button
+                    type="button"
+                    onClick={handleCancelTrip}
+                    className="flex-1 px-6 py-3 bg-red-600 text-white font-medium rounded-full hover:bg-red-700 transition-colors"
+                  >
+                    CANCEL TRIP
+                  </button>
                 </>
               )}
             </div>
@@ -1005,7 +847,6 @@ function Ride() {
           </div>
         </div>
 
-        {/* Right Side - Ride Illustration Image */}
         <div className="w-full lg:w-1/2 flex justify-center items-center mt-8 lg:mt-0">
           <div className="w-full h-full flex items-center justify-center">
             <img
@@ -1017,7 +858,6 @@ function Ride() {
         </div>
       </div>
 
-      {/* Bottom Section - Map (Full Width) */}
       <div className="w-full px-4 pb-8">
         <div className="w-full h-[500px] rounded-xl overflow-hidden border border-gray-200 shadow-md relative">
           {loading && (
@@ -1085,15 +925,12 @@ function Ride() {
               ) : (
                 <div className="text-center">
                   <p className="text-gray-500 mb-4">Enter locations to see the route map</p>
-                  
                 </div>
               )}
             </div>
           )}
         </div>
       </div>
-
-     
     </div>
   );
 }

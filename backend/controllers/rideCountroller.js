@@ -192,13 +192,13 @@ export const createRide = async (req, res) => {
       dropoff,
       startLocation: routeDetails.start_location,
       endLocation: routeDetails.end_location,
-
       distance,
       duration,
       fare,
+      status,
       scheduledTime: scheduledTime ? new Date(scheduledTime) : null,
       steps,
-      status
+      
     });
 
     const savedRide = await newRide.save();
@@ -228,7 +228,6 @@ export const trackRoute = async (req, res) => {
     // Only save to DB if calculateOnly is not true
     if (!calculateOnly) {
       const newRide = new Ride({
-        // your ride creation logic
       });
       await newRide.save();
     }
@@ -242,6 +241,34 @@ export const trackRoute = async (req, res) => {
     res.status(500).json({
       status: "ERROR",
       message: error.message
+    });
+  }
+};
+
+export const cancelRide = async (req, res) => {
+  try {
+    const { rideId } = req.params;
+    
+    const ride = await Ride.findById(rideId);
+    
+    if (!ride) {
+      return res.status(404).json({
+        message: "Ride not found",
+        status: "NOT_FOUND"
+      });
+    }
+    ride.status = 'cancelled';
+    await ride.save();
+
+    res.json({
+      status: "SUCCESS",
+      message: "Ride cancelled successfully"
+    });
+  } catch (error) {
+    console.error("Cancel ride error:", error);
+    res.status(500).json({
+      message: error.message || "Failed to cancel ride",
+      status: "ERROR"
     });
   }
 };

@@ -227,7 +227,7 @@ const DriverRide = () => {
         distance: rideDetails.distance || "0 km",
         duration: rideDetails.duration || "0 mins",
         fare: fareAmount*1000,
-        driverEarnings: fareAmount*1000*0.8,
+        driverEarnings: fareAmount*100*0.8,
         status: "completed",
         route: directions?.routes[0]?.overview_path?.map(point => ({
           lat: point.lat(),
@@ -400,7 +400,7 @@ const DriverRide = () => {
           origin = currentLocation;
           destination = currentRide.pickupLocation || currentRide.pickup;
           break;
-        case "in_progress":
+        case "pending":
           origin = currentLocation;
           destination = currentRide.dropoffLocation || currentRide.dropoff;
           break;
@@ -484,7 +484,7 @@ const DriverRide = () => {
           setDropoffInput(dropoffRes.data.dropoff);
         }
         if (detailsRes.data.success && detailsRes.data.rideDetails) {
-          if (detailsRes.data.rideDetails.status === 'in_progress') {
+          if (detailsRes.data.rideDetails.status === 'pending') {
             setRideDetails(prev => ({
               ...prev,
               distance: detailsRes.data.rideDetails.distance || "",
@@ -894,7 +894,7 @@ const DriverRide = () => {
                 />
               )}
 
-              {currentRide && rideStatus === "in_progress" && (
+              {currentRide && rideStatus === "pending" && (
                 <Marker
                   position={currentRide.dropoffLocation}
                   icon={{

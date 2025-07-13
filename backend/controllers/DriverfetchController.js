@@ -4,7 +4,7 @@ import user from "../models/usermodel.js"
 export const getLatestPickupLocation = async (req, res) => {
   try {
     const ride = await Ride.findOne({
-      status: "in_progress",
+      status: "pending",
     })
       .sort({ createdAt: -1 })
       .populate("userId", "_id name email phone"); // Populate user details
@@ -34,7 +34,7 @@ export const getLatestPickupLocation = async (req, res) => {
 export const getLatestDropoffLocation = async (req, res) => {
   try {
     const ride = await Ride.findOne({
-      status: "in_progress",
+      status: "pending",
     })
       .sort({ createdAt: -1 })
       .populate("userId", "_id");
@@ -64,7 +64,7 @@ export const getLatestDropoffLocation = async (req, res) => {
 export const getLatestRideDetails = async (req, res) => {
   try {
     const ride = await Ride.findOne({
-      status: "in_progress",
+      status: "pending",
     })
       .sort({ createdAt: -1 })
       .populate("userId", "_id name email phone"); 
