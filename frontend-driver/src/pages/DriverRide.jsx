@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import {
   GoogleMap,
   LoadScript,
@@ -10,6 +10,7 @@ import { io } from "socket.io-client";
 import axios from "axios";
 
 const DriverRide = () => {
+  // State variables
   const [socket, setSocket] = useState(null);
   const [currentRide, setCurrentRide] = useState(null);
   const [rideStatus, setRideStatus] = useState("available");
@@ -29,19 +30,25 @@ const DriverRide = () => {
     fare: "",
     status: "",
     scheduleTime: "",
+    userName: ""
   });
   const [manualRideAccepted, setManualRideAccepted] = useState(false);
   const [tripStarted, setTripStarted] = useState(false);
   const [isFinishingTrip, setIsFinishingTrip] = useState(false);
+  const [socketConnected, setSocketConnected] = useState(false);
 
+  // Refs
   const mapRef = useRef(null);
   const watchIdRef = useRef(null);
   const directionsServiceRef = useRef(null);
   const geocoderRef = useRef(null);
+  const socketRef = useRef(null);
 
+  // Constants
   const mapContainerStyle = {
     width: "100%",
     height: "100%",
+    minHeight: "400px"
   };
 
   const sriLankaBounds = {
@@ -51,7 +58,10 @@ const DriverRide = () => {
     west: 79,
   };
 
-  const resetRideData = () => {
+  const API_BASE_URL = "http://localhost:5000";
+
+  // Reset all ride data
+  const resetRideData = useCallback(() => {
     setCurrentRide(null);
     setRideStatus("available");
     setDirections(null);
@@ -61,15 +71,18 @@ const DriverRide = () => {
       fare: "",
       status: "",
       scheduleTime: "",
+      userName: "",
+      userId:""
     });
     setShowAcceptModal(false);
     setPickupInput("");
     setDropoffInput("");
     setManualRideAccepted(false);
     setTripStarted(false);
-  };
+  }, []);
 
-  const getCurrentLocation = async () => {
+  // Get current location using browser geolocation API
+  const getCurrentLocation = useCallback(async () => {
     if (!navigator.geolocation) {
       setLocationError("Geolocation is not supported by your browser");
       return;
@@ -120,7 +133,7 @@ const DriverRide = () => {
       
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/location/reverse-geocode?lat=${latitude}&lng=${longitude}`
+          `${API_BASE_URL}/api/location/reverse-geocode?lat=${latitude}&lng=${longitude}`
         );
 
         if (response.data.status === "SUCCESS") {
@@ -133,8 +146,8 @@ const DriverRide = () => {
         setCurrentAddress("Address not available");
       }
 
-      if (currentRide && socket) {
-        socket.emit("driver:location", {
+      if (currentRide && socketRef.current?.connected) {
+        socketRef.current.emit("driver:location", {
           rideId: currentRide._id,
           location: { lat: latitude, lng: longitude },
           accuracy,
@@ -147,9 +160,10 @@ const DriverRide = () => {
     } finally {
       setIsLocating(false);
     }
-  };
+  }, [currentRide]);
 
-  const startTrip = () => {
+  // Start trip with manual locations
+  const startTrip = useCallback(() => {
     if (!pickupInput || !dropoffInput || !directionsServiceRef.current) {
       return;
     }
@@ -171,111 +185,156 @@ const DriverRide = () => {
         }
       }
     );
-  };
+  }, [pickupInput, dropoffInput]);
 
-const finishTrip = async () => {
-  setIsFinishingTrip(true);
-  try {
-    if (socket && currentRide) {
-      // First emit the completion event
-      socket.emit("ride:complete", { rideId: currentRide._id });
+  // Complete the current trip
+  const finishTrip = useCallback(async () => {
+    setIsFinishingTrip(true);
+    try {
+      const token = localStorage.getItem('token');
+      const rideId = currentRide?._id || `ride_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const fareText = rideDetails.fare.replace(/[^0-9.]/g, '');
+      const fareAmount = parseFloat(fareText);
       
-      // Parse fare amount correctly
-      const fareAmount = parseFloat(rideDetails.fare.replace(/[^0-9.]/g, '')) || 0;
-      
-      // Prepare ride data for saving
+      if (isNaN(fareAmount)) {
+        throw new Error('Invalid fare amount');
+      }
+
       const rideData = {
-        rideId: currentRide._id,
-        driverId: "680f384d4c417b3a83f65278", // Replace with actual driver ID
-        userId: currentRide.userId || "unknown",
-        pickup: currentRide.pickup || pickupInput,
-        dropoff: currentRide.dropoff || dropoffInput,
+        rideId,
+        
+        userId: rideDetails.userId || "unknown",
+        userName: rideDetails.userName || "Unknown",
+        pickup: currentRide?.pickup || pickupInput,
+        dropoff: currentRide?.dropoff || dropoffInput,
         startLocation: {
-          lat: currentLocation.lat,
-          lng: currentLocation.lng,
-          address: currentAddress
+          lat: currentLocation?.lat || 0,
+          lng: currentLocation?.lng || 0,
+          address: currentAddress || "Unknown address"
         },
         endLocation: {
-          lat: currentLocation.lat,
-          lng: currentLocation.lng,
-          address: currentAddress
+          lat: currentLocation?.lat || 0,
+          lng: currentLocation?.lng || 0,
+          address: currentAddress || "Unknown address"
         },
         driverLocationUpdates: locationHistory.map(loc => ({
           lat: loc.lat,
           lng: loc.lng,
-          accuracy: loc.accuracy,
-          timestamp: loc.timestamp,
-          address: currentAddress
+          accuracy: loc.accuracy || 0,
+          timestamp: loc.timestamp || new Date(),
+          address: currentAddress || "Unknown address"
         })),
-        distance: rideDetails.distance,
-        duration: rideDetails.duration,
-        fare: fareAmount,
-        driverEarnings: fareAmount * 0.8, // 80% of fare
+        distance: rideDetails.distance || "0 km",
+        duration: rideDetails.duration || "0 mins",
+        fare: fareAmount*1000,
+        driverEarnings: fareAmount*1000*0.8,
         status: "completed",
         route: directions?.routes[0]?.overview_path?.map(point => ({
           lat: point.lat(),
           lng: point.lng()
-        })) || []
+        })) || [],
+        completedAt: new Date()
       };
 
-      // Save ride history to database
       const response = await axios.post(
         "http://localhost:5000/api/driver-rides/save",
         rideData,
         {
           headers: {
-            'Content-Type': 'application/json'
-          }
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}`
+          },
+          timeout: 10000
         }
       );
 
-      if (response.data && response.data.success) {
-        setRideStatus("completed");
-        setRideDetails(prev => ({
-          ...prev,
-          status: "completed"
-        }));
-        
-        setTimeout(() => {
-          resetRideData();
-        }, 3000);
-      } else {
-        console.error("Failed to save ride history:", response.data?.message || "Unknown error");
-        alert("Failed to save ride history: " + (response.data?.message || "Unknown error"));
+      if (!response.data?.success) {
+        throw new Error(response.data?.message || 'Failed to save ride');
       }
-    } else if (tripStarted) {
-      // For manual trips
-      setTripStarted(false);
-      resetRideData();
-    }
-  } catch (error) {
-    console.error("Error completing trip:", error);
-    if (error.response) {
-      console.error("Server responded with:", error.response.data);
-      alert("Error: " + (error.response.data.message || error.message));
-    } else {
-      alert("Error completing trip: " + error.message);
-    }
-  } finally {
-    setIsFinishingTrip(false);
-  }
-};
 
+      setRideStatus("completed");
+      setRideDetails(prev => ({ ...prev, status: "completed" }));
+      alert("Ride completed and saved successfully!");
+      setTimeout(resetRideData, 3000);
+
+    } catch (error) {
+      console.error('Finish trip error:', {
+        error: error.response?.data || error.message,
+        fullError: error
+      });
+
+      let errorMessage = 'Failed to complete trip';
+      if (error.response) {
+        errorMessage = error.response.data?.message || 
+                     error.response.data?.error || 
+                     JSON.stringify(error.response.data);
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+
+      alert(`Error: ${errorMessage}`);
+    } finally {
+      setIsFinishingTrip(false);
+    }
+  }, [currentRide, currentLocation, currentAddress, locationHistory, rideDetails, directions, resetRideData]);
+
+  // Format duration from seconds to readable format
+  const formatDuration = useCallback((seconds) => {
+    if (!seconds) return "N/A";
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
+    
+    let result = "";
+    if (hours > 0) result += `${hours} hr `;
+    if (minutes > 0) result += `${minutes} min`;
+    return result || "<1 min";
+  }, []);
+
+  // Initialize socket connection
   useEffect(() => {
-    const socketInstance = io("http://localhost:5000", {
+    const socketInstance = io(API_BASE_URL, {
       reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 1000,
+      transports: ["websocket"],
+      withCredentials: true,
+      auth: {
+        token: localStorage.getItem("token") || "DRIVER_AUTH_TOKEN"
+      }
     });
 
+    socketRef.current = socketInstance;
     setSocket(socketInstance);
 
     socketInstance.on("connect", () => {
-      console.log("Connected to server");
+      console.log("Connected to server with ID:", socketInstance.id);
+      setSocketConnected(true);
+      const driverId = "680f384d4c417b3a83f65278";
+      socketInstance.emit("driver:authenticate", driverId);
     });
 
-    socketInstance.on("disconnect", () => {
-      console.log("Disconnected from server");
+    socketInstance.on("disconnect", (reason) => {
+      console.log("Disconnected from server:", reason);
+      setSocketConnected(false);
+      if (reason === "io server disconnect") {
+        setTimeout(() => {
+          socketInstance.connect();
+        }, 1000);
+      }
+    });
+
+    socketInstance.on("connect_error", (error) => {
+      console.error("Connection error:", error);
+      setSocketConnected(false);
+    });
+
+    socketInstance.on("reconnect_attempt", (attempt) => {
+      console.log("Reconnection attempt:", attempt);
+    });
+
+    socketInstance.on("reconnect_failed", () => {
+      console.error("Reconnection failed");
+      setSocketConnected(false);
     });
 
     return () => {
@@ -285,6 +344,7 @@ const finishTrip = async () => {
     };
   }, []);
 
+  // Get initial location and set up watcher
   useEffect(() => {
     getCurrentLocation();
 
@@ -317,8 +377,9 @@ const finishTrip = async () => {
         navigator.geolocation.clearWatch(watchIdRef.current);
       }
     };
-  }, []);
+  }, [getCurrentLocation]);
 
+  // Initialize map services when loaded
   useEffect(() => {
     if (mapLoaded && window.google) {
       directionsServiceRef.current = new window.google.maps.DirectionsService();
@@ -326,105 +387,39 @@ const finishTrip = async () => {
     }
   }, [mapLoaded]);
 
+  // Calculate directions when dependencies change
   useEffect(() => {
-    if (!socket) return;
-
-    const handleNewRide = (ride) => {
-      if (!currentRide) {
-        setCurrentRide(ride);
-        setRideDetails({
-          distance: (ride.distance / 1000).toFixed(1) + " km",
-          duration: formatDuration(ride.duration),
-          fare: "Rs. " + ride.fare?.toFixed(2) || "0.00",
-          status: "requested",
-          scheduleTime: ride.scheduleTime || "ASAP",
-        });
-        setShowAcceptModal(true);
-        setRideStatus("requested");
-        setManualRideAccepted(false);
-      }
-    };
-
-    const handleRideUpdate = (updatedRide) => {
-      if (currentRide && currentRide._id === updatedRide._id) {
-        setCurrentRide(updatedRide);
-        setRideDetails(prev => ({
-          ...prev,
-          status: updatedRide.status,
-          scheduleTime: updatedRide.scheduleTime || prev.scheduleTime,
-        }));
-      }
-    };
-
-    const handleRideCompletion = () => {
-      setRideStatus("completed");
-      setRideDetails(prev => ({
-        ...prev,
-        status: "completed"
-      }));
-      setTimeout(() => {
-        resetRideData();
-      }, 3000);
-    };
-
-    const handleRideCanceled = (rideId) => {
-      if (currentRide && currentRide._id === rideId) {
-        resetRideData();
-      }
-    };
-
-    socket.on("ride:requested", handleNewRide);
-    socket.on("ride:updated", handleRideUpdate);
-    socket.on("ride:completed", handleRideCompletion);
-    socket.on("ride:canceled", handleRideCanceled);
-
-    return () => {
-      socket.off("ride:requested", handleNewRide);
-      socket.off("ride:updated", handleRideUpdate);
-      socket.off("ride:completed", handleRideCompletion);
-      socket.off("ride:canceled", handleRideCanceled);
-    };
-  }, [socket, currentRide]);
-
-  const formatDuration = (seconds) => {
-    if (!seconds) return "N/A";
-    const hours = Math.floor(seconds / 3600);
-    const minutes = Math.floor((seconds % 3600) / 60);
-    
-    let result = "";
-    if (hours > 0) result += `${hours} hr `;
-    if (minutes > 0) result += `${minutes} min`;
-    return result || "<1 min";
-  };
-
-  useEffect(() => {
-    if (
-      !currentLocation ||
-      !mapLoaded ||
-      !directionsServiceRef.current
-    )
-      return;
+    if (!currentLocation || !mapLoaded || !directionsServiceRef.current) return;
+    if (!currentRide && !manualRideAccepted) return;
 
     let origin, destination;
 
     if (currentRide) {
-      if (rideStatus === "accepted") {
+      switch (rideStatus) {
+        case "accepted":
+          origin = currentLocation;
+          destination = currentRide.pickupLocation || currentRide.pickup;
+          break;
+        case "in_progress":
+          origin = currentLocation;
+          destination = currentRide.dropoffLocation || currentRide.dropoff;
+          break;
+        default:
+          return;
+      }
+    } else if (manualRideAccepted) {
+      if (tripStarted && pickupInput && dropoffInput) {
+        origin = pickupInput;
+        destination = dropoffInput;
+      } else if (pickupInput) {
         origin = currentLocation;
-        destination = currentRide.pickup;
-      } else if (rideStatus === "in_progress") {
-        origin = currentLocation;
-        destination = currentRide.dropoff;
+        destination = pickupInput;
       } else {
         return;
       }
-    } else if (manualRideAccepted && pickupInput) {
-      origin = currentLocation;
-      destination = pickupInput;
-    } else if (tripStarted && pickupInput && dropoffInput) {
-      return;
-    } else {
-      return;
     }
+
+    if (!origin || !destination) return;
 
     directionsServiceRef.current.route(
       {
@@ -439,33 +434,101 @@ const finishTrip = async () => {
       (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK) {
           setDirections(result);
+          
+          if (result.routes[0]?.legs[0]) {
+            const leg = result.routes[0].legs[0];
+            setRideDetails(prev => ({
+              ...prev,
+              distance: leg.distance?.text || prev.distance,
+              duration: leg.duration?.text || prev.duration
+            }));
+          }
         } else {
           console.error("Directions request failed:", status);
           setDirections(null);
         }
       }
     );
-  }, [currentRide, currentLocation, rideStatus, mapLoaded, manualRideAccepted, pickupInput, tripStarted, dropoffInput]);
+  }, [
+    currentRide, 
+    currentLocation, 
+    rideStatus, 
+    mapLoaded, 
+    manualRideAccepted, 
+    pickupInput, 
+    tripStarted, 
+    dropoffInput
+  ]);
 
-  const handleMapLoad = (map) => {
+  // Fetch initial data
+  useEffect(() => {
+    const fetchInitialData = async () => {
+      try {
+        const [pickupRes, dropoffRes, detailsRes] = await Promise.all([
+          axios.get(`${API_BASE_URL}/api/driver/pickup`),
+          axios.get(`${API_BASE_URL}/api/driver/dropoff`),
+          axios.get(`${API_BASE_URL}/api/driver/details`)
+        ]);
+        
+
+        if (pickupRes.data.success && pickupRes.data.pickup) {
+          setPickupInput(pickupRes.data.pickup);
+          if (pickupRes.data.userName) {
+            setRideDetails(prev => ({
+              ...prev,
+              userName: pickupRes.data.userName
+            }));
+          }
+        }
+        if (dropoffRes.data.success && dropoffRes.data.dropoff) {
+          setDropoffInput(dropoffRes.data.dropoff);
+        }
+        if (detailsRes.data.success && detailsRes.data.rideDetails) {
+          if (detailsRes.data.rideDetails.status === 'in_progress') {
+            setRideDetails(prev => ({
+              ...prev,
+              distance: detailsRes.data.rideDetails.distance || "",
+              duration: detailsRes.data.rideDetails.duration || "",
+              fare: detailsRes.data.rideDetails.fare ? `Rs. ${detailsRes.data.rideDetails.fare.toFixed(2)}` : "",
+              status: detailsRes.data.rideDetails.status || "available",
+              scheduleTime: detailsRes.data.rideDetails.scheduleTime ? 
+                new Date(detailsRes.data.rideDetails.scheduleTime).toLocaleString() : "ASAP",
+              userName: detailsRes.data.rideDetails.userDetails?.name || prev.userName,
+              userId:detailsRes.data.rideDetails.userId
+            }));
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching initial data:", err);
+      }
+    };
+
+    fetchInitialData();
+  }, []);
+
+  // Handle map load
+  const handleMapLoad = useCallback((map) => {
     mapRef.current = map;
     setMapLoaded(true);
-  };
+  }, []);
 
-  const handleMapError = () => {
+  // Handle map error
+  const handleMapError = useCallback(() => {
     console.error("Google Maps failed to load");
-  };
+  }, []);
 
-  const declineRide = () => {
-    if (socket && currentRide) {
-      socket.emit("ride:decline", { rideId: currentRide._id });
+  // Decline a ride
+  const declineRide = useCallback(() => {
+    if (socketRef.current?.connected && currentRide) {
+      socketRef.current.emit("ride:decline", { rideId: currentRide._id });
     }
     resetRideData();
-  };
+  }, [currentRide, resetRideData]);
 
-  const acceptRide = () => {
-    if (socket && currentRide) {
-      socket.emit("ride:accept", { rideId: currentRide._id });
+  // Accept a ride
+  const acceptRide = useCallback(() => {
+    if (socketRef.current?.connected && currentRide) {
+      socketRef.current.emit("ride:accept", { rideId: currentRide._id });
       setRideStatus("accepted");
       setRideDetails(prev => ({
         ...prev,
@@ -473,9 +536,10 @@ const finishTrip = async () => {
       }));
       setShowAcceptModal(false);
     }
-  };
+  }, [currentRide]);
 
-  const handleManualAccept = () => {
+  // Handle manual ride acceptance
+  const handleManualAccept = useCallback(() => {
     if (pickupInput) {
       setManualRideAccepted(true);
       setRideDetails(prev => ({
@@ -483,49 +547,15 @@ const finishTrip = async () => {
         status: "accepted"
       }));
     }
-  };
+  }, [pickupInput]);
 
-  const handleManualDecline = () => {
+  // Handle manual ride decline
+  const handleManualDecline = useCallback(() => {
     resetRideData();
-  };
+  }, [resetRideData]);
 
-  const userId = "680f384d4c417b3a83f65278";
-  useEffect(() => {
-    const fetchInitialData = async () => {
-      try {
-        const [pickupRes, dropoffRes, detailsRes] = await Promise.all([
-          axios.get(`/api/driver/pickup/${userId}`),
-          axios.get(`/api/driver/dropoff/${userId}`),
-          axios.get(`/api/driver/details/${userId}`)
-        ]);
-
-        if (pickupRes.data.success) {
-          setPickupInput(pickupRes.data.pickup || "");
-        }
-        if (dropoffRes.data.success) {
-          setDropoffInput(dropoffRes.data.dropoff || "");
-        }
-        if (detailsRes.data.success) {
-          setRideDetails({
-            distance: detailsRes.data.rideDetails.distance || "",
-            duration: detailsRes.data.rideDetails.duration || "",
-            fare: detailsRes.data.rideDetails.fare ? `Rs. ${detailsRes.data.rideDetails.fare.toFixed(2)}` : "",
-            status: detailsRes.data.rideDetails.status || "available",
-            scheduleTime: detailsRes.data.rideDetails.scheduleTime ? 
-              new Date(detailsRes.data.rideDetails.scheduleTime).toLocaleString() : "ASAP"
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching initial data:", err);
-      }
-    };
-
-    if (userId) {
-      fetchInitialData();
-    }
-  }, []);
-
-  const LocationStatus = () => {
+  // Location status component
+  const LocationStatus = useCallback(() => {
     if (isLocating) {
       return (
         <div className="flex items-center space-x-2 text-gray-500">
@@ -563,22 +593,21 @@ const finishTrip = async () => {
         <p className="text-gray-700 mb-2">
           <span className="font-medium">Address:</span> {currentAddress}
         </p>
+        <p className="text-sm text-gray-500">
+          Socket status: {socketConnected ? (
+            <span className="text-green-600">Connected</span>
+          ) : (
+            <span className="text-red-600">Disconnected</span>
+          )}
+        </p>
       </div>
     );
-  };
+  }, [isLocating, locationError, currentLocation, currentAddress, socketConnected, getCurrentLocation]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <header className="bg-blue-600 text-white p-4 shadow-md">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">Driver Ride Dashboard</h1>
-          {currentLocation && (
-            <div className="flex items-center space-x-1">
-              <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
-              <span className="text-sm">Live GPS</span>
-            </div>
-          )}
-        </div>
+        <h1 className="text-xl font-bold">Driver Ride Dashboard</h1>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
@@ -589,6 +618,18 @@ const finishTrip = async () => {
             </h2>
             
             <LocationStatus />
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">
+                Passenger Name
+              </label>
+              <input
+                type="text"
+                readOnly
+                className="w-full p-2 border border-gray-300 rounded bg-gray-50"
+                value={rideDetails.userName}
+              />
+            </div>
 
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -685,20 +726,20 @@ const finishTrip = async () => {
                 <div className="flex gap-4">
                   <button
                     onClick={handleManualAccept}
-                    disabled={!pickupInput}
+                    disabled={!pickupInput || manualRideAccepted}
                     className={`px-4 py-2 rounded-lg font-medium ${
-                      !pickupInput
+                      !pickupInput || manualRideAccepted
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                         : "bg-green-600 text-white hover:bg-green-700"
                     }`}
                   >
-                    Accept
+                    {manualRideAccepted ? "Going to Pickup" : "Go to Pickup Location"}
                   </button>
                   <button
                     onClick={handleManualDecline}
-                    disabled={!manualRideAccepted}
+                    disabled={manualRideAccepted}
                     className={`px-4 py-2 rounded-lg font-medium ${
-                      !manualRideAccepted
+                      manualRideAccepted
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
                         : "bg-red-600 text-white hover:bg-red-700"
                     }`}
@@ -707,7 +748,7 @@ const finishTrip = async () => {
                   </button>
                 </div>
 
-                {pickupInput && dropoffInput && (
+                {manualRideAccepted && pickupInput && dropoffInput && (
                   <button
                     onClick={startTrip}
                     disabled={tripStarted}
@@ -745,7 +786,7 @@ const finishTrip = async () => {
               <div className="space-y-3 bg-blue-50 p-3 rounded-lg">
                 <p className="text-gray-700">
                   <span className="font-medium">Passenger:</span>{" "}
-                  {currentRide.passengerId?.name || "Guest"}
+                  {rideDetails.userName || "Guest"}
                 </p>
                 <p className="text-gray-700">
                   <span className="font-medium">Pickup:</span>{" "}
@@ -893,6 +934,10 @@ const finishTrip = async () => {
 
               <div className="space-y-3 mb-6 bg-blue-50 p-4 rounded-lg">
                 <p className="text-gray-700">
+                  <span className="font-medium">Passenger:</span>{" "}
+                  {rideDetails.userName || "Guest"}
+                </p>
+                <p className="text-gray-700">
                   <span className="font-medium">From:</span>{" "}
                   {currentRide.pickup}
                 </p>
@@ -928,7 +973,7 @@ const finishTrip = async () => {
                   onClick={acceptRide}
                   className="flex-1 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors shadow-md"
                 >
-                  Accept
+                  Go to Pickup Location
                 </button>
               </div>
             </div>

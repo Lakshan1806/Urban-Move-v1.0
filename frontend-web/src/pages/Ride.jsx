@@ -5,7 +5,6 @@ import Earnings from "./Earnings";
 import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import DriverRide from "./DriverRide";
 
 const MapPinIcon = () => (
   <svg
@@ -350,6 +349,11 @@ function Ride() {
       setError("Please enter both pickup and dropoff locations");
       return;
     }
+
+    if (scheduledTime <= new Date()) {
+    setError("Please select a future time for scheduling");
+    return;
+  }
 
     setIsScheduling(true);
     setError(null);
@@ -1089,7 +1093,7 @@ function Ride() {
         </div>
       </div>
 
-      {/*<DriverRide />*/}
+     
     </div>
   );
 }
