@@ -1,12 +1,38 @@
 import Admin from "../../../models/admin.model.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import generateRandomPassword from "../../../utils/passwordGenerator.js";
 import sendWelcomeMail from "../../../utils/mailer.js";
 
 const adminAccountManagementController = {
-  changePassword: (req, res) => {
-    // To Be Implemented
-    res.send("To Be Implemented");
+  changePassword: async (req, res) => {
+    const { token } = req.cookies;
+    const { currentPassword, newPassword } = req.body;
+    console.log(req);
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+    try {
+      const user = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      console.log(user);
+      const { _id } = user;
+      const admin = await Admin.findOne({ _id }).select({
+        password: 1,
+      });
+      if (!admin) {
+        return res.status(404).json({ message: "Admin not found" });
+      }
+      const isMatch = await bcrypt.compare(currentPassword, admin.password);
+      if (!isMatch) {
+        return res.status(401).json({ message: "Invalid password" });
+      }
+      
+      admin.password = newPassword;
+      await admin.save();
+    } catch (error) {
+      console.log(error);
+      return res.status(403).json({ error: "Token verification failed" });
+    }
   },
 
   addAdmin: async (req, res) => {
@@ -64,7 +90,7 @@ const adminAccountManagementController = {
     res.json(admins);
   },
 
-  accountInfo: async (req, res) => {   
+  accountInfo: async (req, res) => {
     const { token } = req.cookies;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });

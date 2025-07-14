@@ -9,7 +9,7 @@ const adminRoutes = express.Router();
 
 adminRoutes.post("/login", adminController.auth.login);
 adminRoutes.post("/logout", adminController.auth.logout);
-adminRoutes.post("/change_password", adminController.admin.changePassword);
+adminRoutes.patch("/change_password", adminController.admin.changePassword);
 adminRoutes.post("/add_admin", adminController.admin.addAdmin);
 adminRoutes.post(
   "/update_details",
