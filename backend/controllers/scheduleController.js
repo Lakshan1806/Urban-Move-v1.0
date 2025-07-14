@@ -15,6 +15,18 @@ export const scheduleRide = async (req, res) => {
       });
     }
 
+        // Validate scheduled time is in the future
+    const scheduledDateTime = new Date(scheduledTime);
+    const currentDateTime = new Date();
+    
+    if (scheduledDateTime <= currentDateTime) {
+      return res.status(400).json({
+        success: false,
+        message: 'Please select a future time for scheduling',
+        status: 'INVALID_TIME'
+      });
+    }
+
     // Get route details from Google Maps API
     const routeDetails = await getRouteDetails(pickup, dropoff);
     

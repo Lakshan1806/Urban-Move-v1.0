@@ -8,8 +8,8 @@ import {
 
 const router = express.Router();
 
-router.get('/pickup/:userId', getLatestPickupLocation);
-router.get('/dropoff/:userId', getLatestDropoffLocation);
-router.get('/details/:userId', getLatestRideDetails);
+router.get('/pickup', getLatestPickupLocation);
+router.get('/dropoff', getLatestDropoffLocation);
+router.get('/details', getLatestRideDetails);
 
 export default router;
