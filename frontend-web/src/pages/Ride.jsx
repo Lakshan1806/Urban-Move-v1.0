@@ -78,21 +78,27 @@ function Ride() {
   const dropoffRef = useRef(null);
   const navigate = useNavigate();
 
+  // Load active ride from localStorage on component mount
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (pickupRef.current && !pickupRef.current.contains(event.target)) {
-        setPickupSuggestions([]);
-      }
-      if (dropoffRef.current && !dropoffRef.current.contains(event.target)) {
-        setDropoffSuggestions([]);
+    const loadActiveRide = async () => {
+      const activeRide = localStorage.getItem('activeRide');
+      if (activeRide) {
+        const rideData = JSON.parse(activeRide);
+        setPickup(rideData.pickup || '');
+        setDropoff(rideData.dropoff || '');
+        setRouteDetails(rideData.routeDetails || null);
+        setMapUrl(rideData.mapUrl || null);
+        setFare(rideData.fare || null);
+        setRideStatus(rideData.rideStatus || null);
+        setRideId(rideData.rideId || null);
+        
+        // If there was an active ride, start polling again
+        if (rideData.rideId && rideData.rideStatus === 'searching') {
+          startRidePolling(rideData.rideId);
+        }
       }
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  useEffect(() => {
     if (navigator.permissions) {
       navigator.permissions
         .query({ name: "geolocation" })
@@ -105,6 +111,8 @@ function Ride() {
           };
         });
     }
+    
+    loadActiveRide();
     fetchScheduledRides();
 
     return () => {
@@ -113,6 +121,22 @@ function Ride() {
       }
     };
   }, []);
+
+  // Save active ride to localStorage whenever relevant state changes
+  useEffect(() => {
+    if (rideId || rideStatus || routeDetails) {
+      const activeRide = {
+        pickup,
+        dropoff,
+        routeDetails,
+        mapUrl,
+        fare,
+        rideStatus,
+        rideId
+      };
+      localStorage.setItem('activeRide', JSON.stringify(activeRide));
+    }
+  }, [pickup, dropoff, routeDetails, mapUrl, fare, rideStatus, rideId]);
 
   const fetchScheduledRides = async () => {
     try {
@@ -254,7 +278,6 @@ function Ride() {
     setError(null);
     setRouteDetails(null);
     setMapUrl(null);
-    setRideStatus(null);
 
     try {
       const response = await axios.post(
@@ -335,6 +358,11 @@ function Ride() {
   };
 
   const startRidePolling = (rideId) => {
+    // Clear any existing interval
+    if (pollingInterval) {
+      clearInterval(pollingInterval);
+    }
+
     const interval = setInterval(async () => {
       try {
         const response = await axios.get(
@@ -412,36 +440,39 @@ function Ride() {
     }
   };
 
-const handleCancelTrip = async () => {
-  try {
-    if (rideId) {
-      // Update to send a POST request to cancel the ride
-      await axios.post(`http://localhost:5000/api/rideRoute/cancel/${rideId}`, null, {
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-      });
+  const handleCancelTrip = async () => {
+    try {
+      if (rideId) {
+        // Update to send a POST request to cancel the ride
+        await axios.post(`http://localhost:5000/api/rideRoute/cancel/${rideId}`, null, {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+      }
+    } catch (err) {
+      console.error("Error cancelling ride:", err);
+    } finally {
+      // Clear the active ride from localStorage
+      localStorage.removeItem('activeRide');
+      
+      // Reset all state
+      setPickup("");
+      setDropoff("");
+      setRouteDetails(null);
+      setMapUrl(null);
+      setFare(null);
+      setShowScheduleForm(false);
+      setRideStatus(null);
+      setRideId(null);
+      setLoading(false);
+      
+      if (pollingInterval) {
+        clearInterval(pollingInterval);
+        setPollingInterval(null);
+      }
     }
-  } catch (err) {
-    console.error("Error cancelling ride:", err);
-  } finally {
-    // Reset all state
-    setPickup("");
-    setDropoff("");
-    setRouteDetails(null);
-    setMapUrl(null);
-    setFare(null);
-    setShowScheduleForm(false);
-    setRideStatus(null);
-    setRideId(null);
-    setLoading(false);
-    
-    if (pollingInterval) {
-      clearInterval(pollingInterval);
-      setPollingInterval(null);
-    }
-  }
-};
+  };
 
   const cancelScheduledRide = async (rideId) => {
     try {
@@ -532,7 +563,7 @@ const handleCancelTrip = async () => {
                   onFocus={() => handleInputFocus("pickup")}
                   className="w-full p-3 rounded-lg bg-gray-100 focus:ring-2 focus:ring-[#FF7C1D] outline-none"
                   placeholder="E.g., Colombo Fort"
-                  disabled={loading}
+                  disabled={loading || rideStatus === "searching"}
                 />
                 {isFetchingSuggestions && activeInput === "pickup" && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
@@ -572,7 +603,7 @@ const handleCancelTrip = async () => {
                   onFocus={() => handleInputFocus("dropoff")}
                   className="w-full p-3 rounded-lg bg-gray-100 focus:ring-2 focus:ring-[#FF7C1D] outline-none"
                   placeholder="E.g., Kandy City Center"
-                  disabled={loading}
+                  disabled={loading || rideStatus === "searching"}
                 />
                 {isFetchingSuggestions && activeInput === "dropoff" && (
                   <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
@@ -715,7 +746,7 @@ const handleCancelTrip = async () => {
                 <>
                   <button
                     type="submit"
-                    disabled={loading}
+                    disabled={loading || rideStatus === "searching"}
                     className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
                   >
                     {loading ? (
@@ -750,7 +781,7 @@ const handleCancelTrip = async () => {
                     type="button"
                     onClick={() => setShowScheduleForm(!showScheduleForm)}
                     className="flex-1 px-6 py-3 border-2 border-[#ad9481] text-[#FF7C1D] font-medium rounded-full hover:bg-[#FF7C1D]/10 transition-colors"
-                    disabled={loading}
+                    disabled={loading || rideStatus === "searching"}
                   >
                     {showScheduleForm ? "CANCEL SCHEDULE" : "SCHEDULE LATER"}
                   </button>
@@ -785,6 +816,7 @@ const handleCancelTrip = async () => {
                     <button
                       type="button"
                       onClick={handleStartRide}
+                      disabled={rideStatus === "searching"}
                       className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity"
                     >
                       START RIDE
