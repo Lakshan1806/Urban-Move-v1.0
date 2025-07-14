@@ -15,6 +15,10 @@ function AccountInfo() {
   const [imageUrl, setImageUrl] = useState(null);
   const [tempImage, setTempImage] = useState(null);
   const [isEditable, setIsEditable] = useState(false);
+  const [showChangePassword, setShowChangePassword] = useState(false);
+  const [newPassword, setNewPassword] = useState(null);
+  const [confirmPassword, setConfirmPassword] = useState(null);
+  const [currentPassword, setCurrentPassword] = useState(null);
 
   console.log(imageUrl);
   useEffect(() => {
@@ -74,6 +78,39 @@ function AccountInfo() {
       console.error("Upload failed:", error);
     }
     setIsEditable(false);
+  };
+
+  const handleUpdatePassword = async () => {
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      return;
+    }
+    /* if (newPassword.length < 8) {
+      return;
+    } */
+
+    try {
+      //setLoading(true);
+      await axios.patch("/admin/change_password", {
+        currentPassword,
+        newPassword,
+      });
+      setCurrentPassword("");
+      setNewPassword("");
+      setConfirmPassword("");
+      setTimeout(() => setShowChangePassword(false), 800); // brief success flash
+    } catch (err) {
+      setStatus({
+        type: "error",
+        msg:
+          err.response?.data?.message ??
+          "Something went wrong. Please check your current password and try again.",
+      });
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -225,13 +262,78 @@ function AccountInfo() {
               </button>
             </div>
             <div className="button-wrapper w-1/4">
-              <button type="button" className="button-primary">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={() => setShowChangePassword(true)}
+              >
                 Change Password
               </button>
             </div>
           </>
         )}
       </div>
+
+      {showChangePassword && (
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+            <h2 className="text-xl font-semibold text-gray-800">
+              Change Password
+            </h2>
+            <label className="block">
+              <span className="text-sm text-gray-700">Current password</span>
+              <input
+                type="password"
+                name="current"
+                value={currentPassword}
+                onChange={(e) => setCurrentPassword(e.target.value)}
+                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-200"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm text-gray-700">New password</span>
+              <input
+                type="password"
+                name="new"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-200"
+              />
+            </label>
+
+            <label className="block">
+              <span className="text-sm text-gray-700">Confirm password</span>
+              <input
+                type="password"
+                name="confirm"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-200"
+              />
+            </label>
+
+            <div className="flex justify-end gap-2">
+              <button
+                className="px-4 py-2 bg-gray-200 rounded"
+                onClick={() => setShowChangePassword(false)}
+              >
+                Cancel
+              </button>
+              <div className="button-wrapper">
+                <button
+                  className="button-primary"
+                  onClick={() => {
+                    handleUpdatePassword();
+                  }}
+                >
+                  Update Password
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
