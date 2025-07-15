@@ -30,7 +30,7 @@ const DriverRide = () => {
     fare: "",
     status: "",
     scheduleTime: "",
-    userName: ""
+    userName: "",
   });
   const [manualRideAccepted, setManualRideAccepted] = useState(false);
   const [tripStarted, setTripStarted] = useState(false);
@@ -48,7 +48,7 @@ const DriverRide = () => {
   const mapContainerStyle = {
     width: "100%",
     height: "100%",
-    minHeight: "400px"
+    minHeight: "400px",
   };
 
   const sriLankaBounds = {
@@ -72,7 +72,7 @@ const DriverRide = () => {
       status: "",
       scheduleTime: "",
       userName: "",
-      userId:""
+      userId: "",
     });
     setShowAcceptModal(false);
     setPickupInput("");
@@ -99,7 +99,8 @@ const DriverRide = () => {
             let errorMessage;
             switch (error.code) {
               case error.PERMISSION_DENIED:
-                errorMessage = "Location access was denied. Please enable permissions in your browser settings.";
+                errorMessage =
+                  "Location access was denied. Please enable permissions in your browser settings.";
                 break;
               case error.POSITION_UNAVAILABLE:
                 errorMessage = "Location information is unavailable.";
@@ -130,7 +131,7 @@ const DriverRide = () => {
 
       setCurrentLocation(newLocation);
       setLocationHistory((prev) => [...prev.slice(-50), newLocation]);
-      
+
       try {
         const response = await axios.get(
           `${API_BASE_URL}/api/location/reverse-geocode?lat=${latitude}&lng=${longitude}`
@@ -191,18 +192,20 @@ const DriverRide = () => {
   const finishTrip = useCallback(async () => {
     setIsFinishingTrip(true);
     try {
-      const token = localStorage.getItem('token');
-      const rideId = currentRide?._id || `ride_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
-      const fareText = rideDetails.fare.replace(/[^0-9.]/g, '');
+      const token = localStorage.getItem("token");
+      const rideId =
+        currentRide?._id ||
+        `ride_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+      const fareText = rideDetails.fare.replace(/[^0-9.]/g, "");
       const fareAmount = parseFloat(fareText);
-      
+
       if (isNaN(fareAmount)) {
-        throw new Error('Invalid fare amount');
+        throw new Error("Invalid fare amount");
       }
 
       const rideData = {
         rideId,
-        
+
         userId: rideDetails.userId || "unknown",
         userName: rideDetails.userName || "Unknown",
         pickup: currentRide?.pickup || pickupInput,
@@ -210,30 +213,31 @@ const DriverRide = () => {
         startLocation: {
           lat: currentLocation?.lat || 0,
           lng: currentLocation?.lng || 0,
-          address: currentAddress || "Unknown address"
+          address: currentAddress || "Unknown address",
         },
         endLocation: {
           lat: currentLocation?.lat || 0,
           lng: currentLocation?.lng || 0,
-          address: currentAddress || "Unknown address"
+          address: currentAddress || "Unknown address",
         },
-        driverLocationUpdates: locationHistory.map(loc => ({
+        driverLocationUpdates: locationHistory.map((loc) => ({
           lat: loc.lat,
           lng: loc.lng,
           accuracy: loc.accuracy || 0,
           timestamp: loc.timestamp || new Date(),
-          address: currentAddress || "Unknown address"
+          address: currentAddress || "Unknown address",
         })),
         distance: rideDetails.distance || "0 km",
         duration: rideDetails.duration || "0 mins",
-        fare: fareAmount*1000,
-        driverEarnings: fareAmount*100*0.8,
+        fare: fareAmount * 1000,
+        driverEarnings: fareAmount * 100 * 0.8,
         status: "completed",
-        route: directions?.routes[0]?.overview_path?.map(point => ({
-          lat: point.lat(),
-          lng: point.lng()
-        })) || [],
-        completedAt: new Date()
+        route:
+          directions?.routes[0]?.overview_path?.map((point) => ({
+            lat: point.lat(),
+            lng: point.lng(),
+          })) || [],
+        completedAt: new Date(),
       };
 
       const response = await axios.post(
@@ -241,33 +245,33 @@ const DriverRide = () => {
         rideData,
         {
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
-          timeout: 10000
+          timeout: 10000,
         }
       );
 
       if (!response.data?.success) {
-        throw new Error(response.data?.message || 'Failed to save ride');
+        throw new Error(response.data?.message || "Failed to save ride");
       }
 
       setRideStatus("completed");
-      setRideDetails(prev => ({ ...prev, status: "completed" }));
+      setRideDetails((prev) => ({ ...prev, status: "completed" }));
       alert("Ride completed and saved successfully!");
       setTimeout(resetRideData, 3000);
-
     } catch (error) {
-      console.error('Finish trip error:', {
+      console.error("Finish trip error:", {
         error: error.response?.data || error.message,
-        fullError: error
+        fullError: error,
       });
 
-      let errorMessage = 'Failed to complete trip';
+      let errorMessage = "Failed to complete trip";
       if (error.response) {
-        errorMessage = error.response.data?.message || 
-                     error.response.data?.error || 
-                     JSON.stringify(error.response.data);
+        errorMessage =
+          error.response.data?.message ||
+          error.response.data?.error ||
+          JSON.stringify(error.response.data);
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -276,14 +280,22 @@ const DriverRide = () => {
     } finally {
       setIsFinishingTrip(false);
     }
-  }, [currentRide, currentLocation, currentAddress, locationHistory, rideDetails, directions, resetRideData]);
+  }, [
+    currentRide,
+    currentLocation,
+    currentAddress,
+    locationHistory,
+    rideDetails,
+    directions,
+    resetRideData,
+  ]);
 
   // Format duration from seconds to readable format
   const formatDuration = useCallback((seconds) => {
     if (!seconds) return "N/A";
     const hours = Math.floor(seconds / 3600);
     const minutes = Math.floor((seconds % 3600) / 60);
-    
+
     let result = "";
     if (hours > 0) result += `${hours} hr `;
     if (minutes > 0) result += `${minutes} min`;
@@ -299,8 +311,8 @@ const DriverRide = () => {
       transports: ["websocket"],
       withCredentials: true,
       auth: {
-        token: localStorage.getItem("token") || "DRIVER_AUTH_TOKEN"
-      }
+        token: localStorage.getItem("token") || "DRIVER_AUTH_TOKEN",
+      },
     });
 
     socketRef.current = socketInstance;
@@ -434,13 +446,13 @@ const DriverRide = () => {
       (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK) {
           setDirections(result);
-          
+
           if (result.routes[0]?.legs[0]) {
             const leg = result.routes[0].legs[0];
-            setRideDetails(prev => ({
+            setRideDetails((prev) => ({
               ...prev,
               distance: leg.distance?.text || prev.distance,
-              duration: leg.duration?.text || prev.duration
+              duration: leg.duration?.text || prev.duration,
             }));
           }
         } else {
@@ -450,14 +462,14 @@ const DriverRide = () => {
       }
     );
   }, [
-    currentRide, 
-    currentLocation, 
-    rideStatus, 
-    mapLoaded, 
-    manualRideAccepted, 
-    pickupInput, 
-    tripStarted, 
-    dropoffInput
+    currentRide,
+    currentLocation,
+    rideStatus,
+    mapLoaded,
+    manualRideAccepted,
+    pickupInput,
+    tripStarted,
+    dropoffInput,
   ]);
 
   // Fetch initial data
@@ -467,16 +479,15 @@ const DriverRide = () => {
         const [pickupRes, dropoffRes, detailsRes] = await Promise.all([
           axios.get(`${API_BASE_URL}/api/driver/pickup`),
           axios.get(`${API_BASE_URL}/api/driver/dropoff`),
-          axios.get(`${API_BASE_URL}/api/driver/details`)
+          axios.get(`${API_BASE_URL}/api/driver/details`),
         ]);
-        
 
         if (pickupRes.data.success && pickupRes.data.pickup) {
           setPickupInput(pickupRes.data.pickup);
           if (pickupRes.data.userName) {
-            setRideDetails(prev => ({
+            setRideDetails((prev) => ({
               ...prev,
-              userName: pickupRes.data.userName
+              userName: pickupRes.data.userName,
             }));
           }
         }
@@ -484,17 +495,23 @@ const DriverRide = () => {
           setDropoffInput(dropoffRes.data.dropoff);
         }
         if (detailsRes.data.success && detailsRes.data.rideDetails) {
-          if (detailsRes.data.rideDetails.status === 'pending') {
-            setRideDetails(prev => ({
+          if (detailsRes.data.rideDetails.status === "pending") {
+            setRideDetails((prev) => ({
               ...prev,
               distance: detailsRes.data.rideDetails.distance || "",
               duration: detailsRes.data.rideDetails.duration || "",
-              fare: detailsRes.data.rideDetails.fare ? `Rs. ${detailsRes.data.rideDetails.fare.toFixed(2)}` : "",
+              fare: detailsRes.data.rideDetails.fare
+                ? `Rs. ${detailsRes.data.rideDetails.fare.toFixed(2)}`
+                : "",
               status: detailsRes.data.rideDetails.status || "available",
-              scheduleTime: detailsRes.data.rideDetails.scheduleTime ? 
-                new Date(detailsRes.data.rideDetails.scheduleTime).toLocaleString() : "ASAP",
-              userName: detailsRes.data.rideDetails.userDetails?.name || prev.userName,
-              userId:detailsRes.data.rideDetails.userId
+              scheduleTime: detailsRes.data.rideDetails.scheduleTime
+                ? new Date(
+                    detailsRes.data.rideDetails.scheduleTime
+                  ).toLocaleString()
+                : "ASAP",
+              userName:
+                detailsRes.data.rideDetails.userDetails?.name || prev.userName,
+              userId: detailsRes.data.rideDetails.userId,
             }));
           }
         }
@@ -526,25 +543,70 @@ const DriverRide = () => {
   }, [currentRide, resetRideData]);
 
   // Accept a ride
-  const acceptRide = useCallback(() => {
-    if (socketRef.current?.connected && currentRide) {
-      socketRef.current.emit("ride:accept", { rideId: currentRide._id });
+
+const acceptRide = useCallback(async () => {
+  console.log("acceptRide called"); // Debug log
+
+  if (!currentRide || !currentLocation) {
+    console.warn("Missing required data to accept the ride");
+    return;
+  }
+
+  try {
+    const token = localStorage.getItem("token");
+    const response = await axios.post(
+      `${API_BASE_URL}/api/driver-acceptance/accept`,
+      {
+        rideId: currentRide._id,
+        driverName: rideDetails.userName || "Driver",
+        currentLocation: {
+          lat: currentLocation.lat,
+          lng: currentLocation.lng,
+          address: currentAddress,
+        },
+        pickupLocation: currentRide.pickupLocation || {
+          lat: currentLocation.lat,
+          lng: currentLocation.lng,
+          address: currentAddress,
+        },
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+
+    if (response.data.success) {
       setRideStatus("accepted");
-      setRideDetails(prev => ({
+      setRideDetails((prev) => ({
         ...prev,
-        status: "accepted"
+        status: "accepted",
       }));
       setShowAcceptModal(false);
+
+      if (socketRef.current?.connected) {
+        socketRef.current.emit("ride:accept", { rideId: currentRide._id });
+      }
     }
-  }, [currentRide]);
+  } catch (error) {
+    console.error(
+      "Failed to accept ride:",
+      error?.response?.data || error.message
+    );
+    alert(
+      `Failed to accept ride: ${error?.response?.data?.message || error.message}`
+    );
+  }
+}, [currentRide, currentLocation, currentAddress, rideDetails.userName]);
 
   // Handle manual ride acceptance
   const handleManualAccept = useCallback(() => {
     if (pickupInput) {
       setManualRideAccepted(true);
-      setRideDetails(prev => ({
+      setRideDetails((prev) => ({
         ...prev,
-        status: "accepted"
+        status: "accepted",
       }));
     }
   }, [pickupInput]);
@@ -594,7 +656,8 @@ const DriverRide = () => {
           <span className="font-medium">Address:</span> {currentAddress}
         </p>
         <p className="text-sm text-gray-500">
-          Socket status: {socketConnected ? (
+          Socket status:{" "}
+          {socketConnected ? (
             <span className="text-green-600">Connected</span>
           ) : (
             <span className="text-red-600">Disconnected</span>
@@ -602,7 +665,14 @@ const DriverRide = () => {
         </p>
       </div>
     );
-  }, [isLocating, locationError, currentLocation, currentAddress, socketConnected, getCurrentLocation]);
+  }, [
+    isLocating,
+    locationError,
+    currentLocation,
+    currentAddress,
+    socketConnected,
+    getCurrentLocation,
+  ]);
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
@@ -616,7 +686,7 @@ const DriverRide = () => {
             <h2 className="text-lg font-semibold text-gray-800">
               Your Current Location
             </h2>
-            
+
             <LocationStatus />
 
             <div>
@@ -733,7 +803,9 @@ const DriverRide = () => {
                         : "bg-green-600 text-white hover:bg-green-700"
                     }`}
                   >
-                    {manualRideAccepted ? "Going to Pickup" : "Go to Pickup Location"}
+                    {manualRideAccepted
+                      ? "Going to Pickup"
+                      : "Go to Pickup Location"}
                   </button>
                   <button
                     onClick={handleManualDecline}
@@ -805,8 +877,7 @@ const DriverRide = () => {
                   {rideDetails.duration}
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Fare:</span>{" "}
-                  {rideDetails.fare}
+                  <span className="font-medium">Fare:</span> {rideDetails.fare}
                 </p>
                 <p className="text-gray-700">
                   <span className="font-medium">Status:</span>{" "}
@@ -851,7 +922,9 @@ const DriverRide = () => {
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white p-4 rounded-lg shadow-lg text-center max-w-xs">
                   <p className="font-medium">Waiting for your location</p>
                   <p className="text-sm text-gray-500 mt-1">
-                    {locationError ? locationError : "This may take a moment..."}
+                    {locationError
+                      ? locationError
+                      : "This may take a moment..."}
                   </p>
                 </div>
               )}
@@ -953,8 +1026,7 @@ const DriverRide = () => {
                   {rideDetails.duration}
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Fare:</span>{" "}
-                  {rideDetails.fare}
+                  <span className="font-medium">Fare:</span> {rideDetails.fare}
                 </p>
                 <p className="text-gray-700">
                   <span className="font-medium">Scheduled Time:</span>{" "}
