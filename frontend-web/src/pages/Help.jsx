@@ -31,9 +31,9 @@ function Help() {
         </div>
       </div>
 
-      {/* Add a button to navigate to the Payment Page */}
+    
       <button 
-        onClick={() => navigate("/email")} 
+        onClick={() => navigate("/chat")} 
         className="mt-6 px-6 py-3 bg-yellow-500 text-white text-xl rounded-lg hover:bg-orange-500"
       >
         Go to Payment

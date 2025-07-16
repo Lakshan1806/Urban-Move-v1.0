@@ -19,9 +19,9 @@ import ProtectedRoute from "./ProtectedRoute";
 import GooglePhoneVerification from "../pages/GooglePhoneVerification.jsx";
 import DriverRegister from "../pages/driverRegister.jsx";
 import DriverLogin from "../pages/DriverLogin.jsx";
-
+import ChatAndCall from "../pages/ChatAndCall.jsx";
 function RouteSelect() {
-  const userId = "123456"; // Replace this with actual logged-in user ID
+  const userId = localStorage.getItem("userId");
 
   return (
     <main className="h-full min-h-0">
@@ -43,6 +43,7 @@ function RouteSelect() {
         <Route path="/trip-history" element={<TripHistory userId={userId} />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetpasswordPage />} />
+        <Route path="/chat" element={<ChatAndCall/>} />
         <Route
           path="/profile"
           element={
@@ -53,6 +54,7 @@ function RouteSelect() {
         />
         <Route path="/verify-phone" element={<GooglePhoneVerification />} />
       </Routes>
+      
     </main>
   );
 }
