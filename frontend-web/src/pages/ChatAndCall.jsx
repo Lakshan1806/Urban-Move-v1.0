@@ -6,7 +6,9 @@ const socket = io("http://localhost:5000");
 
 const ChatAndCall = () => {
   const [userId, setUserId] = useState("");
+  const [userRole, setUserRole] = useState(""); // NEW: track user or driver
   const [driverId, setDriverId] = useState("");
+  const [otherUserId, setOtherUserId] = useState(""); // NEW: store userId from ride
   const [roomId, setRoomId] = useState("");
   const [messages, setMessages] = useState([]);
   const [userInput, setUserInput] = useState("");
@@ -17,6 +19,7 @@ const ChatAndCall = () => {
   const remoteAudioRef = useRef();
   const peerConnection = useRef(null);
   const localStream = useRef(null);
+  const messagesEndRef = useRef(null);
 
   const servers = { iceServers: [{ urls: "stun:stun.l.google.com:19302" }] };
 
@@ -38,12 +41,17 @@ const ChatAndCall = () => {
       try {
         const res = await axios.get("http://localhost:5000/api/auth/me", { withCredentials: true });
         const loggedInUserId = res.data?.user?._id;
+        const role = res.data?.user?.role;
+
         setUserId(loggedInUserId);
+        setUserRole(role);
 
         const rideRes = await axios.get(`http://localhost:5000/api/driverrides/latest-ride/${loggedInUserId}`);
         setDriverId(rideRes.data.driverId);
+        setOtherUserId(rideRes.data.userId);
 
-        const genRoomId = [loggedInUserId, rideRes.data.driverId].sort().join("_");
+        // Generate consistent room ID
+        const genRoomId = [rideRes.data.userId, rideRes.data.driverId].sort().join("_");
         setRoomId(genRoomId);
       } catch (err) {
         console.error("Failed to load user or driver ID", err);
@@ -64,39 +72,49 @@ const ChatAndCall = () => {
     socket.on("receive-message", (data) => setMessages((prev) => [...prev, data]));
 
     socket.on("call-made", async ({ offer, socket: from }) => {
-      await setupMedia();
+      try {
+        await setupMedia();
 
-      peerConnection.current = new RTCPeerConnection(servers);
-      addLocalTracks();
+        peerConnection.current = new RTCPeerConnection(servers);
+        addLocalTracks();
 
-      peerConnection.current.ontrack = ({ streams: [stream] }) => {
-        remoteAudioRef.current.srcObject = stream;
-      };
+        peerConnection.current.ontrack = ({ streams: [stream] }) => {
+          remoteAudioRef.current.srcObject = stream;
+        };
 
-      peerConnection.current.onicecandidate = (event) => {
-        if (event.candidate) {
-          socket.emit("ice-candidate", { to: from, candidate: event.candidate });
-        }
-      };
+        peerConnection.current.onicecandidate = (event) => {
+          if (event.candidate) {
+            socket.emit("ice-candidate", { to: from, candidate: event.candidate });
+          }
+        };
 
-      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
-      const answer = await peerConnection.current.createAnswer();
-      await peerConnection.current.setLocalDescription(answer);
+        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(offer));
+        const answer = await peerConnection.current.createAnswer();
+        await peerConnection.current.setLocalDescription(answer);
 
-      socket.emit("make-answer", { answer, to: from });
+        socket.emit("make-answer", { answer, to: from });
 
-      setInCall(true);
-      await logCall("started");
+        setInCall(true);
+        await logCall("started");
+      } catch (error) {
+        console.error("Error handling call-made", error);
+      }
     });
 
     socket.on("answer-made", async ({ answer }) => {
-      await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
-      setInCall(true);
+      try {
+        await peerConnection.current.setRemoteDescription(new RTCSessionDescription(answer));
+        setInCall(true);
+      } catch (error) {
+        console.error("Error handling answer-made", error);
+      }
     });
 
     socket.on("ice-candidate", ({ candidate }) => {
       if (peerConnection.current) {
-        peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate));
+        peerConnection.current.addIceCandidate(new RTCIceCandidate(candidate)).catch(e => {
+          console.error("Error adding ICE candidate", e);
+        });
       }
     });
 
@@ -108,37 +126,66 @@ const ChatAndCall = () => {
     };
   }, [roomId]);
 
+  useEffect(() => {
+    return () => {
+      if (peerConnection.current) {
+        peerConnection.current.close();
+        peerConnection.current = null;
+      }
+      if (localStream.current) {
+        localStream.current.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const setupMedia = async () => {
-    localStream.current = await navigator.mediaDevices.getUserMedia({ audio: true });
-    localAudioRef.current.srcObject = localStream.current;
+    try {
+      localStream.current = await navigator.mediaDevices.getUserMedia({ audio: true });
+      localAudioRef.current.srcObject = localStream.current;
+    } catch (err) {
+      console.error("Error accessing media devices", err);
+      alert("Microphone access denied or not available.");
+    }
   };
 
   const addLocalTracks = () => {
-    localStream.current.getTracks().forEach((track) => peerConnection.current.addTrack(track, localStream.current));
+    if (localStream.current && peerConnection.current) {
+      localStream.current.getTracks().forEach((track) => peerConnection.current.addTrack(track, localStream.current));
+    }
   };
 
   const initiateCall = async () => {
-    await setupMedia();
-    peerConnection.current = new RTCPeerConnection(servers);
-    addLocalTracks();
+    try {
+      await setupMedia();
+      peerConnection.current = new RTCPeerConnection(servers);
+      addLocalTracks();
 
-    peerConnection.current.ontrack = ({ streams: [stream] }) => {
-      remoteAudioRef.current.srcObject = stream;
-    };
+      peerConnection.current.ontrack = ({ streams: [stream] }) => {
+        remoteAudioRef.current.srcObject = stream;
+      };
 
-    peerConnection.current.onicecandidate = (event) => {
-      if (event.candidate) {
-        socket.emit("ice-candidate", { to: driverId, candidate: event.candidate });
-      }
-    };
+      peerConnection.current.onicecandidate = (event) => {
+        if (event.candidate) {
+          socket.emit("ice-candidate", { to: driverId, candidate: event.candidate });
+        }
+      };
 
-    const offer = await peerConnection.current.createOffer();
-    await peerConnection.current.setLocalDescription(offer);
+      const offer = await peerConnection.current.createOffer();
+      await peerConnection.current.setLocalDescription(offer);
 
-    socket.emit("call-user", { offer, to: driverId });
+      socket.emit("call-user", { offer, to: driverId });
 
-    setInCall(true);
-    await logCall("started");
+      setInCall(true);
+      await logCall("started");
+    } catch (error) {
+      console.error("Error initiating call", error);
+    }
   };
 
   const endCall = async () => {
@@ -157,20 +204,31 @@ const ChatAndCall = () => {
     if (localStream.current) {
       const audioTrack = localStream.current.getAudioTracks()[0];
       if (audioTrack) {
-        audioTrack.enabled = isMuted;
+        audioTrack.enabled = isMuted ? true : false; 
         setIsMuted(!isMuted);
       }
     }
   };
 
   const sendMessage = async () => {
-    if (!userInput.trim()) return;
-    if (!userId || !driverId || !roomId) return;
+    if (!userInput.trim() || !userId || !roomId) return;
 
-    const newMsg = { senderId: userId, receiverId: driverId, message: userInput, roomId };
+    const receiverId = userRole === "user" ? driverId : otherUserId;
+
+    const newMsg = {
+      senderId: userId,
+      receiverId,
+      message: userInput,
+      roomId,
+    };
+
     socket.emit("send-message", newMsg);
-    await axios.post("http://localhost:5000/api/messages", newMsg);
-    setUserInput("");
+    try {
+      await axios.post("http://localhost:5000/api/messages", newMsg);
+      setUserInput("");
+    } catch (err) {
+      console.error("Failed to send message", err);
+    }
   };
 
   return (
@@ -196,9 +254,17 @@ const ChatAndCall = () => {
           <div className="w-full max-w-3xl h-72 overflow-y-auto border rounded bg-white p-6 mb-8 space-y-3">
             {messages.map((msg, idx) => (
               <div key={idx} className="text-sm">
-                <strong className="text-blue-600">{msg.senderId === userId ? "You" : "Driver"}:</strong> {msg.message}
+                <strong className="text-blue-600">
+                  {msg.senderId === userId
+                    ? "You"
+                    : userRole === "user"
+                    ? "Driver"
+                    : "User"}:
+                </strong>{" "}
+                {msg.message}
               </div>
             ))}
+            <div ref={messagesEndRef} />
           </div>
 
           <div className="w-full max-w-2xl flex flex-col">
