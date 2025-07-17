@@ -20,8 +20,8 @@ function ExpiredPromotions() {
   }, []);
 
   return (
-    <div className="col-span-3 row-span-6 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
-      <div className="sticky top-0 z-20 bg-white/30 rounded-t-xl backdrop-blur-md px-4 py-4 flex justify-center">
+    <div className="col-span-3 row-span-6 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+      <div className="sticky top-0 z-20 bg-white/30 rounded-t-3xl backdrop-blur-md px-4 py-4 flex justify-center">
         <h3 className="text-sm font-bold uppercase">Expired Promotions</h3>
       </div>
       {promotion.length > 0 ? (

@@ -52,7 +52,7 @@ function AddPromotions() {
     }
   };
   return (
-    <div className="col-span-5 row-span-6 p-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-5 row-span-6 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
       <div className="flex flex-col">
         <div>
           <h2>Add Promotion Details</h2>
