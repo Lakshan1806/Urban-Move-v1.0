@@ -61,6 +61,16 @@ adminRoutes.get(
   adminController.promotion.getAllExpiredPromotions
 );
 
+adminRoutes.get(
+  "/get_yearly_income",
+  adminController.promotion.calculateYearlyIncome
+);
+
+adminRoutes.get(
+  "/get_monthly_stats",
+  adminController.promotion.getMonthlyRideStats
+);
+
 adminRoutes.patch(
   "/update_car_image",
   carUpload.fields([
