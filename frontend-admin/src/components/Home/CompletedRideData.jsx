@@ -1,78 +1,84 @@
 import { useState, useEffect } from "react";
 import { Chart } from "primereact/chart";
+import axios from "axios";
 
 function CompletedRideData() {
   const [chartData, setChartData] = useState({});
   const [chartOptions, setChartOptions] = useState({});
 
   useEffect(() => {
-    const documentStyle = getComputedStyle(document.documentElement);
-    const textColor = documentStyle.getPropertyValue("--text-color");
-    const textColorSecondary = documentStyle.getPropertyValue(
-      "--text-color-secondary"
-    );
-    const surfaceBorder = documentStyle.getPropertyValue("--surface-border");
-    const data = {
-      labels: ["January", "February", "March", "April", "May", "June", "July"],
-      datasets: [
-        {
-          label: "First Dataset",
-          data: [65, 59, 80, 81, 56, 55, 40],
-          fill: true,
-          tension: 0.4,
-          borderColor: documentStyle.getPropertyValue("--blue-500"),
-        },
-        {
-          label: "Second Dataset",
-          data: [28, 48, 40, 19, 86, 27, 90],
-          fill: false, 
-          borderDash: [5, 5],
-          tension: 0.4,
-          borderColor: documentStyle.getPropertyValue("--teal-500"),
-        },
-        {
-          label: "Third Dataset",
-          data: [12, 51, 62, 33, 21, 62, 45],
-          fill: true,
-          borderColor: documentStyle.getPropertyValue("--orange-500"),
-          tension: 0.4,
-          backgroundColor: "rgba(255,167,38,0.2)",
-        },
-      ],
-    };
-    const options = {
-      maintainAspectRatio: false,
-       
-      
-      plugins: {
-        legend: {
-          labels: {
-            color: textColor,
+    let isMounted = true;
+    const fetchData = async () => {
+      let response;
+      try {
+        response = await axios.get("/admin/get_monthly_stats");
+        console.log(response);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+
+      if (!isMounted) {
+        return;
+      }
+      const data = {
+        labels: response.data.labels,
+        datasets: [
+          {
+            label: "Completed Rides",
+            data: response.data.completed,
+            fill: true,
+            tension: 0.4,
+            borderColor: "#ffd12e",
+          },
+          {
+            label: "Cancelled Rides",
+            data: response.data.cancelled,
+            fill: false,
+            tension: 0.4,
+            borderColor: "#ff7c1d",
+          },
+        ],
+      };
+      const options = {
+        maintainAspectRatio: true,
+
+        plugins: {
+          legend: {
+            labels: {
+              color: "#000000",
+            },
           },
         },
-      },
-      scales: {
-        x: {
-          ticks: {
-            color: textColorSecondary,
+        scales: {
+          x: {
+            ticks: {
+              color: "#000000",
+            },
+            grid: {
+              color: "#cccccc",
+            },
           },
-          grid: {
-            color: surfaceBorder,
+          y: {
+            ticks: {
+              color: "#000000",
+            },
+            grid: {
+              color: "#cccccc",
+            },
           },
         },
-        y: {
-          ticks: {
-            color: textColorSecondary,
-          },
-          grid: {
-            color: surfaceBorder,
-          },
-        },
-      },
+      };
+
+      setChartData(data);
+      setChartOptions(options);
     };
 
-    setChartData(data);
-    setChartOptions(options);
+    fetchData();
+    const intervalId = setInterval(fetchData, 10000);
+    return () => {
+      isMounted = false;
+      clearInterval(intervalId);
+    };
   }, []);
 
   return (
