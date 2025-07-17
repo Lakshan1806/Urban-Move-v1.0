@@ -53,7 +53,7 @@ function UnitDetails({ unit, onEdit }) {
   };
 
   return (
-    <div className="p-4 my-2 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row items-center gap-4 flex-none">
+    <div className="p-4 my-2 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row items-center gap-4 flex-none">
       <div className="flex flex-col">
         {isEditableUnit ? (
           <>

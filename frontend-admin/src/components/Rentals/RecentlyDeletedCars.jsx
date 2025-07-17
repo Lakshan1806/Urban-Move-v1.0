@@ -35,7 +35,7 @@ function RecentlyDeletedCars() {
   };
 
   return (
-    <div className="col-span-4 row-span-6 pt-4 px-4 pb-0 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-4 row-span-6 pt-4 px-4 pb-0 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
       {car.map((cars) => {
         console.log("data :", cars);
         console.log("data :", cars.images);
