@@ -67,17 +67,15 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-
 app.use(
   "/uploads",
   express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), "/uploads"))
 );
 
-
 app.use("/auth", userRoutes);
 app.use("/user", userRoutes);
 app.use("/api/auth", userRoutes);
-app.use("/api/admin", adminRoutes);
+app.use("/admin", adminRoutes);
 app.use("/api/cars", carRoutes);
 app.use("/api/rideRoute", RideRoute);
 app.use("/api/schedule", scheduleRoutes);
@@ -115,28 +113,55 @@ async function startServer() {
     },
   });
 
+  const userSocketMap = new Map();
+
   io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
+
+    socket.on('authenticate', (userId) => {
+      userSocketMap.set(userId, socket.id);
+      console.log(`User ${userId} associated with socket ${socket.id}`);
+    });
 
     socket.on("join-room", ({ roomId }) => {
       socket.join(roomId);
       console.log(`Socket ${socket.id} joined room ${roomId}`);
     });
 
+    // ✅ UPDATED send-message handler to emit to both room + receiver's socket
     socket.on("send-message", (data) => {
-      io.to(data.roomId).emit("receive-message", data);
+      const { senderId, receiverId, roomId, message } = data;
+
+      // Emit to all users in the room
+      io.to(roomId).emit("receive-message", data);
+
+      // Emit directly to receiver in case they're not in the room
+      const receiverSocketId = userSocketMap.get(receiverId);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("receive-message", data);
+        console.log(`Message sent to receiver socket: ${receiverSocketId}`);
+      }
     });
 
     socket.on("call-user", ({ offer, to }) => {
-      socket.to(to).emit("call-made", { offer, socket: socket.id });
+      const targetSocketId = userSocketMap.get(to);
+      if (targetSocketId) {
+        socket.to(targetSocketId).emit("call-made", { offer, socket: socket.id });
+      }
     });
 
     socket.on("make-answer", ({ answer, to }) => {
-      socket.to(to).emit("answer-made", { answer });
+      const targetSocketId = userSocketMap.get(to);
+      if (targetSocketId) {
+        socket.to(targetSocketId).emit("answer-made", { answer });
+      }
     });
 
     socket.on("ice-candidate", ({ candidate, to }) => {
-      socket.to(to).emit("ice-candidate", { candidate });
+      const targetSocketId = userSocketMap.get(to);
+      if (targetSocketId) {
+        socket.to(targetSocketId).emit("ice-candidate", { candidate });
+      }
     });
 
     socket.on('driver:authenticate', (driverId) => {
@@ -166,6 +191,12 @@ async function startServer() {
 
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
+      for (const [userId, sId] of userSocketMap.entries()) {
+        if (sId === socket.id) {
+          userSocketMap.delete(userId);
+          break;
+        }
+      }
     });
   });
 

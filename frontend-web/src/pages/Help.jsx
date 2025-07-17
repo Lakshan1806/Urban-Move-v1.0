@@ -33,7 +33,7 @@ function Help() {
 
     
       <button 
-        onClick={() => navigate("/chat")} 
+        onClick={() => navigate("/trip-history")} 
         className="mt-6 px-6 py-3 bg-yellow-500 text-white text-xl rounded-lg hover:bg-orange-500"
       >
         Go to Payment

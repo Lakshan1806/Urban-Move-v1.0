@@ -56,7 +56,7 @@
   },
   "devDependencies": {
     "eslint": "^8.56.0",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
     "prettier": "^3.2.5"
   }
 }
