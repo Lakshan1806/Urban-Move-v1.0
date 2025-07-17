@@ -71,6 +71,16 @@ adminRoutes.get(
   adminController.promotion.getMonthlyRideStats
 );
 
+adminRoutes.get(
+  "/get_branch_locations",
+  adminController.promotion.getBranchLocations
+);
+
+adminRoutes.post(
+  "/add_branch_location",
+  adminController.promotion.addBranchLocation
+);
+
 adminRoutes.patch(
   "/update_car_image",
   carUpload.fields([

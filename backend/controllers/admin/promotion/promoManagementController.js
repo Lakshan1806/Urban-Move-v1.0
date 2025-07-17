@@ -1,6 +1,7 @@
 import jwt from "jsonwebtoken";
 import Promotion from "../../../models/promotion.model.js";
 import Ride from "../../../models/RideModel.js";
+import BranchLocation from "../../../models/branchLocation.model.js";
 
 const promoManagementController = {
   addPromotion: async (req, res) => {
@@ -151,12 +152,12 @@ const promoManagementController = {
   },
 
   getMonthlyRideStats: async (req, res) => {
-    /* const { token } = req.cookies;
+    const { token } = req.cookies;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
-    } */
+    }
     try {
-      //jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
       const year = new Date().getFullYear();
       const start = new Date(year, 0, 1);
@@ -209,6 +210,49 @@ const promoManagementController = {
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Analytics query failed" });
+    }
+  },
+
+  getBranchLocations: async (req, res) => {
+    /* const { token } = req.cookies;
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    } */
+    try {
+      //jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+      const locations = await BranchLocation.find();
+
+      return res.json(locations);
+    } catch (err) {
+      console.error(err);
+      return res
+        .status(500)
+        .json({ error: "Failed to fetch branch locations" });
+    }
+  },
+
+  addBranchLocation: async (req, res) => {
+    const { token } = req.cookies;
+    const { location, lat, lng } = req.body;
+    if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    }
+    try {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+      const pin = await BranchLocation.create({
+        location,
+        position: {
+          type: "Point",
+          coordinates: [lng, lat],
+        },
+      });
+
+      return res.status(201).json(pin);
+    } catch (err) {
+      console.error(err);
+      return res.status(500).json({ error: "Failed to save location" });
     }
   },
 };
