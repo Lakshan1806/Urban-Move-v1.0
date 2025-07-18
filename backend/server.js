@@ -27,6 +27,7 @@ import checkAndCreateAdmin from "./utils/adminInitialSetup.js";
 import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
 import callLogRoutes from './routes/callLogRoutes.js';
 import "./config/passport.js";
+import promotionRoutes from "./routes/promotionRoutes.js";
 
 dotenv.config();
 const PORT = 5000;
@@ -89,6 +90,7 @@ app.use("/api/promo", promoRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/messages", messageRoutes);
 app.use('/api/call-log', callLogRoutes);
+app.use("/api/promotions", promotionRoutes);
 
 app.get("/", (req, res) => {
   res.send("Server is ready");
@@ -128,14 +130,11 @@ async function startServer() {
       console.log(`Socket ${socket.id} joined room ${roomId}`);
     });
 
-    // ✅ UPDATED send-message handler to emit to both room + receiver's socket
     socket.on("send-message", (data) => {
       const { senderId, receiverId, roomId, message } = data;
 
-      // Emit to all users in the room
       io.to(roomId).emit("receive-message", data);
 
-      // Emit directly to receiver in case they're not in the room
       const receiverSocketId = userSocketMap.get(receiverId);
       if (receiverSocketId) {
         io.to(receiverSocketId).emit("receive-message", data);

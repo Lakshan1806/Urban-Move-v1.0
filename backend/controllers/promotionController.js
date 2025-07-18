@@ -28,3 +28,13 @@ export const applyPromoCode = async (req, res) => {
     return res.status(500).json({ message: "Failed to apply promo code" });
   }
 };
+
+export const getActivePromotions = async (req, res) => {
+  try {
+    const activePromotions = await Promotion.find({ isActive: true });
+    res.status(200).json(activePromotions);
+  } catch (error) {
+    console.error("Error fetching promotions:", error);
+    res.status(500).json({ message: "Failed to fetch active promotions" });
+  }
+};
