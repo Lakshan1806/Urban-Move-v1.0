@@ -83,7 +83,7 @@ function Home() {
 
   return (
     <div className="h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
-      <div ref={topRef} className="snap-start flex flex-col items-center w-full px-10 h-screen pt-30">
+      <div ref={topRef} className="snap-start flex flex-col items-center w-full px-10 h-screen pt-10">
         <div className="flex justify-between items-center w-full">
           {[Car20, Car10, Car30].map((car, index) => {
             const paths = ["/ride", "/rent", "/drive"];
