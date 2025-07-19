@@ -12,7 +12,7 @@ function CompletedRideData() {
       let response;
       try {
         response = await axios.get("/admin/get_monthly_stats");
-        console.log(response);
+        console.log("graph data",response);
       } catch (error) {
         console.error("Error fetching data:", error);
       }
@@ -33,7 +33,7 @@ function CompletedRideData() {
           {
             label: "Cancelled Rides",
             data: response.data.cancelled,
-            fill: false,
+            fill: true,
             tension: 0.4,
             borderColor: "#ff7c1d",
           },
