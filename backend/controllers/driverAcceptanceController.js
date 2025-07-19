@@ -1,5 +1,6 @@
 import DriverAcceptance from '../models/DriverAcceptance.js';
 
+
 export const acceptRide = async (req, res) => {
   try {
     const driverId = req.user.driverId;

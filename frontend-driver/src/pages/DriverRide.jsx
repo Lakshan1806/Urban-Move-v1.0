@@ -148,6 +148,7 @@ const DriverRide = () => {
       }
 
       if (currentRide && socketRef.current?.connected) {
+        console.log(currentRide._id)
         socketRef.current.emit("driver:location", {
           rideId: currentRide._id,
           location: { lat: latitude, lng: longitude },
@@ -187,14 +188,15 @@ const DriverRide = () => {
       }
     );
   }, [pickupInput, dropoffInput]);
-
+console.log(rideDetails)
   // Complete the current trip
+
   const finishTrip = useCallback(async () => {
     setIsFinishingTrip(true);
     try {
       const token = localStorage.getItem("token");
       const rideId =
-        currentRide?._id ||
+          rideDetails.rideId ||
         `ride_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
       const fareText = rideDetails.fare.replace(/[^0-9.]/g, "");
       const fareAmount = parseFloat(fareText);
@@ -229,8 +231,8 @@ const DriverRide = () => {
         })),
         distance: rideDetails.distance || "0 km",
         duration: rideDetails.duration || "0 mins",
-        fare: fareAmount * 1000,
-        driverEarnings: fareAmount * 100 * 0.8,
+        fare: fareAmount * 100000,
+        driverEarnings: fareAmount * 100000 * 0.8,
         status: "completed",
         route:
           directions?.routes[0]?.overview_path?.map((point) => ({
@@ -512,6 +514,8 @@ const DriverRide = () => {
               userName:
                 detailsRes.data.rideDetails.userDetails?.name || prev.userName,
               userId: detailsRes.data.rideDetails.userId,
+              rideId: detailsRes.data.rideDetails.rideId
+
             }));
           }
         }
@@ -544,72 +548,86 @@ const DriverRide = () => {
 
   // Accept a ride
 
-const acceptRide = useCallback(async () => {
-  console.log("acceptRide called"); // Debug log
-
-  if (!currentRide || !currentLocation) {
-    console.warn("Missing required data to accept the ride");
-    return;
-  }
-
+const acceptRide =(async () => {
   try {
-    const token = localStorage.getItem("token");
-    const response = await axios.post(
-      `${API_BASE_URL}/api/driver-acceptance/accept`,
-      {
-        rideId: currentRide._id,
-        driverName: rideDetails.userName || "Driver",
-        currentLocation: {
-          lat: currentLocation.lat,
-          lng: currentLocation.lng,
-          address: currentAddress,
-        },
-        pickupLocation: currentRide.pickupLocation || {
-          lat: currentLocation.lat,
-          lng: currentLocation.lng,
-          address: currentAddress,
-        },
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      }
-    );
-
-    if (response.data.success) {
-      setRideStatus("accepted");
-      setRideDetails((prev) => ({
-        ...prev,
-        status: "accepted",
-      }));
-      setShowAcceptModal(false);
-
-      if (socketRef.current?.connected) {
-        socketRef.current.emit("ride:accept", { rideId: currentRide._id });
-      }
+    // Check if we have the required data
+    if (!rideDetails.rideId || !currentLocation) {
+    
+      throw new Error("Missing required ride information");
     }
+
+    // Prepare the request data
+    const requestData = {
+      rideId: rideDetails.rideId,
+      currentLocation: {
+        lat: currentLocation.lat,
+        lng: currentLocation.lng,
+        address: currentAddress || "Address not available",
+      }
+    };
+
+    // Make the API call
+    const response = await axios.post(
+      `${API_BASE_URL}/api/driver-acceptance/change`,
+      requestData
+    );
+
+    if (!response.data?.success) {
+      throw new Error(response.data?.message || "Failed to accept ride");
+    }
+
+    // Update local state
+    setRideStatus("accepted");
+    setRideDetails(prev => ({
+      ...prev,
+      status: "accepted",
+    }));
+    setShowAcceptModal(false);
+
+    // Emit socket event if connected
+    if (socketRef.current?.connected) {
+      socketRef.current.emit("ride:accept", { 
+        rideId: rideDetails.rideId,
+        status: "accepted"
+      });
+    }
+
+    console.log("Ride accepted successfully:", response.data);
+    
   } catch (error) {
-    console.error(
-      "Failed to accept ride:",
-      error?.response?.data || error.message
-    );
-    alert(
-      `Failed to accept ride: ${error?.response?.data?.message || error.message}`
-    );
+    console.error("Failed to accept ride:", error.response?.data || error.message);
+    
+    let errorMessage = "Failed to accept ride";
+    if (error.response) {
+      errorMessage = error.response.data?.message || 
+                   error.response.data?.error || 
+                   "Server error occurred";
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+
+    alert(`Error: ${errorMessage}`);
+
+    if (error.response?.status === 400) {
+      resetRideData();
+    }
   }
-}, [currentRide, currentLocation, currentAddress, rideDetails.userName]);
+});
 
   // Handle manual ride acceptance
   const handleManualAccept = useCallback(() => {
     if (pickupInput) {
+      console.log(rideDetails.rideId)
+      console.log(currentLocation)
+          acceptRide();
+
       setManualRideAccepted(true);
       setRideDetails((prev) => ({
         ...prev,
         status: "accepted",
       }));
     }
-  }, [pickupInput]);
+  }, [pickupInput,acceptRide]);
 
   // Handle manual ride decline
   const handleManualDecline = useCallback(() => {
@@ -1041,12 +1059,7 @@ const acceptRide = useCallback(async () => {
                 >
                   Decline
                 </button>
-                <button
-                  onClick={acceptRide}
-                  className="flex-1 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors shadow-md"
-                >
-                  Go to Pickup Location
-                </button>
+                
               </div>
             </div>
           </div>

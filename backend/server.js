@@ -29,6 +29,8 @@ import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
 import callLogRoutes from './routes/callLogRoutes.js';
 import "./config/passport.js";
 import promotionRoutes from "./routes/promotionRoutes.js";
+import fetchRoute  from './routes/fetchRoute.js';
+
 
 dotenv.config();
 const PORT = 5000;
@@ -92,6 +94,8 @@ app.use("/api/email", emailRoutes);
 app.use("/api/messages", messageRoutes);
 app.use('/api/call-log', callLogRoutes);
 app.use("/api/promotions", promotionRoutes);
+app.use('/api/driver-acceptance', fetchRoute);
+
 
 app.get("/", (req, res) => {
   res.send("Server is ready");
@@ -227,6 +231,7 @@ async function startServer() {
         }
       }
     });
+    
   });
 
   httpServer.listen(PORT, () => {

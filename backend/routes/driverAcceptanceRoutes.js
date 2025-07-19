@@ -13,7 +13,7 @@ const router = express.Router();
 router.post('/accept',driverAuth,acceptRide);
 
 // PUT /api/driver/update-location
-router.put('/update-location', updateDriverLocation);
+router.put('/update-location', driverAuth,updateDriverLocation);
 
 // GET /api/driver/:rideId
 router.get('/:rideId', getDriverAcceptance);
