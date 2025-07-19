@@ -1,5 +1,4 @@
 import express from "express";
-import feedbackController from "../controllers/rent/feedbackController.js";
 import rentalController from "../controllers/rent/rentalController.js";
 import { getAvailableCars } from "../controllers/carController.js";
 import userController from "../controllers/user/userController.js";
