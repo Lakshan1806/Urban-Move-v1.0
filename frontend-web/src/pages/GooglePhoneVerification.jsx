@@ -5,7 +5,6 @@ import { AuthContext } from "../context/AuthContext";
 import OtpInput from "../components/otp-input";
 import useCountdown from "../components/hooks/useCountdown";
 import Line1 from "../signup_photos/liner1.svg";
-import getToastSeverity from "../utils/getToastSeverity";
 import { Toast } from "primereact/toast";
 import { FaArrowRight } from "react-icons/fa";
 

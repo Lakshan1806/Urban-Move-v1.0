@@ -265,7 +265,7 @@ const Login = () => {
                 disabled={loading}
               />
             </div>
-            <div className="flex items-center mb-6">
+            <div className="flex items-center mb-2">
               <Link
                 to="/forgot-password"
                 className="text-sm hover:underline flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text"
@@ -274,7 +274,7 @@ const Login = () => {
               </Link>
             </div>
 
-            <div className="button-wrapper">
+            <div className="button-wrapper m-2">
               <button
                 type="submit"
                 className="button-primary flex gap-2 justify-center items-center "

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState, useRef } from "react";
+import { useContext, useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { DriverAuthContext } from "../context/DriverAuthContext-driver.jsx";
 import axios from "axios";
@@ -6,6 +6,8 @@ import PhoneVerification from "../components/PhoneVerification.jsx";
 import EmailVerification from "../components/EmailVerification";
 import useOtpVerification from "../components/hooks/useOtpVerification";
 import DeleteAccountModal from "../components/DeleteAccountModel.jsx";
+import { Toast } from "primereact/toast";
+import getToastSeverity from "../utils/getToastSeverity";
 
 const Profile = () => {
   const { isAuthenticated, user, logout } = useContext(DriverAuthContext);
@@ -18,7 +20,6 @@ const Profile = () => {
     field: null,
     value: "",
   });
-  const [error, setError] = useState("");
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [passwordForm, setPasswordForm] = useState({
     currentPassword: "",
@@ -26,6 +27,7 @@ const Profile = () => {
     confirmPassword: "",
   });
   const fileInputRef = useRef(null);
+  const toast = useRef(null);
   const navigate = useNavigate();
 
   const phoneVerification = useOtpVerification();
@@ -37,7 +39,12 @@ const Profile = () => {
         const response = await axios.get("/auth/driver/profile");
         setProfile(response.data);
       } catch (err) {
-        console.error(err.response?.data?.message || "Failed to load profile");
+        toast.current?.show({
+          severity: getToastSeverity(err.response?.status),
+          summary: "Profile Load Failed",
+          detail: err.response?.data?.message || "Failed to load profile",
+          life: 4000,
+        });
       }
     };
     if (isAuthenticated) fetchProfile();
@@ -61,15 +68,29 @@ const Profile = () => {
   const handlePhoneVerify = async () => {
     try {
       if (!validateSriLankanPhone(formData.phone)) {
-        throw new Error(
-          "Invalid phone number format (0XXXXXXXXX or +94XXXXXXXXX)"
-        );
+        toast.current?.show({
+          severity: "warn",
+          summary: "Invalid Phone Number",
+          detail: "Invalid phone number format (0XXXXXXXXX or +94XXXXXXXXX)",
+          life: 4000,
+        });
       }
       if (!profile?.phone || profile.phone.replace(/\D/g, "").length < 10) {
-        throw new Error("Please enter a valid phone number");
+        toast.current?.show({
+          severity: "warn",
+          summary: "Invalid Phone Number",
+          detail: "Please enter a valid phone number",
+          life: 4000,
+        });
+        return;
       }
     } catch {
-      alert(err.message);
+      toast.current?.show({
+        severity: "warn",
+        summary: "Validation Error",
+        detail: err.message,
+        life: 4000,
+      });
       return;
     }
 
@@ -83,15 +104,31 @@ const Profile = () => {
         type: "phone",
         userId: profile?._id,
       });
+      toast.current?.show({
+        severity: "success",
+        summary: "OTP Sent",
+        detail: "Verification code sent to your phone",
+        life: 3000,
+      });
     } catch (error) {
-      console.error("Failed to send OTP");
+      toast.current?.show({
+        severity: getToastSeverity(error.response?.status),
+        summary: "Send OTP Failed",
+        detail: error.response?.data?.message || "Failed to send OTP",
+        life: 4000,
+      });
       setIsVerifying(false);
     }
   };
 
   const handleEmailVerify = async () => {
     if (!profile?.email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(profile.email)) {
-      console.error("Please enter a valid email address");
+      toast.current?.show({
+        severity: "warn",
+        summary: "Invalid Email",
+        detail: "Please enter a valid email address",
+        life: 4000,
+      });
       return;
     }
 
@@ -105,8 +142,19 @@ const Profile = () => {
         type: "email",
         userId: profile?._id,
       });
+      toast.current?.show({
+        severity: "success",
+        summary: "OTP Sent",
+        detail: "Verification code sent to your email",
+        life: 3000,
+      });
     } catch (error) {
-      console.error("Failed to send OTP");
+      toast.current?.show({
+        severity: getToastSeverity(error.response?.status),
+        summary: "Send OTP Failed",
+        detail: error.response?.data?.message || "Failed to send OTP",
+        life: 4000,
+      });
       setIsVerifying(false);
     }
   };
@@ -136,13 +184,23 @@ const Profile = () => {
       }
 
       if (verificationResult.success) {
-        console.log("Verification successful!");
+        toast.current?.show({
+          severity: "success",
+          summary: "Verification Successful",
+          detail: `${verificationType === "phone" ? "Phone number" : "Email address"} verified successfully!`,
+          life: 3000,
+        });
         setIsVerifying(false);
         setVerificationType(null);
         setPendingVerification({ field: null, value: "" });
       }
     } catch (error) {
-      console.error(error.response?.data?.message || "Verification failed");
+      toast.current?.show({
+        severity: getToastSeverity(error.response?.status),
+        summary: "Verification Failed",
+        detail: error.response?.data?.message || "Verification failed",
+        life: 4000,
+      });
     }
   };
 
@@ -166,35 +224,56 @@ const Profile = () => {
 
       const response = await axios.post("/auth/driver/updateprofile", formData);
       setIsEditing(false);
-      console.log("Profile updated successfully");
+      toast.current?.show({
+        severity: "success",
+        summary: "Profile Updated",
+        detail: "Profile updated successfully",
+        life: 3000,
+      });
     } catch (error) {
-      console.error(
-        error.response?.data?.message || "Failed to update profile"
-      );
+      toast.current?.show({
+        severity: getToastSeverity(error.response?.status),
+        summary: "Update Failed",
+        detail: error.response?.data?.message || "Failed to update profile",
+        life: 4000,
+      });
     }
   };
 
   const changePassword = async () => {
-    setError(null);
     if (
       !passwordForm.currentPassword ||
       !passwordForm.newPassword ||
       !passwordForm.confirmPassword
     ) {
-      setError("All fields are required.");
+      toast.current?.show({
+        severity: "warn",
+        summary: "Missing Fields",
+        detail: "All fields are required.",
+        life: 4000,
+      });
       return false;
     }
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      setError("New passwords don't match");
+      toast.current?.show({
+        severity: "warn",
+        summary: "Password Mismatch",
+        detail: "New passwords don't match",
+        life: 4000,
+      });
       return false;
     }
     const strongPasswordRegex =
       /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
     if (!strongPasswordRegex.test(passwordForm.newPassword)) {
-      setError(
-        "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character"
-      );
+      toast.current?.show({
+        severity: "warn",
+        summary: "Weak Password",
+        detail:
+          "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character",
+        life: 5000,
+      });
       return false;
     }
     try {
@@ -204,7 +283,12 @@ const Profile = () => {
       );
       return response.data;
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to change password");
+      toast.current?.show({
+        severity: getToastSeverity(err.response?.status),
+        summary: "Password Change Failed",
+        detail: err.response?.data?.message || "Failed to change password",
+        life: 4000,
+      });
       throw err;
     }
   };
@@ -226,7 +310,14 @@ const Profile = () => {
       axios
         .get("/auth/driver/profile")
         .then((response) => setProfile(response.data))
-        .catch((err) => console.error("Failed to reset changes"));
+        .catch((err) => {
+          toast.current?.show({
+            severity: getToastSeverity(err.response?.status),
+            summary: "Reset Failed",
+            detail: "Failed to reset changes",
+            life: 4000,
+          });
+        });
     }
   };
   const handlePasswordChange = (e) => {
@@ -240,14 +331,32 @@ const Profile = () => {
     try {
       await changePassword();
       setIsChangingPassword(false);
-      console.log("Password changed successfully");
+      setPasswordForm({
+        currentPassword: "",
+        newPassword: "",
+        confirmPassword: "",
+      });
+      toast.current?.show({
+        severity: "success",
+        summary: "Password Changed",
+        detail: "Password changed successfully",
+        life: 3000,
+      });
     } catch (err) {
       console.error(err.response?.data?.message || "Failed to change password");
     }
   };
   const handleDeleteSuccess = async () => {
     await logout();
-    navigate("/");
+    toast.current?.show({
+      severity: "success",
+      summary: "Account Deleted",
+      detail: "Account deleted successfully",
+      life: 3000,
+    });
+    setTimeout(() => {
+      navigate("/");
+    }, 1500);
   };
 
   if (!profile) return;
@@ -268,7 +377,6 @@ const Profile = () => {
             }
             isActive={phoneVerification.isActive}
             secondsLeft={phoneVerification.secondsLeft}
-            error={phoneVerification.error}
             onOtpSubmit={phoneVerification.setOtp}
           />
         ) : (
@@ -284,7 +392,6 @@ const Profile = () => {
             }
             isActive={emailVerification.isActive}
             secondsLeft={emailVerification.secondsLeft}
-            error={emailVerification.error}
             onOtpSubmit={emailVerification.setOtp}
           />
         )}
@@ -297,6 +404,7 @@ const Profile = () => {
             Cancel Verification
           </button>
         </div>
+        <Toast ref={toast} position="bottom-right" />
       </div>
     );
   }
@@ -659,6 +767,7 @@ const Profile = () => {
           onSuccess={handleDeleteSuccess}
         />
       )}
+      <Toast ref={toast} position="bottom-right" />
     </div>
   );
 };
