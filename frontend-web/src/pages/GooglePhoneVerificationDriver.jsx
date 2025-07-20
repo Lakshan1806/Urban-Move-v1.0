@@ -1,14 +1,14 @@
-import React, { useState, useContext } from "react";
+import { useState, useContext, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { toast } from "react-toastify";
+import { Toast } from "primereact/toast";
 import { DriverAuthContext } from "../context/driverAuthContext";
 import OtpInput from "../components/otp-input";
 import useCountdown from "../components/hooks/useCountdown";
 import Line1 from "../signup_photos/liner1.svg";
-import arrow from "../signup_photos/arrowvector.svg";
 import { FaCheck, FaFileUpload } from "react-icons/fa";
 import { FaArrowRight } from "react-icons/fa";
+import getToastSeverity from "../utils/getToastSeverity";
 
 const GooglePhoneVerification = () => {
   const { checkAuth } = useContext(DriverAuthContext);
@@ -16,7 +16,6 @@ const GooglePhoneVerification = () => {
   const [phoneNumber, setPhoneNumber] = useState("");
   const [otp, setOtp] = useState("");
   const [step, setStep] = useState(1);
-  const [error, setError] = useState("");
   const [documents, setDocuments] = useState({
     license: null,
     residency: null,
@@ -24,6 +23,7 @@ const GooglePhoneVerification = () => {
   });
   const [loading, setLoading] = useState(false);
   const [otpVerified, setOtpVerified] = useState(false);
+  const toast = useRef(null);
 
   const {
     secondsLeft,
@@ -32,28 +32,65 @@ const GooglePhoneVerification = () => {
     reset: resetTimer,
   } = useCountdown(60);
 
+  const validateSriLankanPhone = (phone) => {
+    const phoneRegex = /^(\+94|0)(7[0-9])([0-9]{7})$/;
+    return phoneRegex.test(phone);
+  };
+
   const handleSendOtp = async () => {
-    setError("");
+    if (!validateSriLankanPhone(phoneNumber)) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Invalid Phone Number",
+        detail:
+          "Please enter a valid Sri Lankan phone number (0XXXXXXXXX or +94XXXXXXXXX)",
+        life: 4000,
+      });
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await axios.post("/auth/google/verify-phone-driver", {
         phoneNumber,
       });
 
       if (response.data.success) {
-        toast.success("OTP sent to your phone");
+        toast.current?.show({
+          severity: "success",
+          summary: "OTP Sent",
+          detail: "Verification code sent to your phone",
+          life: 3000,
+        });
         startTimer();
         setStep(2);
       } else {
         throw new Error(response.data.message || "Failed to send OTP");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to send OTP");
-      toast.error(err.response?.data?.message || "Failed to send OTP");
+      toast.current?.show({
+        severity: getToastSeverity(err.response?.status),
+        summary: "Send OTP Failed",
+        detail: err.response?.data?.message || "Failed to send OTP",
+        life: 4000,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleVerifyOtp = async () => {
-    setError("");
+    if (!otp || otp.length !== 6) {
+      toast.current?.show({
+        severity: "warn",
+        summary: "Invalid OTP",
+        detail: "Please enter a valid 6-digit OTP",
+        life: 4000,
+      });
+      return;
+    }
+
+    setLoading(true);
     try {
       const response = await axios.post("/auth/google/verify-phone-driver", {
         phoneNumber,
@@ -62,19 +99,37 @@ const GooglePhoneVerification = () => {
 
       if (response.data.success) {
         if (response.data.requireDocuments) {
-          toast.success("OTP verified! Please upload your documents");
+          toast.current?.show({
+            severity: "success",
+            summary: "OTP Verified",
+            detail: "Phone verified! Please upload your documents",
+            life: 3000,
+          });
           setOtpVerified(true);
           setStep(3);
         } else {
-          toast.success("Phone verification successful!");
-          window.location.href = "http://localhost:5174";
+          toast.current?.show({
+            severity: "success",
+            summary: "Verification Successful",
+            detail: "Phone verification completed successfully!",
+            life: 3000,
+          });
+          setTimeout(() => {
+            window.location.href = "http://localhost:5174";
+          }, 1500);
         }
       } else {
         throw new Error(response.data.message || "Failed to verify OTP");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to verify OTP");
-      toast.error(err.response?.data?.message || "Failed to verify OTP");
+      toast.current?.show({
+        severity: getToastSeverity(err.response?.status),
+        summary: "Verification Failed",
+        detail: err.response?.data?.message || "Failed to verify OTP",
+        life: 4000,
+      });
+    } finally {
+      setLoading(false);
     }
   };
   const handleDocumentChange = (type) => (e) => {
@@ -88,17 +143,26 @@ const GooglePhoneVerification = () => {
 
     const files = Object.values(documents).filter(Boolean);
     if (files.length < 3) {
-      setError("Please upload all required documents");
+      toast.current?.show({
+        severity: "warn",
+        summary: "Missing Documents",
+        detail: "Please upload all required documents",
+        life: 4000,
+      });
       return;
     }
 
     const nonPdfFiles = files.filter((file) => !isPdfFile(file));
     if (nonPdfFiles.length > 0) {
-      setError("Only PDF files are allowed.");
+      toast.current?.show({
+        severity: "warn",
+        summary: "Invalid File Format",
+        detail: "Only PDF files are allowed",
+        life: 4000,
+      });
       return;
     }
 
-    setError("");
     setLoading(true);
 
     try {
@@ -122,16 +186,25 @@ const GooglePhoneVerification = () => {
       );
 
       if (response.data.success && response.data.redirect) {
-        toast.success(
-          "Documents uploaded successfully! Registration complete."
-        );
-        window.location.href = "http://localhost:5174";
+        toast.current?.show({
+          severity: "success",
+          summary: "Upload Successful",
+          detail: "Documents uploaded successfully! Registration complete",
+          life: 3000,
+        });
+        setTimeout(() => {
+          window.location.href = "http://localhost:5174";
+        }, 1500);
       } else {
         throw new Error(response.data.message || "Failed to upload documents");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to upload documents");
-      toast.error(err.response?.data?.message || "Failed to upload documents");
+      toast.current?.show({
+        severity: getToastSeverity(err.response?.status),
+        summary: "Upload Failed",
+        detail: err.response?.data?.message || "Failed to upload documents",
+        life: 4000,
+      });
     } finally {
       setLoading(false);
     }
@@ -139,21 +212,32 @@ const GooglePhoneVerification = () => {
 
   const handleResendOtp = async () => {
     if (isActive) return;
-    setError("");
+    setLoading(true);
     try {
       const response = await axios.post("/auth/resend-otp", {
         phone: phoneNumber,
       });
 
       if (response.data.message.includes("sent to phone")) {
-        toast.success("New OTP sent to your phone");
+        toast.current?.show({
+          severity: "success",
+          summary: "OTP Resent",
+          detail: "New verification code sent to your phone",
+          life: 3000,
+        });
         startTimer();
       } else {
         throw new Error(response.data.message || "Failed to resend OTP");
       }
     } catch (err) {
-      setError(err.response?.data?.message || "Failed to resend OTP");
-      toast.error(err.response?.data?.message || "Failed to resend OTP");
+      toast.current?.show({
+        severity: getToastSeverity(err.response?.status),
+        summary: "Resend Failed",
+        detail: err.response?.data?.message || "Failed to resend OTP",
+        life: 4000,
+      });
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -173,7 +257,6 @@ const GooglePhoneVerification = () => {
             </p>
 
             <img src={Line1} className="h-auto w-full" />
-            {error && <p className="text-red-500 text-center">{error}</p>}
 
             <input
               type="text"
@@ -198,15 +281,17 @@ const GooglePhoneVerification = () => {
         )}
 
         {step === 2 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-            <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-20">
+            <h1
+              className="text-grad-stroke font-[300] text-[36px]"
+              data-text="verify your Mobile Number"
+            >
               verify your Mobile Number
             </h1>
             <p className="font-[700] text-[20px]">
               We will send a verification code to this number
             </p>
             <img src={Line1} className="h-auto w-full" />
-            {error && <p className="text-red-500 text-center">{error}</p>}
 
             <OtpInput length={6} onOtpSubmit={(code) => setOtp(code)} />
 
@@ -319,8 +404,6 @@ const GooglePhoneVerification = () => {
                 />
               </div>
 
-              {error && <p className="text-red-500 text-center">{error}</p>}
-
               <div className="button-wrapper">
                 <button
                   type="button"
@@ -339,6 +422,7 @@ const GooglePhoneVerification = () => {
           </div>
         )}
       </div>
+      <Toast ref={toast} position="bottom-right" />
     </div>
   );
 };
