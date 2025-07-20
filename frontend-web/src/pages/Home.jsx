@@ -6,6 +6,8 @@ import Car20 from "../assets/home_car2 0.svg";
 import Car30 from "../assets/home_car3 0.svg";
 
 const BACKEND_BASE_URL = "http://localhost:5000";
+import FeedbackSlideshow from "../components/Feedback/FeedbackSlideshow";
+
 
 function Home() {
   const navigate = useNavigate();
@@ -167,6 +169,7 @@ function Home() {
           </p>
         </div>
       </div>
+    <FeedbackSlideshow />
     </div>
   );
 }

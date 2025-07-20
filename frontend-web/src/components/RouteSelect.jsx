@@ -4,7 +4,7 @@ import Rent from "../pages/Rent";
 import Drive from "../pages/Drive";
 import Ride from "../pages/Ride";
 import Help from "../pages/Help";
-import Feedback from "../pages/Feedback";
+import Feedback from "./Feedback/RateUsModal.jsx";
 import Register from "../pages/Register";
 import { Routes, Route } from "react-router-dom";
 import Login from "../pages/Login";

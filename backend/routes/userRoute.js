@@ -1,5 +1,4 @@
 import express from "express";
-import feedbackController from "../controllers/rent/feedbackController.js";
 import rentalController from "../controllers/rent/rentalController.js";
 import { getAvailableCars } from "../controllers/carController.js";
 import userController from "../controllers/user/userController.js";
@@ -18,6 +17,7 @@ import userModel from "../models/usermodel.js";
 import driverModel from "../models/driver.models.js";
 import driverAuth from "../middlewares/driverAuth.js";
 import "../config/passportDriver.js";
+import feedbackRoutes from "./feedbackRoutes.js";
 
 dotenv.config();
 
@@ -325,7 +325,7 @@ userRoutes.post("/verify-otp", async (req, res) => {
 });
 userRoutes.post("/resend-otp", userController.auth.resendOtp);
 
-userRoutes.post("/submit", feedbackController.submit);
+userRoutes.post("/submit",feedbackRoutes );
 
 userRoutes.get("/slideshow_images", rentalController.fetchSlideshowImage);
 

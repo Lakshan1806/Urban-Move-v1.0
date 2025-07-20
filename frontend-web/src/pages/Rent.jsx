@@ -8,6 +8,7 @@ import myImage3 from "../assets/rent.image.3.png";
 import myImage4 from "../assets/rent.image.4.png";
 import RentNowForm from "../components/Rent/RentNowForm";
 import Footer from "../components/Footer";
+import RateUsModal from "../components/Feedback/RateUsModal";
 
 function Rent() {
   const { isAuthenticated } = useAuth();
@@ -74,6 +75,7 @@ function Rent() {
 
         <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
           <Slideshow />
+          <RateUsButton/>
         </div>
 
         <div className=" h-[180px] shrink-0 snap-start">
@@ -157,5 +159,24 @@ function Slideshow() {
     </div>
   );
 }
+
+function RateUsButton({ userId }) {
+  const [showModal, setShowModal] = useState(false);
+
+  return (
+    <>
+    <button 
+      onClick={() => setShowModal(true)}
+      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
+      >
+        Rate Us
+      </button>
+      {showModal && <RateUsModal userId={userId} onClose={() => setShowModal(false)} />}  
+    </>
+  );
+}
+
+
+
 
 export default Rent;

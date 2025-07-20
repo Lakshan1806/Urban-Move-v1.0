@@ -18,6 +18,7 @@ import carRoutes from "./routes/carRoutes.js";
 import locationRoutes from "./routes/locationRoute.js";
 import DriverfetchRoutes from "./routes/DriverfetchRoute.js";
 import driverRideRoutes from './routes/driverRideRoutes.js';
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 import liveTrackingRoutes from './routes/liveTrackingRoutes.js';
 import tripHistoryRoutes from "./routes/tripHistoryRoutes.js";
 import promoRoutes from "./routes/promotionRoutes.js";
@@ -28,6 +29,7 @@ import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
 import callLogRoutes from './routes/callLogRoutes.js';
 import "./config/passport.js";
 import promotionRoutes from "./routes/promotionRoutes.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 
 dotenv.config();
 const PORT = 5000;
@@ -100,6 +102,35 @@ app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ success: false, message: "Internal Server Error" });
 });
+
+app.get("/", (req, res) => {
+  res.send("Server is ready");
+});
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
+console.log(path.join(__dirname, "/uploads"));
+
+app.use(express.json());
+
+app.use(cookieParser());
+app.use("/admin", adminRoutes);
+app.use("/user", userRoutes);
+app.use("/api/cars", carRoutes);
+app.use("/api/feedbacks", feedbackRoutes);
+
+console.log(process.env.MONGO_URI);
+console.log("server is ready");
+console.log("Current Working Directory:", process.cwd());
+
+//app.use("/api/auth", userRoutes);
+app.use("/api/admin", adminRoutes);
+app.use("/api/rideRoute", RideRoute);
+app.use("/api/schedule", scheduleRoutes);
+app.use("/api/location",locationRoutes);
+app.use("/api/driver",DriverfetchRoutes);
+app.use('/api/driver-rides', driverRideRoutes);
 
 async function startServer() {
   await connectDB();
