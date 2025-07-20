@@ -13,7 +13,7 @@ function Rentals() {
 
   let component = null;
   if (!editMode) {
-    component = (
+    component = ( 
       <AvailableCars onCarSelect={setCarDetails} onAddCars={setEditMode} />
     );
   } else {
