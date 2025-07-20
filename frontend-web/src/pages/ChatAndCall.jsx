@@ -4,7 +4,6 @@ import axios from "axios";
 
 const socket = io("http://localhost:5000");
 
-// Gradient text utility class for reuse
 const gradientTextClass = "bg-gradient-to-r from-[#ff7c1d] to-[#ffd12e] bg-clip-text text-transparent font-semibold";
 
 const ChatAndCall = () => {
@@ -28,20 +27,38 @@ const ChatAndCall = () => {
     const fetchUserAndDriver = async () => {
       try {
         const res = await axios.get("http://localhost:5000/api/auth/me", { withCredentials: true });
-        const loggedInUserId = res.data?.user?._id;
-        setUserId(loggedInUserId);
-
-        const rideRes = await axios.get(`http://localhost:5000/api/driverrides/latest-ride/${loggedInUserId}`);
-        setDriverId(rideRes.data.driverId);
-
-        const genRoomId = [loggedInUserId, rideRes.data.driverId].sort().join("_");
-        setRoomId(genRoomId);
+        const loggedInId = res.data?.user?._id;
+  
+        if (!loggedInId) throw new Error("Login required");
+  
+        try {
+          const userRideRes = await axios.get(`http://localhost:5000/api/driverrides/latest-ride/${loggedInId}`);
+          const driverId = userRideRes.data.driverId;
+  
+          setUserId(loggedInId);
+          setDriverId(driverId);
+          setRoomId([loggedInId, driverId].sort().join("_"));
+        } catch (userError) {
+          if (userError.response?.status === 404) {
+            const driverRideRes = await axios.get(`http://localhost:5000/api/driverrides/latest-ride-by-driver/${loggedInId}`);
+            const userId = driverRideRes.data.userId;
+  
+            setDriverId(loggedInId);
+            setUserId(userId);
+            setRoomId([loggedInId, userId].sort().join("_"));
+          } else {
+            throw userError;
+          }
+        }
       } catch (err) {
-        console.error("Failed to load user or driver ID", err);
+        console.error("Failed to fetch chat participants:", err);
       }
     };
+  
     fetchUserAndDriver();
   }, []);
+  
+  
 
   useEffect(() => {
     if (userId) {
@@ -213,18 +230,18 @@ const ChatAndCall = () => {
   const sendMessage = async () => {
     if (!userInput.trim()) return;
     if (!userId || !driverId || !roomId) return;
-
+  
     const newMsg = { senderId: userId, receiverId: driverId, message: userInput, roomId };
     socket.emit("send-message", newMsg);
     try {
-      await axios.post("http://localhost:5000/api/messages", newMsg);
+      await axios.post("http://localhost:5000/api/messages/send", newMsg);
       setUserInput("");
     } catch (err) {
       console.error("Failed to send message", err);
     }
   };
+  
 
-  // Determine styling & sender label per message
   const getSenderInfo = (msg) => {
     if (msg.senderId === userId) {
       return {
