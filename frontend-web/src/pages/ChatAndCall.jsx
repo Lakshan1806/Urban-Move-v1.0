@@ -180,32 +180,39 @@ const ChatAndCall = () => {
   const initiateCall = async () => {
     try {
       await setupMedia();
-
+  
       peerConnection.current = new RTCPeerConnection(servers);
       addLocalTracks();
-
+  
       peerConnection.current.ontrack = ({ streams: [stream] }) => {
         remoteAudioRef.current.srcObject = stream;
       };
-
+  
       peerConnection.current.onicecandidate = (event) => {
         if (event.candidate) {
           socket.emit("ice-candidate", { toUserId: driverId, candidate: event.candidate });
         }
       };
-
+  
       const offer = await peerConnection.current.createOffer();
       await peerConnection.current.setLocalDescription(offer);
-
+  
       socket.emit("call-user", { offer, toUserId: driverId });
-
+  
+      await axios.post("http://localhost:5000/api/call-log", {
+        userId,
+        callType: "audio",
+        callStatus: "started",
+      });
+  
       setInCall(true);
     } catch (error) {
       console.error("Error initiating call", error);
     }
   };
+  
 
-  const endCall = () => {
+  const endCall = async () => {
     if (peerConnection.current) {
       peerConnection.current.close();
       peerConnection.current = null;
@@ -213,20 +220,33 @@ const ChatAndCall = () => {
     if (localStream.current) {
       localStream.current.getTracks().forEach(track => track.stop());
     }
+  
+    // ✅ Log call end
+    try {
+      await axios.post("http://localhost:5000/api/call-log", {
+        userId,
+        callType: "audio",
+        callStatus: "ended",
+      });
+    } catch (err) {
+      console.error("Failed to log call end", err);
+    }
+  
     setInCall(false);
     setIsMuted(false);
   };
+ // const [isMuted, setIsMuted] = useState(false);
 
-  const toggleMute = () => {
-    if (localStream.current) {
-      const audioTrack = localStream.current.getAudioTracks()[0];
-      if (audioTrack) {
-        audioTrack.enabled = isMuted;
-        setIsMuted(!isMuted);
-      }
-    }
-  };
+ const toggleMute = () => {
+  if (localStream.current) {
+    localStream.current.getAudioTracks().forEach(track => {
+      track.enabled = !track.enabled;
+    });
+    setIsMuted(prev => !prev);
+  }
+};
 
+  
   const sendMessage = async () => {
     if (!userInput.trim()) return;
     if (!userId || !driverId || !roomId) return;

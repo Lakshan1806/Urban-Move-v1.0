@@ -4,7 +4,7 @@ import DriverRide from '../models/DriverRide.js';
 
 const router = express.Router();
 
-router.post('/call-log', async (req, res) => {
+router.post('/', async (req, res) => {
   try {
     const { userId, callType, callStatus } = req.body;
 
@@ -29,7 +29,7 @@ router.post('/call-log', async (req, res) => {
   }
 });
 
-router.get('/call-logs', async (req, res) => {
+router.get('/', async (req, res) => {
   try {
     const callLogs = await CallLog.find();
     res.status(200).json(callLogs);
