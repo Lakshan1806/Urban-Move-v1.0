@@ -34,8 +34,7 @@ function NavBar() {
 
   const accountOptions = [
     { path: "/profile", label: "My Profile", icon: <FaUser /> },
-    { label: "Activities", icon: <FaBell /> },
-    { label: "Notifications", icon: <FaBell /> },
+    {path:"/history", label: "Activities", icon: <FaBell /> },
     {
       label: "Sign Out",
       icon: <FaSignOutAlt />,
