@@ -1,13 +1,19 @@
 import express from "express";
-import { getAvailableCars, bookCar } from "../controllers/carController.js";
-import userAuth from "../middlewares/userAuth.js";
+import {
+  getAvailableCars,
+  bookCar,
+  getBranchLocations
+} from "../controllers/carController.js";
 
 const router = express.Router();
 
-// GET available cars
+// Get available cars
 router.get("/available", getAvailableCars);
 
-// POST book a car
-router.post("/book", userAuth,bookCar);
+// Book a car
+router.post("/book", bookCar);
+
+// Get branch locations
+router.get("/locations", getBranchLocations);
 
 export default router;

@@ -1,10 +1,11 @@
-import { useState, useContext } from "react";
+import { useState, useContext, useEffect } from "react";
 import { AuthContext } from "../../context/AuthContext";
 import axios from "axios";
 
-function RentNowForm({ onClose, userId }) {
+function RentNowForm({ onClose }) {
   const { user } = useContext(AuthContext);
-  const cities = ["Colombo", "Kandy", "Galle", "Jaffna", "Negombo"];
+  const [locations, setLocations] = useState([]);
+  const [loadingLocations, setLoadingLocations] = useState(false);
 
   const [formData, setFormData] = useState({
     pickupLocation: "",
@@ -19,6 +20,24 @@ function RentNowForm({ onClose, userId }) {
   const [error, setError] = useState("");
   const [bookedCarId, setBookedCarId] = useState(null);
 
+  useEffect(() => {
+    // Fetch branch locations when component mounts
+    const fetchLocations = async () => {
+      setLoadingLocations(true);
+      try {
+        const res = await axios.get("/api/cars/locations");
+        setLocations(res.data.data);
+      } catch (err) {
+        console.error("Error fetching locations", err);
+        setError("Failed to load locations");
+      } finally {
+        setLoadingLocations(false);
+      }
+    };
+
+    fetchLocations();
+  }, []);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -27,7 +46,8 @@ function RentNowForm({ onClose, userId }) {
     path.replace(/\\/g, "/").replace("backend/uploads", "/uploads");
 
   const validateForm = () => {
-    const { pickupLocation, dropoffLocation, pickupTime, dropoffTime } = formData;
+    const { pickupLocation, dropoffLocation, pickupTime, dropoffTime } =
+      formData;
 
     if (!pickupLocation || !dropoffLocation || !pickupTime || !dropoffTime) {
       setError("All fields are required.");
@@ -72,43 +92,71 @@ function RentNowForm({ onClose, userId }) {
         return;
       }
 
-      const instances = data.instances;
-      const cars = data.cars;
+      const instances = data.instances || [];
+      const cars = data.cars || [];
 
-      if (!Array.isArray(instances) || instances.length === 0) {
+      if (instances.length === 0) {
         setError("No cars available for the selected criteria.");
         return;
       }
 
-      const uniqueModels = new Map();
+      // Calculate total price for each car
+      const pickupDate = new Date(formData.pickupTime);
+      const dropoffDate = new Date(formData.dropoffTime);
+      const rentalDays = Math.ceil(
+        (dropoffDate - pickupDate) / (1000 * 60 * 60 * 24)
+      );
+
+      // Create a map to store unique car models
+      const uniqueCarModels = new Map();
 
       instances.forEach((instance) => {
-        const model = cars.find((car) => car._id === instance.carID);
-        if (!model) return;
+        const carModel = cars.find((car) => car?._id === instance?.carID);
+        if (!carModel) {
+          console.warn("Car model not found for instance:", instance);
+          return;
+        }
 
-        if (!uniqueModels.has(model._id)) {
-          uniqueModels.set(model._id, {
-            carInstanceId: instance._id,
-            carModel: model,
+        // If we haven't seen this car model yet, add it to our map
+        if (!uniqueCarModels.has(carModel._id)) {
+          const pricePerDay = Number(carModel?.price) || 0;
+
+          uniqueCarModels.set(carModel._id, {
+            carInstanceId: instance._id, // We'll use the first available instance ID
+            carModel: carModel,
+            totalPrice: rentalDays * pricePerDay,
+            rentalDays,
+            availableCount: 1, // Track how many instances are available
+          });
+        } else {
+          // If we've seen this model before, just increment the count
+          const existing = uniqueCarModels.get(carModel._id);
+          uniqueCarModels.set(carModel._id, {
+            ...existing,
+            availableCount: existing.availableCount + 1,
           });
         }
       });
 
-      const availableCarList = Array.from(uniqueModels.values());
-      setAvailableCars(availableCarList);
+      const availableCarList = Array.from(uniqueCarModels.values());
 
       if (availableCarList.length === 0) {
-        setError("No unique cars found.");
+        setError("No valid cars available after filtering.");
+        return;
       }
+
+      setAvailableCars(availableCarList);
     } catch (err) {
       console.error("Error fetching available cars", err);
-      setError("Failed to fetch available cars.");
+      setError(
+        err.response?.data?.message || "Failed to fetch available cars."
+      );
     } finally {
       setLoadingCar(false);
     }
   };
 
-  const handleBooking = async (carInstanceId) => {
+  const handleBooking = async (carInstanceId, carModelId) => {
     try {
       await axios.post("/api/cars/book", {
         carInstanceId,
@@ -136,7 +184,7 @@ function RentNowForm({ onClose, userId }) {
 
   return (
     <div className="p-4 relative bg-white rounded-2xl w-full max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-center">RENT</h1>
+      <h1 className="text-2xl font-bold text-center">RENT A CAR</h1>
 
       {bookingSuccess && (
         <div className="bg-green-100 text-green-800 border border-green-400 px-4 py-2 rounded mt-4 text-center font-medium">
@@ -156,11 +204,12 @@ function RentNowForm({ onClose, userId }) {
               value={formData.pickupLocation}
               onChange={handleChange}
               className="w-full p-2 border rounded"
+              disabled={loadingLocations}
             >
               <option value="">Select Pickup Location</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
+              {locations.map((location) => (
+                <option key={location} value={location}>
+                  {location}
                 </option>
               ))}
             </select>
@@ -176,11 +225,12 @@ function RentNowForm({ onClose, userId }) {
               value={formData.dropoffLocation}
               onChange={handleChange}
               className="w-full p-2 border rounded"
+              disabled={loadingLocations}
             >
               <option value="">Select Dropoff Location</option>
-              {cities.map((city) => (
-                <option key={city} value={city}>
-                  {city}
+              {locations.map((location) => (
+                <option key={location} value={location}>
+                  {location}
                 </option>
               ))}
             </select>
@@ -197,6 +247,7 @@ function RentNowForm({ onClose, userId }) {
               value={formData.pickupTime}
               onChange={handleChange}
               className="w-full p-2 border rounded"
+              min={new Date().toISOString().slice(0, 16)}
             />
           </div>
 
@@ -211,6 +262,7 @@ function RentNowForm({ onClose, userId }) {
               value={formData.dropoffTime}
               onChange={handleChange}
               className="w-full p-2 border rounded"
+              min={formData.pickupTime || new Date().toISOString().slice(0, 16)}
             />
           </div>
 
@@ -221,6 +273,7 @@ function RentNowForm({ onClose, userId }) {
               type="button"
               onClick={fetchAvailableCar}
               className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition w-full"
+              disabled={loadingCar || loadingLocations}
             >
               {loadingCar ? "Finding Car..." : "Check Availability"}
             </button>
@@ -245,37 +298,62 @@ function RentNowForm({ onClose, userId }) {
 
                     <div className="grid grid-cols-2 gap-4 text-sm">
                       <p>
-                        <strong>Model:</strong> {carData.carModel?.model || "N/A"}
+                        <strong>Model:</strong>{" "}
+                        {carData.carModel?.model || "N/A"}
                       </p>
                       <p>
-                        <strong>Brand:</strong> {carData.carModel?.make || "N/A"}
+                        <strong>Brand:</strong>{" "}
+                        {carData.carModel?.make || "N/A"}
                       </p>
                       <p>
                         <strong>Year:</strong> {carData.carModel?.year || "N/A"}
                       </p>
                       <p>
-                        <strong>Seats:</strong> {carData.carModel?.seat || "N/A"}
+                        <strong>Seats:</strong>{" "}
+                        {carData.carModel?.seat || "N/A"}
                       </p>
                       <p>
-                        <strong>Fuel:</strong> {carData.carModel?.fuelType || "N/A"}
+                        <strong>Fuel:</strong>{" "}
+                        {carData.carModel?.fuelType || "N/A"}
                       </p>
                       <p>
-                        <strong>Transmission:</strong> {carData.carModel?.transmission || "N/A"}
+                        <strong>Transmission:</strong>{" "}
+                        {carData.carModel?.transmission || "N/A"}
                       </p>
                       <p>
-                        <strong>Body Style:</strong> {carData.carModel?.bodyStyle || "N/A"}
+                        <strong>Body Style:</strong>{" "}
+                        {carData.carModel?.bodyStyle || "N/A"}
                       </p>
                       <p>
-                        <strong>Mileage:</strong> {carData.carModel?.mileage || "N/A"} km/l
+                        <strong>Mileage:</strong>{" "}
+                        {carData.carModel?.mileage || "N/A"} km/l
                       </p>
                       <p>
-                        <strong>Engine:</strong> {carData.carModel?.engine || "N/A"}
+                        <strong>Engine:</strong>{" "}
+                        {carData.carModel?.engine || "N/A"}
                       </p>
                       <p>
-                        <strong>Speed:</strong> {carData.carModel?.speed || "N/A"} km/h
+                        <strong>Speed:</strong>{" "}
+                        {carData.carModel?.speed || "N/A"} km/h
+                      </p>
+                      <p>
+                        <strong>Available Units:</strong>{" "}
+                        {carData.availableCount}
+                      </p>
+
+                      <p>
+                        <strong>Price per day:</strong> $
+                        {carData.carModel?.price || "N/A"}
+                      </p>
+                      <p>
+                        <strong>Rental Days:</strong> {carData.rentalDays}
+                      </p>
+                      <p className="col-span-2 font-bold text-lg">
+                        <strong>Total Price:</strong> ${carData.totalPrice}
                       </p>
                       <p className="col-span-2">
-                        <strong>Description:</strong> {carData.carModel?.description || "N/A"}
+                        <strong>Description:</strong>{" "}
+                        {carData.carModel?.description || "N/A"}
                       </p>
                     </div>
 
@@ -288,7 +366,7 @@ function RentNowForm({ onClose, userId }) {
                               key={i}
                               src={normalizePath(img)}
                               alt={`Car ${i + 1}`}
-                              className="rounded-lg border object-cover"
+                              className="rounded-lg border object-cover h-24 w-full"
                             />
                           ))}
                         </div>
@@ -297,7 +375,12 @@ function RentNowForm({ onClose, userId }) {
 
                     <button
                       type="button"
-                      onClick={() => handleBooking(carData.carInstanceId)}
+                      onClick={() =>
+                        handleBooking(
+                          carData.carInstanceId,
+                          carData.carModel._id
+                        )
+                      }
                       className={`mt-6 px-6 py-2 rounded w-full text-white transition ${
                         bookedCarId === carData.carInstanceId
                           ? "bg-gray-500 cursor-not-allowed"
@@ -305,7 +388,9 @@ function RentNowForm({ onClose, userId }) {
                       }`}
                       disabled={bookedCarId === carData.carInstanceId}
                     >
-                      {bookedCarId === carData.carInstanceId ? "Booked" : "Book This Car"}
+                      {bookedCarId === carData.carInstanceId
+                        ? "Booked"
+                        : "Book This Car"}
                     </button>
                   </div>
                 ))}
