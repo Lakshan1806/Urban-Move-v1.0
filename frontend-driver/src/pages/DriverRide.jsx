@@ -48,7 +48,6 @@ const DriverRide = () => {
   const mapContainerStyle = {
     width: "100%",
     height: "100%",
-    minHeight: "400px",
   };
 
   const sriLankaBounds = {
@@ -188,8 +187,6 @@ const DriverRide = () => {
       }
     );
   }, [pickupInput, dropoffInput]);
-console.log(rideDetails)
-  // Complete the current trip
 
   const finishTrip = useCallback(async () => {
     setIsFinishingTrip(true);
@@ -231,8 +228,8 @@ console.log(rideDetails)
         })),
         distance: rideDetails.distance || "0 km",
         duration: rideDetails.duration || "0 mins",
-        fare: fareAmount * 100000,
-        driverEarnings: fareAmount * 100000 * 0.8,
+        fare: fareAmount*10000 ,
+        driverEarnings: fareAmount*10000 * 0.8,
         status: "completed",
         route:
           directions?.routes[0]?.overview_path?.map((point) => ({
@@ -673,14 +670,7 @@ const acceptRide =(async () => {
         <p className="text-gray-700 mb-2">
           <span className="font-medium">Address:</span> {currentAddress}
         </p>
-        <p className="text-sm text-gray-500">
-          Socket status:{" "}
-          {socketConnected ? (
-            <span className="text-green-600">Connected</span>
-          ) : (
-            <span className="text-red-600">Disconnected</span>
-          )}
-        </p>
+       
       </div>
     );
   }, [
@@ -695,7 +685,7 @@ const acceptRide =(async () => {
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <header className=" text-black p-4 shadow-md">
-        <h1 className="text-xl font-bold">Driver Ride Dashboard</h1>
+        <h1 className="text-xl text-center font-bold">Driver Ride Dashboard</h1>
       </header>
 
       <div className="flex flex-1 overflow-hidden">
@@ -726,7 +716,7 @@ const acceptRide =(async () => {
               <input
                 id="pickup-input"
                 type="text"
-                placeholder="Enter pickup location"
+                placeholder=""
                 className="w-full p-2 border border-gray-300 rounded"
                 value={pickupInput}
                 onChange={(e) => setPickupInput(e.target.value)}
@@ -740,7 +730,7 @@ const acceptRide =(async () => {
               <input
                 id="dropoff-input"
                 type="text"
-                placeholder="Enter drop-off location"
+                placeholder=""
                 className="w-full p-2 border border-gray-300 rounded"
                 value={dropoffInput}
                 onChange={(e) => setDropoffInput(e.target.value)}
@@ -831,7 +821,7 @@ const acceptRide =(async () => {
                     className={`px-4 py-2 rounded-lg font-medium ${
                       manualRideAccepted
                         ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                        : "bg-red-600 text-white hover:bg-red-700"
+                        : "bg-gray-300 text-gray-500 cursor-not-allowed"
                     }`}
                   >
                     Decline

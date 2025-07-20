@@ -20,6 +20,8 @@ import DriverfetchRoutes from "./routes/DriverfetchRoute.js";
 import driverRideRoutes from './routes/driverRideRoutes.js';
 import feedbackRoutes from "./routes/feedbackRoutes.js";
 import liveTrackingRoutes from './routes/liveTrackingRoutes.js';
+import driverAcceptanceRoutes from './routes/driverAcceptanceRoutes.js';
+import fetchRoute from './routes/fetchRoute.js';
 import tripHistoryRoutes from "./routes/tripHistoryRoutes.js";
 import promoRoutes from "./routes/promotionRoutes.js";
 import { emailRoutes } from "./routes/email.js";
@@ -29,11 +31,12 @@ import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
 import callLogRoutes from './routes/callLogRoutes.js';
 import "./config/passport.js";
 import promotionRoutes from "./routes/promotionRoutes.js";
+import { initSocket, getIO } from './utils/socket.js';
 import fetchRoute  from './routes/fetchRoute.js';
 
 
 dotenv.config();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
 if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
   console.error("Missing SESSION_SECRET or MONGO_URI in .env file");
@@ -42,6 +45,7 @@ if (!process.env.SESSION_SECRET || !process.env.MONGO_URI) {
 
 const app = express();
 
+// CORS configuration
 app.use(
   cors({
     credentials: true,
@@ -49,6 +53,7 @@ app.use(
   })
 );
 
+// Session configuration
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -65,17 +70,20 @@ app.use(session({
   }),
 }));
 
+// Middleware
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+// Static files
 app.use(
   "/uploads",
   express.static(path.join(path.dirname(fileURLToPath(import.meta.url)), "/uploads"))
 );
 
+// Routes
 app.use("/auth", userRoutes);
 app.use("/user", userRoutes);
 app.use("/api/auth", userRoutes);
@@ -88,6 +96,8 @@ app.use("/api/driver", DriverfetchRoutes);
 app.use("/api/driver-rides", driverRideRoutes);
 app.use("/api/driverrides", driverRideRoutes);
 app.use("/api/live-tracking", liveTrackingRoutes);
+app.use('/api/driver-acceptance', driverAcceptanceRoutes);
+app.use('/api/driver-acceptance', fetchRoute);
 app.use("/api/triphistory", tripHistoryRoutes);
 app.use("/api/promo", promoRoutes);
 app.use("/api/email", emailRoutes);
@@ -97,10 +107,14 @@ app.use("/api/promotions", promotionRoutes);
 app.use('/api/driver-acceptance', fetchRoute);
 
 
+
+
+
 app.get("/", (req, res) => {
   res.send("Server is ready");
 });
 
+// Error handling
 app.use((err, req, res, next) => {
   console.error(err);
   res.status(500).json({ success: false, message: "Internal Server Error" });
@@ -136,34 +150,40 @@ app.use("/api/driver",DriverfetchRoutes);
 app.use('/api/driver-rides', driverRideRoutes);
 
 async function startServer() {
+  // Database connection
   await connectDB();
+  
+  // Admin setup
   await checkAndCreateAdmin();
+  
+  // Scheduled tasks
   schedulePromoCleanup();
 
+  // Create HTTP server
   const httpServer = createServer(app);
 
-  const io = new Server(httpServer, {
-    cors: {
-      origin: ["http://localhost:5173", "http://localhost:5174"],
-      methods: ["GET", "POST"],
-    },
-  });
+  // Initialize Socket.io
+  const io = initSocket(httpServer);
 
+  // Socket.io event handlers
   const userSocketMap = new Map();
 
   io.on('connection', (socket) => {
     console.log('New client connected:', socket.id);
 
+    // Authentication handler
     socket.on('authenticate', (userId) => {
       userSocketMap.set(userId, socket.id);
       console.log(`User ${userId} associated with socket ${socket.id}`);
     });
 
+    // Room joining handler
     socket.on("join-room", ({ roomId }) => {
       socket.join(roomId);
       console.log(`Socket ${socket.id} joined room ${roomId}`);
     });
 
+    // Message handling
     socket.on("send-message", (data) => {
       const { senderId, receiverId, roomId, message } = data;
 
@@ -176,6 +196,7 @@ async function startServer() {
       }
     });
 
+    // Call handling
     socket.on("call-user", ({ offer, to }) => {
       const targetSocketId = userSocketMap.get(to);
       if (targetSocketId) {
@@ -197,11 +218,13 @@ async function startServer() {
       }
     });
 
+    // Driver-specific handlers
     socket.on('driver:authenticate', (driverId) => {
       socket.join(`driver_${driverId}`);
       console.log(`Driver ${driverId} connected`);
     });
 
+    // Ride handling
     socket.on('ride:request', (rideData) => {
       io.emit('ride:requested', rideData);
     });
@@ -214,14 +237,17 @@ async function startServer() {
       io.emit('ride:declined', { rideId, status: 'declined' });
     });
 
+    // Location updates
     socket.on('driver:location', (data) => {
       io.emit('driver:locationUpdate', data);
     });
 
+    // Ride completion
     socket.on('ride:complete', (rideId) => {
       io.emit('ride:completed', { rideId, status: 'completed' });
     });
 
+    // Disconnection handler
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
       for (const [userId, sId] of userSocketMap.entries()) {
@@ -231,9 +257,9 @@ async function startServer() {
         }
       }
     });
-    
   });
 
+  // Start server
   httpServer.listen(PORT, () => {
     console.log(`Server started at http://localhost:${PORT}`);
   });

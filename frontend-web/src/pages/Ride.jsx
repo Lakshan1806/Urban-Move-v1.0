@@ -579,11 +579,8 @@ function Ride() {
                   <br />
                   <strong>Location:</strong> {driverAddress}
                   <br />
-                  <strong>Coordinates:</strong> {driverLocation.lat.toFixed(4)}, {driverLocation.lng.toFixed(4)}
+                  
                 </p>
-                {/* <p className="text-green-700 mt-2">
-                  Progress: {Math.round(rideProgress)}% complete
-                </p> */}
               </div>
             )}
 
@@ -640,7 +637,7 @@ function Ride() {
                   onChange={(e) => setPickup(e.target.value)}
                   onFocus={() => handleInputFocus("pickup")}
                   className="w-full p-3 rounded-lg bg-gray-100 focus:ring-2 focus:ring-[#FF7C1D] outline-none"
-                  placeholder="E.g., Colombo Fort"
+                  placeholder=""
                   disabled={loading || rideStatus === "searching"}
                 />
                 {/* Pickup Suggestions */}
@@ -682,7 +679,7 @@ function Ride() {
                   onChange={(e) => setDropoff(e.target.value)}
                   onFocus={() => handleInputFocus("dropoff")}
                   className="w-full p-3 rounded-lg bg-gray-100 focus:ring-2 focus:ring-[#FF7C1D] outline-none"
-                  placeholder="E.g., Kandy City Center"
+                  placeholder=""
                   disabled={loading || rideStatus === "searching"}
                 />
                 {/* Dropoff Suggestions */}
@@ -715,7 +712,7 @@ function Ride() {
 
             {/* Schedule Form */}
             {showScheduleForm && (
-              <div className="bg-gray-800 p-4 rounded-lg space-y-4">
+              <div className="bg-black p-4 rounded-lg space-y-4">
                 <h3 className="text-lg font-medium text-[#FFD12E]">
                   Schedule Your Ride
                 </h3>
@@ -906,14 +903,16 @@ function Ride() {
                       DRIVER ON THE WAY
                     </button>
                   ) : (
-                    <button
+                    
+                      <button
                       type="button"
                       onClick={handleStartRide}
                       disabled={rideStatus === "searching"}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity"
+                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
                     >
                       START RIDE
                     </button>
+                    
                   )}
                   <button
                     type="button"
@@ -933,14 +932,14 @@ function Ride() {
           <div className="mt-6">
             <button
               onClick={() => setShowScheduledRides(!showScheduledRides)}
-              className="w-full py-2 bg-gray-800 text-[#FFD12E] rounded-lg hover:bg-gray-700 transition-colors"
+              className="w-full py-2 bg-black text-[#FFD12E] rounded-lg hover:bg-black transition-colors  "
             >
               {showScheduledRides ? "Hide" : "View"} Scheduled Rides
             </button>
             
 
             {showScheduledRides && (
-              <div className="mt-4 bg-gray-800 rounded-lg p-4">
+              <div className="mt-4 bg-black rounded-lg p-4 ">
                 <h3 className="text-lg font-medium text-[#FFD12E] mb-3">
                   Your Scheduled Rides
                 </h3>
@@ -977,13 +976,13 @@ function Ride() {
               
             )}
              {/* Reset Button */}
-          <div className="flex justify-end mt-4">
+          <div className="mt-1 bg-black rounded-lg p-2">
             <button
               type="button"
               onClick={handleReset}
-              className="flex items-center gap-1 px-3 py-1 text-sm bg-gray-700 text-[#FFD12E] rounded hover:bg-gray-600 transition-colors"
+              className="w-full py-1/2 bg-black text-[#FFD12E] rounded-lg hover:bg-black transition-colors"
             >
-              Finshe Trip....
+              Finish Trip
             </button>
           </div>
           </div>
