@@ -251,9 +251,11 @@ const ChatAndCall = () => {
 
       {roomId ? (
         <>
-          <div className="mb-4 font-semibold text-gray-700 select-all">
-            Room ID: <code>{roomId}</code>
-          </div>
+           {/* Room ID display hidden */}
+    {/* <div className="mb-4 font-semibold text-gray-700 select-all">
+      Room ID: <code>{roomId}</code>
+    </div> */}
+
 
           <div className="flex gap-4 mb-8 flex-wrap justify-center">
             <button
