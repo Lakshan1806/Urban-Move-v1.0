@@ -14,3 +14,4 @@ router.get('/reverse-geocode', reverseGeocode);
 router.post('/track', userAuth, trackRoute);
 
 export default router;
+

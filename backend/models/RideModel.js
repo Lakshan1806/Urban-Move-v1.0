@@ -45,7 +45,7 @@ const rideSchema = new mongoose.Schema({
     default: 'pending'
   },
   scheduledTime: {
-    type: Date
+    type: Date 
   },
   steps: [{
     distance: { text: String, value: Number },
