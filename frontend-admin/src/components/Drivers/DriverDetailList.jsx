@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-function DriverDetails() {
+function DriverDetailList() {
   const [user, setUser] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -20,19 +20,19 @@ function DriverDetails() {
   }, []);
 
   return (
-    <div className="col-span-12 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-8 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
       {user.map((user) => {
         console.log(user.photo);
         return (
           <div
             key={user._id}
-            className="p-4 my-2 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-5 items-center justify-between"
+            className="p-4 my-2 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-5 items-center justify-between"
           >
             <div className="flex flex-row gap-5">
               <img
                 src={user.authMethod === "google" ? user.avatar : user.photo}
                 alt="profile image"
-                className="w-24 h-24 rounded-full object-cover"
+                className="w-16 h-16 rounded-full object-cover"
               />
               <div>
                 <h3 className="text-lg font-bold">{user.name}</h3>
@@ -51,4 +51,4 @@ function DriverDetails() {
   );
 }
 
-export default DriverDetails;
+export default DriverDetailList;

@@ -81,66 +81,10 @@ function Messages() {
           Messages
         </h1>
       </div>
-      <div className="flex-1 min-h-0"></div>
-      <div className="flex flex-1 min-h-0 divide-x">
-        <div className="w-1/4 overflow-y-auto p-2">
-          <h2 className="font-bold mb-2">Drivers</h2>
-          <ul>
-            {drivers.map((d) => (
-              <li
-                key={d.id}
-                className={`p-2 rounded cursor-pointer mb-1 ${
-                  selectedDriver === d.id
-                    ? "bg-orange-100"
-                    : "hover:bg-gray-100"
-                }`}
-                onClick={() => setSelectedDriver(d.id)}
-              >
-                {d.name || d.id}
-              </li>
-            ))}
-          </ul>
-        </div>
-        <div className="flex-1 flex flex-col">
-          <div className="flex-1 overflow-y-auto p-2">
-            {messages.map((m, idx) => (
-              <div
-                key={idx}
-                className={`mb-2 ${m.from === "admin" ? "text-right" : "text-left"}`}
-              >
-                <div
-                  className={`inline-block px-3 py-2 rounded ${
-                    m.from === "admin"
-                      ? "bg-orange-500 text-white"
-                      : "bg-gray-200"
-                  }`}
-                >
-                  {m.message}
-                </div>
-              </div>
-            ))}
-            <div ref={messagesEndRef} />
-          </div>
-          <div className="p-2 border-t flex gap-2">
-            <input
-              className="border flex-1 rounded p-1"
-              type="text"
-              value={messageInput}
-              onChange={(e) => setMessageInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && sendMessage()}
-              placeholder={
-                selectedDriver ? "Type a message" : "Select a driver"
-              }
-              disabled={!selectedDriver}
-            />
-            <button
-              className="bg-orange-500 text-white px-3 rounded disabled:bg-gray-300"
-              onClick={sendMessage}
-              disabled={!selectedDriver || !messageInput.trim()}
-            >
-              Send
-            </button>
-          </div>
+      <div className="flex-1 flex flex-col gap-3 overflow-y-auto min-h-0 snap-y snap-mandatory scroll-smooth">
+        <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
+          <div className="col-span-3 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto"></div>
+          <div className="col-span-9 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto"></div>
         </div>
       </div>
     </div>

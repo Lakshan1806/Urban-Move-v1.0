@@ -108,7 +108,7 @@ function AddCars({ onSaveForm }) {
     }
   };
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col h-full overflow-auto">
+    <div className="col-span-4 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col h-full overflow-auto">
       <div className="flex flex-col">
         <div>
           <h2>Add Car Details</h2>

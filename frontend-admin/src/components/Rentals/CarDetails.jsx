@@ -95,7 +95,7 @@ function CarDetails({ car, onUpdate }) {
 
   if (!car) {
     return (
-      <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
+      <div className="col-span-8 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
         <div className="flex justify-center items-center h-full text-xl font-bold">
           Select a Car
         </div>
@@ -234,7 +234,7 @@ function CarDetails({ car, onUpdate }) {
   };
 
   return (
-    <div className="col-span-8 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] relative">
+    <div className="col-span-8 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] relative">
       <div className="flex flex-col gap-5 h-full overflow-auto">
         <div className="flex flex-col gap-5">
           <input

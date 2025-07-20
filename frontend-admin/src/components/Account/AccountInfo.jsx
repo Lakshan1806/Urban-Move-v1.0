@@ -109,7 +109,7 @@ function AccountInfo() {
           "Something went wrong. Please check your current password and try again.",
       });
     } finally {
-      setLoading(false);
+      //setLoading(false);
     }
   };
 

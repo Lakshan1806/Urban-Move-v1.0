@@ -61,6 +61,31 @@ adminRoutes.get(
   adminController.promotion.getAllExpiredPromotions
 );
 
+adminRoutes.get(
+  "/get_yearly_income",
+  adminController.promotion.calculateYearlyIncome
+);
+
+adminRoutes.get(
+  "/get_monthly_stats",
+  adminController.promotion.getMonthlyRideStats
+);
+
+adminRoutes.get(
+  "/get_branch_locations",
+  adminController.promotion.getBranchLocations
+);
+
+adminRoutes.get(
+  "/get_rent_bookings",
+  adminController.promotion.getRentBookings
+);
+
+adminRoutes.post(
+  "/add_branch_location",
+  adminController.promotion.addBranchLocation
+);
+
 adminRoutes.patch(
   "/update_car_image",
   carUpload.fields([

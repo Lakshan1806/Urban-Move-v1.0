@@ -5,6 +5,7 @@ import AddCars from "../components/Rentals/AddCars";
 import RecentlyDeletedCars from "../components/Rentals/RecentlyDeletedCars";
 import RecentlyDeletedUnits from "../components/Rentals/RecentlyDeletedUnits";
 import CurrentActivity from "../components/Rentals/CurrentActivity";
+import BranchLocations from "../components/Rentals/BranchLocations";
 
 function Rentals() {
   const [carDetails, setCarDetails] = useState(null);
@@ -12,7 +13,7 @@ function Rentals() {
 
   let component = null;
   if (!editMode) {
-    component = (
+    component = ( 
       <AvailableCars onCarSelect={setCarDetails} onAddCars={setEditMode} />
     );
   } else {
@@ -36,6 +37,7 @@ function Rentals() {
         </div>
         <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
           <CurrentActivity />
+          <BranchLocations/>
           <RecentlyDeletedCars />
           <RecentlyDeletedUnits />
         </div>
