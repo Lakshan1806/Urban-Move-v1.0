@@ -175,9 +175,25 @@ const Profile = () => {
 
   const changePassword = async () => {
     setError(null);
+    if (
+      !passwordForm.currentPassword ||
+      !passwordForm.newPassword ||
+      !passwordForm.confirmPassword
+    ) {
+      setError("All fields are required.");
+      return false;
+    }
 
     if (passwordForm.newPassword !== passwordForm.confirmPassword) {
       setError("New passwords don't match");
+      return false;
+    }
+    const strongPasswordRegex =
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!strongPasswordRegex.test(passwordForm.newPassword)) {
+      setError(
+        "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character"
+      );
       return false;
     }
 
@@ -269,20 +285,26 @@ const Profile = () => {
             onOtpSubmit={emailVerification.setOtp}
           />
         )}
-        <button
-          onClick={handleCancel}
-          className="mt-8 px-6 py-2 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
-        >
-          Cancel Verification
-        </button>
+        <div className="button-wrapper">
+          <button
+            type="button"
+            className="button-primary"
+            onClick={handleCancel}
+          >
+            Cancel Verification
+          </button>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 bg-white-900 text-black rounded-lg shadow-lg mt-8">
+    <div className="max-w-4xl mx-auto p-4 bg-white-900 text-black rounded-lg shadow-md  mt-8 border border-gray-200">
       <div className="flex items-center mb-6">
-        <h1 className="[-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px] flex-none">
+        <h1
+          className="text-grad-stroke font-[300] text-[36px]"
+          data-text="Account"
+        >
           Account
         </h1>
       </div>
@@ -301,7 +323,14 @@ const Profile = () => {
             className="w-40 h-40 rounded-full object-cover border-2 border-orange-500"
           />
           {isEditing && (
-            <label className="absolute bottom-0 right-0 bg-black rounded-full p-2 cursor-pointer hover:bg-gray-800 transition">
+            <div className="absolute bottom-0 right-0 button-wrapper">
+              <button
+                type="button"
+                className="button-primary"
+                onClick={handleImageClick}
+              >
+                change
+              </button>
               <input
                 type="file"
                 ref={fileInputRef}
@@ -309,10 +338,7 @@ const Profile = () => {
                 onChange={handleFileChange}
                 accept="image/*"
               />
-              <span className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer ">
-                Change
-              </span>
-            </label>
+            </div>
           )}
         </div>
       </div>
@@ -321,7 +347,7 @@ const Profile = () => {
         <>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div className="space-y-4">
-              <div>
+              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
                 <label className="block text-sm font-medium text-gray-700">
                   Full Name
                 </label>
@@ -340,7 +366,7 @@ const Profile = () => {
                 )}
               </div>
 
-              <div>
+              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
                 <label className="block text-sm font-medium text-gray-700">
                   Username
                 </label>
@@ -359,7 +385,7 @@ const Profile = () => {
                 )}
               </div>
 
-              <div>
+              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
                 <label className="block text-sm font-medium text-gray-700">
                   Email
                 </label>
@@ -375,10 +401,11 @@ const Profile = () => {
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
                     />
                     {profile.email !== user?.email && (
-                      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+                      <div className="button-wrapper">
                         <button
+                          type="button"
+                          className="button-primary"
                           onClick={handleEmailVerify}
-                          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
                         >
                           verify
                         </button>
@@ -392,7 +419,7 @@ const Profile = () => {
             </div>
 
             <div className="space-y-4">
-              <div>
+              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
                 <label className="block text-sm font-medium text-gray-700">
                   Phone
                 </label>
@@ -408,10 +435,11 @@ const Profile = () => {
                       className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
                     />
                     {profile.phone !== user?.phone && (
-                      <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] text-[20px]">
+                      <div className="button-wrapper">
                         <button
+                          type="button"
+                          className="button-primary"
                           onClick={handlePhoneVerify}
-                          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
                         >
                           verify
                         </button>
@@ -423,7 +451,7 @@ const Profile = () => {
                 )}
               </div>
 
-              <div>
+              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
                 <label className="block text-sm font-medium text-gray-700">
                   NIC Number
                 </label>
@@ -442,7 +470,7 @@ const Profile = () => {
                 )}
               </div>
 
-              <div>
+              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
                 <label className="block text-sm font-medium text-gray-700">
                   Age
                 </label>
@@ -463,7 +491,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="mt-4">
+          <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300 mt-4">
             <label className="block text-sm font-medium text-gray-700">
               Address
             </label>
@@ -529,27 +557,30 @@ const Profile = () => {
       <div className="flex flex-row space-x-4 mt-6 justify-baseline">
         {isEditing || isChangingPassword ? (
           <>
-            <div className="bg-black rounded-[30px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+            <div className="button-wrapper">
               <button
+                type="button"
+                className="button-primary"
                 onClick={isChangingPassword ? handlePasswordSave : handleSave}
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
               >
                 Save
               </button>
             </div>
-            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+            <div className="button-wrapper">
               <button
+                type="button"
+                className="button-primary"
                 onClick={handleCancel}
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
               >
                 Cancel
               </button>
             </div>
             {isEditing && (
-              <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+              <div className="button-wrapper">
                 <button
+                  type="button"
+                  className="button-primary"
                   onClick={() => setShowDeleteModal(true)}
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
                 >
                   Delete Account
                 </button>
@@ -558,18 +589,20 @@ const Profile = () => {
           </>
         ) : (
           <>
-            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+            <div className="button-wrapper">
               <button
+                type="button"
+                className="button-primary"
                 onClick={() => setIsEditing(true)}
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
               >
                 Edit
               </button>
             </div>
-            <div className="bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px]">
+            <div className="button-wrapper">
               <button
+                type="button"
+                className="button-primary"
                 onClick={() => setIsChangingPassword(true)}
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
               >
                 Change Password
               </button>

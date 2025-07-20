@@ -9,6 +9,7 @@ import OtpInput from "../components/otp-input";
 import success from "../signup_photos/success.svg";
 import useCountdown from "../components/hooks/useCountdown";
 import GoogleLoginButton from "../components/GoogleLogin";
+import { FaArrowRight } from "react-icons/fa";
 
 const Register = () => {
   const { register, registrationStep, setRegistrationStep } =
@@ -122,6 +123,16 @@ const Register = () => {
 
     try {
       if (registrationStep === 1) {
+        const strongPasswordRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
+        if (!strongPasswordRegex.test(formData.password)) {
+          setError(
+            "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character"
+          );
+          setLoading(false);
+          return;
+        }
         await register.start(formData.username, formData.password);
       } else if (registrationStep === 2) {
         if (!validateSriLankanPhone(formData.phoneNumber)) {
@@ -162,7 +173,7 @@ const Register = () => {
 
       <div className="flex flex-col px-0.5 z-10 lg:pt-[90px]">
         {registrationStep === 1 && (
-          <form onSubmit={handleSubmit} className="lg:w-[240px] ">
+          <form onSubmit={handleSubmit} className="lg:w-[240px] pl-2">
             <h2 className="text-center text-[18px] sm:text-[22px]  font-medium bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
               Signup as a Customer
             </h2>
@@ -200,13 +211,14 @@ const Register = () => {
               required
               disabled={loading}
             />
-            <div>
+            <div className="button-wrapper">
               <button
                 type="submit"
-                className="w-full py-2 text-center rounded-lg font-semibold font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text  text-[20px] cursor-pointer"
+                className="button-primary flex gap-2 justify-center items-center "
                 disabled={loading}
               >
-                {loading ? "Processing..." : "SIGN UP"}
+                {loading ? "PROCESSING..." : "SIGN UP"}
+                <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
               </button>
             </div>
 
@@ -220,8 +232,11 @@ const Register = () => {
 
         {registrationStep === 2 && (
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-              <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+            <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-30">
+              <h1
+                className="text-grad-stroke font-[300] text-[36px]"
+                data-text="Enter your Mobile Number"
+              >
                 Enter your Mobile Number
               </h1>
               <p className="font-[700] text-[20px]">
@@ -241,15 +256,15 @@ const Register = () => {
                 required
                 disabled={loading}
               />
-              <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+              <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  className="button-primary flex gap-2 justify-center items-center"
                   disabled={loading}
                 >
-                  {loading ? "Sending..." : "Continue"}
+                  {loading ? "SENDING..." : "CONTINUE"}
+                  <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                 </button>
-                <img src={arrow} className="pl-1 pt-1" />
               </div>
             </div>
           </form>
@@ -257,8 +272,11 @@ const Register = () => {
 
         {registrationStep === 3 && (
           <form onSubmit={handleSubmit} className="lg:pb-0 pb-25">
-            <div className="flex flex-col items-center justify-center gap-[25px] w-auto ">
-              <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] lg:text-[48px] text-[30px]">
+            <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-30">
+              <h1
+                className="text-grad-stroke font-[300] text-[36px]"
+                data-text="Verify your Mobile Number"
+              >
                 Verify your Mobile Number
               </h1>
               <p className="font-[700] text-[20px]">
@@ -273,15 +291,15 @@ const Register = () => {
                 disabled={loading}
               />
 
-              <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+              <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  className="button-primary flex gap-2 justify-center items-center"
                   disabled={loading}
                 >
-                  {loading ? "Verifying..." : "Continue"}
+                  {loading ? "VERIFYING..." : "CONTINUE"}
+                  <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                 </button>
-                <img src={arrow} className="pl-1 pt-1" />
               </div>
               <button
                 onClick={handleResendPhoneOtp}
@@ -298,8 +316,11 @@ const Register = () => {
 
         {registrationStep === 4 && (
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col items-center justify-center gap-[25px] ">
-              <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] lg:text-[48px] text-[32px]">
+            <div className="flex flex-col items-center justify-center gap-[25px] pt-30">
+              <h1
+                className="text-grad-stroke font-[300] text-[36px]"
+                data-text="Enter your Email Address"
+              >
                 Enter your Email Address
               </h1>
               <p className="font-[700] text-[20px] ">
@@ -318,15 +339,15 @@ const Register = () => {
                 required
                 disabled={loading}
               />
-              <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+              <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  className="button-primary flex gap-2 justify-center items-center"
                   disabled={loading}
                 >
-                  {loading ? "Sending..." : "Continue"}
+                  {loading ? "SENDING..." : "CONTINUE"}
+                  <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                 </button>
-                <img src={arrow} className="pl-1 pt-1" />
               </div>
             </div>
           </form>
@@ -334,8 +355,11 @@ const Register = () => {
 
         {registrationStep === 5 && (
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-              <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+            <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-30">
+              <h1
+                className="text-grad-stroke font-[300] text-[36px]"
+                data-text="Verify your email address"
+              >
                 Verify your email address
               </h1>
               <p className="font-[700] text-[20px]">
@@ -352,15 +376,15 @@ const Register = () => {
                 disabled={loading}
               />
 
-              <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+              <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  className="button-primary flex gap-2 justify-center items-center"
                   disabled={loading}
                 >
-                  {loading ? "Verifying..." : "Continue"}
+                  {loading ? "VERIFYING..." : "CONTINUE"}
+                  <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                 </button>
-                <img src={arrow} className="pl-1 pt-1" />
               </div>
               <button
                 onClick={handleResendEmailOtp}
@@ -376,16 +400,16 @@ const Register = () => {
         )}
 
         {registrationStep === 6 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-            <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[500] text-[48px]">
+          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-30">
+            <h1
+              className="text-grad-stroke font-[300] text-[36px]"
+              data-text="Account created successfully"
+            >
               Account created successfully
             </h1>
             <img src={Line1} className="h-auto w-full" />
-            <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
-              <button
-                type="button"
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-              >
+            <div className="button-wrapper">
+              <button type="button" className="button-primary">
                 <img src={success} alt="success" />
               </button>
             </div>

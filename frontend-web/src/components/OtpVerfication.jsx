@@ -92,8 +92,8 @@ const OtpVerification = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-      <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+    <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+      <h1 className="text-grad-stroke font-[300] text-[36px]" data-text={title}>
         {title}
       </h1>
       <p className="font-[700] text-[20px]">{subtitle}</p>
@@ -108,15 +108,15 @@ const OtpVerification = ({
           disabled={loading}
         />
         <div className="w-full flex justify-center mt-4">
-          <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px] mt-4">
+          <div className="button-wrapper">
             <button
               type="submit"
-              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+              className="button-primary flex gap-2 justify-center items-center"
               disabled={loading || !otp || otp.length !== otpLength}
             >
-              {loading ? "Verifying..." : "Continue"}
+              {loading ? "VERIFYING..." : "CONTINUE"}
+              <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
             </button>
-            <img src={arrow} className="pl-1 pt-1" alt="Arrow" />
           </div>
         </div>
       </form>

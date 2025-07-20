@@ -2,6 +2,9 @@ import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useParams } from "react-router-dom";
 
+const strongPasswordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
 const ResetPasswordPage = () => {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -17,17 +20,16 @@ const ResetPasswordPage = () => {
       alert("Passwords do not match");
       return;
     }
-    if (password.length < 8) {
-      console.error("Password must be at least 8 characters");
+    if (!strongPasswordRegex.test(password)) {
+      setLocalError(
+        "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character"
+      );
       return;
     }
-
     try {
       await resetPassword(token, password);
 
-      console.log(
-        "Password reset successfully, redirecting to login page..."
-      );
+      console.log("Password reset successfully, redirecting to login page...");
       setTimeout(() => {
         navigate("/login");
       }, 2000);
@@ -37,9 +39,7 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div
-      className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg max-w-md mx-auto mt-44"
-    >
+    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg max-w-md mx-auto mt-44">
       <div className="p-8">
         <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
           Reset Password
@@ -53,7 +53,7 @@ const ResetPasswordPage = () => {
             placeholder="New Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-			className="w-full p-3 mb-4 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full p-3 mb-4 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             required
           />
 
@@ -62,7 +62,7 @@ const ResetPasswordPage = () => {
             placeholder="Confirm New Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-			className="w-full p-3 mb-4 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="w-full p-3 mb-4 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
             required
           />
 

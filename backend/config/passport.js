@@ -17,12 +17,12 @@ passport.use(
 
         const terminatedUser = await userModel.findOne({
           email,
-          isTerminated: true
+          isTerminated: true,
         });
         if (terminatedUser) {
           return done(null, false, { message: "Account terminated" });
         }
-        
+
         const existingGoogleUser = await userModel.findOne({
           googleId: profile.id,
         });
@@ -46,23 +46,34 @@ passport.use(
           return done(null, existingLocalUser);
         }
 
+        let baseUsername = profile.displayName
+          .replace(/[^a-zA-Z0-9]/g, "")
+          .toLowerCase();
+        let proposedUsername = baseUsername;
+        let counter = 0;
+
+        while (await userModel.findOne({ username: proposedUsername })) {
+          counter++;
+          proposedUsername = `${baseUsername}${counter}`;
+        }
+
         const newUser = await userModel.create({
           googleId: profile.id,
-          username: profile.displayName,
+          username: proposedUsername,
           email,
           avatar: profile.photos[0]?.value,
           authMethod: "google",
           isAccountVerified: false,
-          phone: `google-${profile.id}`
+          phone: `google-${profile.id}`,
         });
 
         logger.info(
           `New google user created (pending phone verification): ${email}`
         );
-        done(null, newUser);
+        return done(null, newUser);
       } catch (error) {
         logger.error(`Error in Google strategy: ${error.message}`);
-        done(error, null);
+        return done(error, null);
       }
     }
   )

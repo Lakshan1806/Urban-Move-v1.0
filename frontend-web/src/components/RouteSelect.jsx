@@ -19,6 +19,7 @@ import ProtectedRoute from "./ProtectedRoute";
 import GooglePhoneVerification from "../pages/GooglePhoneVerification.jsx";
 import DriverRegister from "../pages/driverRegister.jsx";
 import DriverLogin from "../pages/DriverLogin.jsx";
+import GooglePhoneVerificationDriver from "../pages/GooglePhoneVerificationDriver.jsx";
 import ChatAndCall from "../pages/ChatAndCall.jsx";
 function RouteSelect() {
   const userId = localStorage.getItem("userId");
@@ -53,6 +54,10 @@ function RouteSelect() {
           }
         />
         <Route path="/verify-phone" element={<GooglePhoneVerification />} />
+        <Route
+            path="/verify-phone-driver"
+            element={<GooglePhoneVerificationDriver />}
+          />
       </Routes>
       
     </main>

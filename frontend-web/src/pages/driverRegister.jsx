@@ -8,9 +8,10 @@ import Line1 from "../signup_photos/liner1.svg";
 import OtpInput from "../components/otp-input";
 import success from "../signup_photos/success.svg";
 import useCountdown from "../components/hooks/useCountdown";
-import GoogleLoginButton from "../components/GoogleLogin";
+import GoogleLoginButton from "../components/GoogleLoginDriver";
 import { FaCheck, FaFileUpload } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import { FaArrowRight } from "react-icons/fa";
 
 const DriverRegister = () => {
   const navigate = useNavigate();
@@ -43,10 +44,18 @@ const DriverRegister = () => {
   };
   const handleDocumentSubmit = async () => {
     setLoading(true);
+    setError("");
+    const isPdfFile = (file) => file && file.type === "application/pdf";
+
     try {
       const files = Object.values(documents).filter(Boolean);
       if (files.length < 3) {
         setError("Please upload all required documents");
+        return;
+      }
+      const nonPdfFiles = files.filter((file) => !isPdfFile(file));
+      if (nonPdfFiles.length > 0) {
+        setError("Only PDF files are allowed.");
         return;
       }
       const result = await register.uploadDocuments(files);
@@ -160,6 +169,16 @@ const DriverRegister = () => {
 
     try {
       if (registrationStep === 1) {
+        const strongPasswordRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
+        if (!strongPasswordRegex.test(formData.password)) {
+          setError(
+            "Password must be at least 8 characters long, contain uppercase and lowercase letters, a number, and a special character"
+          );
+          setLoading(false);
+          return;
+        }
         await register.start(formData.username, formData.password);
       } else if (registrationStep === 2) {
         if (!validateSriLankanPhone(formData.phoneNumber)) {
@@ -194,20 +213,20 @@ const DriverRegister = () => {
         <img
           src={imgd}
           alt="Signup Background"
-          className="absolute z-0 w-full mx-auto h-dvh pl-3"
+          className="absolute z-0  mx-auto w-auto h-[700px] pl-3"
         />
       )}
 
-      <div className="flex flex-col px-0.5 z-10 pt-[130px]">
-        <form onSubmit={handleSubmit} className="w-[300px]">
+      <div className="flex flex-col px-0.5 z-10 ">
+        <form onSubmit={handleSubmit} className="w-[250px] pt-[70px]">
           {registrationStep === 1 && (
             <>
-              <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
+              <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-center">
                 Signup as a driver
               </h2>
               {error && <p className="text-red-500 text-center">{error}</p>}
 
-              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
+              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-start">
                 Username
               </p>
               <input
@@ -221,7 +240,7 @@ const DriverRegister = () => {
                 disabled={loading}
               />
 
-              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
+              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-start">
                 Password
               </p>
               <input
@@ -238,19 +257,20 @@ const DriverRegister = () => {
                 <p className="text-red-500 font-semibold mt-2">{error}</p>
               )}
 
-              <div className="flex justify-center">
+              <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="pt-[10px] pb-[10px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] cursor-pointer"
+                  className="button-primary flex gap-2 justify-center items-center"
                   disabled={loading}
                 >
-                  {loading ? "Processing..." : "SIGN UP"}
+                  {loading ? "PROCESSING..." : "SIGN UP"}
+                  <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                 </button>
               </div>
 
               <img src={imgl} alt="Divider" className="w-full h-auto" />
               <GoogleLoginButton intent="signup" />
-              <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
+              <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[16px] text-center">
                 <Link to="/signin">Already have an account? Sign in</Link>
               </p>
             </>
@@ -260,8 +280,11 @@ const DriverRegister = () => {
         <form onSubmit={handleSubmit}>
           {registrationStep === 2 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-                <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+                <h1
+                  className="text-grad-stroke font-[300] text-[36px]"
+                  data-text="Enter your Mobile Number"
+                >
                   Enter your Mobile Number
                 </h1>
                 <p className="font-[700] text-[20px]">
@@ -281,15 +304,15 @@ const DriverRegister = () => {
                   required
                   disabled={loading}
                 />
-                <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+                <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary flex gap-2 justify-center items-center"
                     disabled={loading}
                   >
-                    {loading ? "Sending..." : "Continue"}
+                    {loading ? "SENDING..." : "CONTINUE"}
+                    <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                   </button>
-                  <img src={arrow} className="pl-1 pt-1" />
                 </div>
               </div>
             </>
@@ -299,8 +322,11 @@ const DriverRegister = () => {
         <form onSubmit={handleSubmit}>
           {registrationStep === 3 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-                <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+                <h1
+                  className="text-grad-stroke font-[300] text-[36px]"
+                  data-text="Verify your Mobile Number"
+                >
                   Verify your Mobile Number
                 </h1>
                 <p className="font-[700] text-[20px]">
@@ -315,15 +341,15 @@ const DriverRegister = () => {
                   disabled={loading}
                 />
 
-                <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+                <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary flex gap-2 justify-center items-center"
                     disabled={loading}
                   >
-                    {loading ? "Verifying..." : "Continue"}
+                    {loading ? "VERIFYING..." : "CONTINUE"}
+                    <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                   </button>
-                  <img src={arrow} className="pl-1 pt-1" />
                 </div>
                 <button
                   onClick={handleResendPhoneOtp}
@@ -342,8 +368,12 @@ const DriverRegister = () => {
         <form onSubmit={handleSubmit}>
           {registrationStep === 4 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-                <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[500] text-[48px]">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+                <h1
+                  className="text-grad-stroke font-[300] text-[36px]"
+                  data-text="Enter your Email Address"
+                >
+                  {" "}
                   Enter your Email Address
                 </h1>
                 <p className="font-[700] text-[20px]">
@@ -362,15 +392,15 @@ const DriverRegister = () => {
                   required
                   disabled={loading}
                 />
-                <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+                <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary flex gap-2 justify-center items-center"
                     disabled={loading}
                   >
-                    {loading ? "Sending..." : "Continue"}
+                    {loading ? "SENDING..." : "CONTINUE"}
+                    <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                   </button>
-                  <img src={arrow} className="pl-1 pt-1" />
                 </div>
               </div>
             </>
@@ -380,8 +410,11 @@ const DriverRegister = () => {
         <form onSubmit={handleSubmit}>
           {registrationStep === 5 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-                <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+                <h1
+                  className="text-grad-stroke font-[300] text-[36px]"
+                  data-text="Verify your email address"
+                >
                   Verify your email address
                 </h1>
                 <p className="font-[700] text-[20px]">
@@ -398,15 +431,15 @@ const DriverRegister = () => {
                   disabled={loading}
                 />
 
-                <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+                <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary flex gap-2 justify-center items-center"
                     disabled={loading}
                   >
-                    {loading ? "Verifying..." : "Continue"}
+                    {loading ? "VERIFYING..." : "CONTINUE"}
+                    <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                   </button>
-                  <img src={arrow} className="pl-1 pt-1" />
                 </div>
                 <button
                   onClick={handleResendEmailOtp}
@@ -422,8 +455,11 @@ const DriverRegister = () => {
           )}
         </form>
         {registrationStep === 6 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-            <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[500] text-[48px]">
+          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-15">
+            <h1
+              className="text-grad-stroke font-[300] text-[36px]"
+              data-text="Submit Documents"
+            >
               Submit Documents
             </h1>
             <img src={Line1} className="h-auto w-full" />
@@ -451,7 +487,7 @@ const DriverRegister = () => {
                   id="license"
                   onChange={handleDocumentChange("license")}
                   className="hidden"
-                  accept=".pdf,.jpg,.jpeg,.png"
+                  accept=".pdf"
                 />
               </div>
 
@@ -477,7 +513,7 @@ const DriverRegister = () => {
                   id="residency"
                   onChange={handleDocumentChange("residency")}
                   className="hidden"
-                  accept=".pdf,.jpg,.jpeg,.png"
+                  accept=".pdf"
                 />
               </div>
 
@@ -503,65 +539,68 @@ const DriverRegister = () => {
                   id="insurance"
                   onChange={handleDocumentChange("insurance")}
                   className="hidden"
-                  accept=".pdf,.jpg,.jpeg,.png"
+                  accept=".pdf"
                 />
               </div>
 
               {error && <p className="text-red-500 text-center">{error}</p>}
 
-              <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px] mx-auto mt-4">
+              <div className="button-wrapper">
                 <button
                   type="button"
                   onClick={handleDocumentSubmit}
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  className="button-primary flex gap-2 justify-center items-center"
                   disabled={
                     loading ||
                     Object.values(documents).filter(Boolean).length < 3
                   }
                 >
-                  {loading ? "Uploading..." : "CONTINUE"}
+                  {loading ? "UPLOADING..." : "CONTINUE"}
+                  <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                 </button>
-                <img src={arrow} className="pl-1 pt-1" />
               </div>
             </div>
           </div>
         )}
         {registrationStep === 7 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-            <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[500] text-[48px] text-center">
+          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+            <h1
+              className="text-grad-stroke font-[300] text-[36px]"
+              data-text="Account Verification Pending"
+            >
               Account Verification Pending
             </h1>
             <img src={Line1} className="h-auto w-full" />
 
-            <p className="text-center max-w-md">
+            <p className="text-center max-w-md font-semibold">
               Thank you for submitting your documents. Your account will be
               reviewed by the admin for verification. You will be notified once
               your account is approved.
             </p>
 
-            <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+            <div className="button-wrapper">
               <button
                 type="button"
                 onClick={() => setRegistrationStep(8)}
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                className="button-primary flex gap-2 justify-center items-center"
               >
                 CONTINUE
+                <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
               </button>
-              <img src={arrow} className="pl-1 pt-1" />
             </div>
           </div>
         )}
         {registrationStep === 8 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-            <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[500] text-[48px]">
+          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+            <h1
+              className="text-grad-stroke font-[300] text-[36px]"
+              data-text="Account created successfully"
+            >
               Account created successfully
             </h1>
             <img src={Line1} className="h-auto w-full" />
-            <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
-              <button
-                type="button"
-                className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
-              >
+            <div className="button-wrapper">
+              <button type="button" className="button-primary ">
                 <img src={success} alt="success" />
               </button>
             </div>

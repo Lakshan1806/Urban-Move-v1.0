@@ -8,7 +8,8 @@ import { Link } from "react-router-dom";
 import OtpInput from "../components/otp-input";
 import Line1 from "../signup_photos/liner1.svg";
 import useCountdown from "../components/hooks/useCountdown";
-import GoogleLoginButton from "../components/GoogleLogin";
+import GoogleLoginButton from "../components/GoogleLoginDriver";
+import { FaArrowRight } from "react-icons/fa";
 
 const DriverLogin = () => {
   const { login } = useContext(DriverAuthContext);
@@ -131,12 +132,12 @@ const DriverLogin = () => {
         <img
           src={imgd}
           alt="Signup Background"
-          className="absolute z-0 w-full mx-auto h-dvh pl-3"
+          className="absolute z-0 w-auto mx-auto h-[700px] pl-3"
         />
       )}
 
-      <div className="flex flex-col px-0.5 z-10 pt-[130px]">
-        <form onSubmit={handleSubmit} className="w-[300px]">
+      <div className="flex flex-col px-0.5 z-10 ">
+        <form onSubmit={handleSubmit} className="w-[250px] pt-[70px]">
           {step === 1 && (
             <>
               <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
@@ -144,7 +145,7 @@ const DriverLogin = () => {
               </h2>
               {error && <p className="text-red-500 text-center">{error}</p>}
 
-              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
+              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-start">
                 Username
               </p>
               <input
@@ -158,7 +159,7 @@ const DriverLogin = () => {
                 disabled={loading}
               />
 
-              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
+              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-start">
                 Password
               </p>
               <div className="relative">
@@ -185,19 +186,20 @@ const DriverLogin = () => {
                 <p className="text-red-500 font-semibold mt-2">{error}</p>
               )}
 
-              <div className="flex justify-center">
+              <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="pt-[10px] pb-[10px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] cursor-pointer"
+                  className="button-primary flex gap-2 justify-center items-center "
                   disabled={loading}
                 >
-                  {loading ? "Processing..." : "SIGN IN"}
+                  {loading ? "PROCESSING..." : "SIGN IN"}
+                  <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                 </button>
               </div>
 
               <img src={imgl} alt="Divider" className="w-full h-auto" />
               <GoogleLoginButton />
-              <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
+              <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[16px] text-center">
                 <Link to="/Register">Don't have an account? Sign up</Link>
               </p>
             </>
@@ -207,8 +209,11 @@ const DriverLogin = () => {
         <form onSubmit={handleSubmit}>
           {step === 2 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-                <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+                <h1
+                  className="text-grad-stroke font-[300] text-[36px]"
+                  data-text="Enter your Mobile Number"
+                >
                   Enter your Mobile Number
                 </h1>
                 <p className="font-[700] text-[20px]">
@@ -229,15 +234,15 @@ const DriverLogin = () => {
                   disabled={loading}
                 />
 
-                <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+                <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary flex gap-2 justify-center items-center"
                     disabled={loading}
                   >
-                    {loading ? "Sending..." : "Continue"}
+                    {loading ? "SENDING..." : "CONTINUE"}
+                    <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                   </button>
-                  <img src={arrow} className="pl-1 pt-1" />
                 </div>
               </div>
             </>
@@ -247,8 +252,11 @@ const DriverLogin = () => {
         <form onSubmit={handleSubmit}>
           {step === 3 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-                <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+                <h1
+                  className="text-grad-stroke font-[300] text-[36px]"
+                  data-text="Verify your Mobile Number"
+                >
                   Verify your Mobile Number
                 </h1>
                 <p className="font-[700] text-[20px]">
@@ -263,15 +271,15 @@ const DriverLogin = () => {
                   disabled={loading}
                 />
 
-                <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+                <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                    className="button-primary flex gap-2 justify-center items-center"
                     disabled={loading}
                   >
-                    {loading ? "Verifying..." : "Continue"}
+                    {loading ? "VERIFYING..." : "CONTINUE"}
+                    <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                   </button>
-                  <img src={arrow} className="pl-1 pt-1" />
                 </div>
                 <button
                   onClick={handleResendPhoneOtp}

@@ -17,10 +17,7 @@ const DriverAuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [registrationStep, setRegistrationStep] = useState(1);
   const navigate = useNavigate();
-
-
-
-/*   useEffect(() => {
+  /*   useEffect(() => {
     const initializeAuth = async () => {
       await checkAuth();
       const urlParams = new URLSearchParams(window.location.search);
@@ -31,8 +28,6 @@ const DriverAuthProvider = ({ children }) => {
 
     initializeAuth();
   }, [checkAuth, navigate]); */
-
-  
   const register = {
     start: async (username, password) => {
       try {
@@ -278,7 +273,7 @@ const DriverAuthProvider = ({ children }) => {
     try {
       setError(null);
       window.open(
-        `http://localhost:5000/auth/google?intent=${intent}`,
+      `http://localhost:5000/auth/google/driver?intent=${intent}`,
         "_self"
       );
     } catch (error) {

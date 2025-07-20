@@ -9,6 +9,7 @@ import generateJwtToken from "../../utils/generateJWTToken.js";
 import nodemailer from "../../utils/nodemailer.js";
 import userModel from "../../models/usermodel.js";
 import bcrypt from "bcrypt";
+import driverModel from "../../models/driver.models.js";
 
 const SESSION_REGISTRATION_KEY = "registration";
 const SESSION_LOGIN_KEY = "loginProcess";
@@ -21,6 +22,15 @@ const userAuthController = {
 
         if (!username || !password) {
           return validationError(res, "Username and password are required");
+        }
+        const strongPasswordRegex =
+          /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+
+        if (!strongPasswordRegex.test(password)) {
+          return validationError(
+            res,
+            "Password must be at least 6 characters long and contain at least one uppercase letter, one lowercase letter, one number, and one special character"
+          );
         }
 
         const existing = await Model.findOne({ username });
@@ -675,7 +685,8 @@ const userAuthController = {
           return validationError(res, "Invalid phone number format");
         }
 
-        if (await userModel.compare("phone", phoneNumber)) {
+        const existingUser = await userModel.findOne({ phone: phoneNumber });
+        if (existingUser) {
           return validationError(res, "Phone number already exists");
         }
 
@@ -719,7 +730,7 @@ const userAuthController = {
         const token = generateJwtToken(
           updatedUser._id,
           updatedUser.username,
-          role
+          updatedUser.role
         );
 
         res.cookie("token", token, {
@@ -746,6 +757,175 @@ const userAuthController = {
 
       return validationError(res, "Invalid request");
     } catch (error) {
+      handleErrors(res, error);
+    }
+  },
+  resendOtp: async (req, res) => {
+    try {
+      const { type } = req.body;
+      const registration = getFromSession(
+        req.session,
+        SESSION_REGISTRATION_KEY
+      );
+
+      if (!registration) {
+        return validationError(res, "Registration session expired");
+      }
+
+      let identifier;
+      if (type === "phone") {
+        if (!registration.phoneNumber) {
+          return validationError(res, "Phone number not provided yet");
+        }
+        identifier = registration.phoneNumber;
+      } else if (type === "email") {
+        if (!registration.email) {
+          return validationError(res, "Email not provided yet");
+        }
+        identifier = registration.email;
+      } else {
+        return validationError(res, "Invalid OTP type");
+      }
+
+      await otpService.resendOtp(type, identifier);
+
+      return res.json({
+        success: true,
+        message: `OTP resent to ${type}`,
+        nextStep: `verify-${type}`,
+      });
+    } catch (error) {
+      handleErrors(res, error);
+    }
+  },
+
+  verifyGooglePhoneForDriver: async (req, res) => {
+    try {
+      const tempUser = getFromSession(req.session, "tempUser");
+
+      if (!tempUser?.googleId) {
+        return validationError(res, "Google signup session expired");
+      }
+
+      const { phoneNumber, otp } = req.body;
+
+      if (phoneNumber && !otp) {
+        const phoneRegex = /^(\+94|0)(7[0-9])([0-9]{7})$/;
+        if (!phoneRegex.test(phoneNumber)) {
+          return validationError(res, "Invalid phone number format");
+        }
+
+        const existingDriver = await driverModel.findOne({
+          phone: phoneNumber,
+        });
+
+        if (existingDriver) {
+          return validationError(res, "Phone number already exists");
+        }
+
+        await saveToSession(req.session, "tempUser", {
+          ...tempUser,
+          phoneNumber,
+        });
+
+        await otpService.sendOtp("phone", phoneNumber);
+
+        return res.json({ success: true, message: "OTP sent to phone" });
+      }
+
+      if (otp) {
+        if (!tempUser.phoneNumber) {
+          return validationError(res, "Phone number not found in session");
+        }
+
+        if (req.files && req.files.length > 0) {
+          if (!tempUser.otpValidated) {
+            return validationError(res, "Please verify your OTP first");
+          }
+
+          const documentPaths = req.files.map((file) =>
+            file.path.replace(/\\/g, "/").replace("backend/uploads", "/uploads")
+          );
+
+          const updatedDriver = await driverModel.findOneAndUpdate(
+            { googleId: tempUser.googleId },
+            {
+              phone: tempUser.phoneNumber,
+              isAccountVerified: true,
+              driverDocuments: documentPaths,
+              driverVerified: "pending",
+            },
+            { new: true }
+          );
+
+          if (!updatedDriver) {
+            return validationError(res, "Driver not found");
+          }
+
+          const token = generateJwtToken(
+            updatedDriver._id,
+            updatedDriver.username,
+            "driver"
+          );
+
+          res.cookie("token", token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "Lax",
+            maxAge: 3600000,
+          });
+
+          await clearFromSession(req.session, "tempUser");
+
+          nodemailer
+            .sendEmail(
+              updatedDriver.email,
+              "Welcome to Our Service",
+              "Your account has been successfully created and documents uploaded!"
+            )
+            .catch((err) => console.error("Error sending welcome email:", err));
+
+          return res.json({
+            success: true,
+            message:
+              "Phone verification and document upload successful. Pending admin verification.",
+            redirect: true,
+            user: {
+              _id: updatedDriver._id,
+              username: updatedDriver.username,
+              email: updatedDriver.email,
+              phone: updatedDriver.phone,
+              authMethod: updatedDriver.authMethod,
+              driverVerified: updatedDriver.driverVerified,
+            },
+          });
+        } else {
+          const otpResult = await otpService.validateOtp(
+            "phone",
+            tempUser.phoneNumber,
+            otp
+          );
+
+          if (!otpResult.isValid) {
+            return validationError(res, "Invalid or expired OTP");
+          }
+
+          await saveToSession(req.session, "tempUser", {
+            ...tempUser,
+            otpValidated: true,
+          });
+
+          return res.json({
+            success: true,
+            message: "OTP verified. Please upload your documents.",
+            requireDocuments: true,
+          });
+        }
+      }
+
+      return validationError(res, "Invalid request");
+    } catch (error) {
+      console.error("Error in verifyGooglePhoneForDriver:", error);
       handleErrors(res, error);
     }
   },
