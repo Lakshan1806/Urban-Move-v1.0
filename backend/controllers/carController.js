@@ -2,7 +2,7 @@ import mongoose from 'mongoose';
 import CarModel from "../models/carModel.model.js";
 import CarInstance from "../models/carInstance.model.js";
 import Booking from "../models/carBookings.model.js";
-import BranchLocation from "../models/branchLocation.js";
+import BranchLocation from "../models/branchLocation.model.js"
 
 // Get available cars based on location and dates
 export const getAvailableCars = async (req, res) => {
