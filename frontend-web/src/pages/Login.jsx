@@ -8,6 +8,7 @@ import { Link } from "react-router-dom";
 import Line1 from "../signup_photos/liner1.svg";
 import GoogleLoginButton from "../components/GoogleLogin";
 import OtpVerification from "../components/OtpVerfication";
+import { FaArrowRight } from "react-icons/fa";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
@@ -150,21 +151,24 @@ const Login = () => {
         <img
           src={imgcl}
           alt="Signup Background"
-          className="absolute z-0 w-full h-auto"
+          className="absolute z-0 mx-auto w-auto h-[700px] pr-1 "
         />
       )}
 
-      <div className="flex flex-col px-0.5 z-10 pt-[130px]">
+      <div className="flex flex-col px-0.5 z-10 ">
         {step === 1 && (
-          <form onSubmit={handleCredentialsSubmit} className="w-[340px]">
-            <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
+          <form
+            onSubmit={handleCredentialsSubmit}
+            className="w-[230px] pt-[75px]"
+          >
+            <h2 className="pt-[10px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
               Sign in as a Customer
             </h2>
             {error && <p className="text-red-500 text-center">{error}</p>}
 
-            <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
+            <label className="block text-[18px] sm:text-[20px] p-0.5 font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
               Username
-            </p>
+            </label>
             <input
               type="text"
               name="username"
@@ -176,9 +180,9 @@ const Login = () => {
               disabled={loading}
             />
 
-            <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-start">
+            <label className="block text-[18px] sm:text-[20px] font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
               Password
-            </p>
+            </label>
             <div className="relative">
               <input
                 type="password"
@@ -200,19 +204,20 @@ const Login = () => {
               </Link>
             </div>
 
-            <div className="flex justify-center">
+            <div className="button-wrapper">
               <button
                 type="submit"
-                className="pt-[10px] pb-[10px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] cursor-pointer"
+                className="button-primary flex gap-2 justify-center items-center "
                 disabled={loading}
               >
-                {loading ? "Processing..." : "SIGN IN"}
+                {loading ? "PROCESSING..." : "SIGN IN"}
+                <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
               </button>
             </div>
 
             <img src={imgl} alt="Divider" className="w-full h-auto" />
             <GoogleLoginButton />
-            <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
+            <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[16px] text-center">
               <Link to="/Register">Don't have an account? Sign up</Link>
             </p>
           </form>
@@ -220,8 +225,11 @@ const Login = () => {
 
         {step === 2 && (
           <form onSubmit={handlePhoneSubmit}>
-            <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-              <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+            <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+              <h1
+                className="text-grad-stroke font-[300] text-[36px]"
+                data-text="Enter your Mobile Number"
+              >
                 Enter your Mobile Number
               </h1>
               <p className="font-[700] text-[20px]">
@@ -242,15 +250,15 @@ const Login = () => {
                 disabled={loading}
               />
 
-              <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+              <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+                  className="button-primary flex gap-2 justify-center items-center"
                   disabled={loading}
                 >
-                  {loading ? "Sending..." : "Continue"}
+                  {loading ? "SENDING..." : "CONTINUE"}
+                  <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
                 </button>
-                <img src={arrow} className="pl-1 pt-1" alt="Arrow" />
               </div>
             </div>
           </form>

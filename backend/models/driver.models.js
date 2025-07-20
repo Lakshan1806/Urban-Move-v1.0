@@ -57,6 +57,8 @@ const driverSchema = new mongoose.Schema(
       enum: ["pending", "approved", "rejected"],
       default: "pending",
     },
+    carColor:{type:String},
+    carNumber:{type:String},
   },
   { timestamps: true }
 );

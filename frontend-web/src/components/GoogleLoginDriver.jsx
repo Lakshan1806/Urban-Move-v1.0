@@ -1,9 +1,8 @@
-import React from "react";
 import imgg from "../signup_photos/googlelogo.svg";
-import { useAuth } from "../context/AuthContext";
+import { useDriverAuth } from "../context/driverAuthContext";
 
 export default function GoogleLoginButton({ intent = "login" }) {
-  const { loginWithGoogle } = useAuth();
+  const { loginWithGoogle } = useDriverAuth();
 
   const handleClick = () => {
     try {

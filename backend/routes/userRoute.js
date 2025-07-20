@@ -1,7 +1,7 @@
 import express from "express";
 import feedbackController from "../controllers/rent/feedbackController.js";
 import rentalController from "../controllers/rent/rentalController.js";
-import {getAvailableCars} from "../controllers/carController.js";
+import { getAvailableCars } from "../controllers/carController.js";
 import userController from "../controllers/user/userController.js";
 import userAuth from "../middlewares/userAuth.js";
 import passport from "passport";
@@ -17,6 +17,7 @@ import driverUpload from "../middlewares/driverUpload.js";
 import userModel from "../models/usermodel.js";
 import driverModel from "../models/driver.models.js";
 import driverAuth from "../middlewares/driverAuth.js";
+import "../config/passportDriver.js";
 
 dotenv.config();
 
@@ -322,27 +323,80 @@ userRoutes.post("/verify-otp", async (req, res) => {
       .json({ message: "Error verifying OTP", error: error.message });
   }
 });
-
-// Create a new rental
-//userRoutes.post('/', rentalController.createRental);
-
-// Get all rentals
-//userRoutes.get('/', rentalController.getAllRentals);
-
-// Get a single rental by ID
-//userRoutes.get('/:id', rentalController.getRentalById);
-
-// Update a rental
-//userRoutes.put('/:id', rentalController.updateRental);
-
-// Delete a rental
-//userRoutes.delete('/:id', rentalController.deleteRental);
+userRoutes.post("/resend-otp", userController.auth.resendOtp);
 
 userRoutes.post("/submit", feedbackController.submit);
 
 userRoutes.get("/slideshow_images", rentalController.fetchSlideshowImage);
 
-userRoutes.get("/me", userAuth, async (req, res) => {
+userRoutes.get(
+  "/google/driver",
+  (req, res, next) => {
+    req.session.googleAuthIntent = req.query.intent || "login";
+    next();
+  },
+  passport.authenticate("google-driver", {
+    scope: ["profile", "email"],
+    session: false,
+  })
+);
+
+userRoutes.get(
+  "/google/driver/callback",
+  passport.authenticate("google-driver", {
+    session: false,
+    failureRedirect: `${process.env.FRONTEND_URL}/dlogin?error=google_auth_failed`,
+  }),
+  async (req, res) => {
+    try {
+      const driver = req.user;
+
+      if (driver.isTerminated) {
+        return res.redirect(
+          `${process.env.FRONTEND_URL}/dlogin?error=account_terminated`
+        );
+      }
+
+      if (driver.isAccountVerified) {
+        const token = generateJwtToken(driver._id, driver.username, "driver");
+
+        res.cookie("token", token, {
+          httpOnly: true,
+          secure: process.env.NODE_ENV === "production",
+          sameSite: "Lax",
+          maxAge: 3600000,
+        });
+        return res.redirect(`${process.env.FRONTEND_DRIVER_URL}`);
+      }
+
+      req.session.tempUser = {
+        googleId: driver.googleId,
+        email: driver.email,
+        username: driver.username,
+        avatar: driver.avatar,
+        authMethod: "google",
+        role: "driver",
+      };
+
+      req.session.save();
+
+      return res.redirect(
+        `${process.env.FRONTEND_URL}/verify-phone-driver?authMethod=google`
+      );
+    } catch (error) {
+      console.error("Google driver callback error:", error.message);
+      res.redirect(
+        `${process.env.FRONTEND_URL}/dlogin?error=google_auth_failed`
+      );
+    }
+  }
+);
+
+userRoutes.post(
+  "/google/verify-phone-driver",
+  driverUpload.array("documents", 3),
+  userController.auth.verifyGooglePhoneForDriver
+);userRoutes.get("/me", userAuth, async (req, res) => {
   try {
     const user = await userModel.findById(req.userId).select("-password");
     if (!user) {

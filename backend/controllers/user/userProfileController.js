@@ -1,5 +1,4 @@
 import dotenv from "dotenv";
-//import userModel from "../../models/usermodel.js";
 import ArchivedUser from "../../models/archivedUser.model.js";
 import nodemailer from "../../utils/nodemailer.js";
 import ArchivedDriver from "../../models/archivedDriver.models.js";
@@ -22,6 +21,8 @@ const userProfileController = (Model, role) => ({
         age: 1,
         address: 1,
         nicNumber: 1,
+        carColor: 1,
+        carNumber: 1,
       });
 
       user.photo = user.photo
@@ -44,6 +45,8 @@ const userProfileController = (Model, role) => ({
         nicNumber,
         address,
         age,
+        carNumber,
+        carColor,
       } = req.body;
 
       console.log("Update profile request body:", req.body);
@@ -78,6 +81,8 @@ const userProfileController = (Model, role) => ({
           address,
           nicNumber,
           age,
+          carColor,
+          carNumber,
         },
       });
 
