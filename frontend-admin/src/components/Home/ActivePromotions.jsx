@@ -33,7 +33,7 @@ function ActivePromotions() {
   };
 
   return (
-    <div className="col-span-4 row-span-6 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-4 row-span-6 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto shrink-0">
       <div className="sticky top-0 z-20 bg-white/30 rounded-t-xl backdrop-blur-md px-4 py-4 flex justify-center">
         <h3 className="text-sm font-bold uppercase">Active Promotions</h3>
       </div>

@@ -47,14 +47,16 @@
     "nodemailer": "^6.10.1",
     "passport": "^0.7.0",
     "passport-google-oauth20": "^2.0.0",
+    "pdfkit": "^0.17.1",
     "react-icons": "^5.5.0",
     "react-toastify": "^11.0.5",
     "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1",
     "winston": "^3.17.0"
   },
   "devDependencies": {
     "eslint": "^8.56.0",
-    "nodemon": "^3.1.9",
+    "nodemon": "^3.1.10",
     "prettier": "^3.2.5"
   }
 }

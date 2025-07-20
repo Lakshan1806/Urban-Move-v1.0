@@ -31,6 +31,7 @@ const userAuth = async (req, res, next) => {
       console.log("Auth check successful for user:", user._id);
 
       req.user = user;
+      req.userId = tokenDecode.id; 
       req.body.userId = tokenDecode.id;
       next();
     } catch (error) {
@@ -39,19 +40,19 @@ const userAuth = async (req, res, next) => {
         stack: error.stack,
         tokenPresent: !!req.cookies.token,
       });
-      let message = "Authentication failed";
-      if (error.name === "TokenExpiredError") {
-        message = "Session expired - please login again";
-      } else if (error.name === "JsonWebTokenError") {
-        message = "Invalid token - please login again";
-      }
 
-      return res.status(401).json({
-        success: false,
-        message: message || error.message,
-      });
+       let message = "Authentication failed";
+    if (error.name === "TokenExpiredError") {
+      message = "Session expired - please login again";
+    } else if (error.name === "JsonWebTokenError") {
+      message = "Invalid token - please login again";
     }
-  };
 
+    return res.status(401).json({
+      success: false,
+      message: message || error.message,
+    });
+  }
+};
 
 export default userAuth;

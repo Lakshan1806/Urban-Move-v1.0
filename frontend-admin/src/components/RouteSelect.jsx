@@ -17,7 +17,6 @@ function RouteSelect() {
       <main className="h-dvh py-[20px] px-[50px] overflow-hidden">
         <Routes>
           <Route index element={<Home />} />
-          <Route path="rides" element={<Rides />} />
           <Route path="rentals" element={<Rentals />} />
           <Route path="customers" element={<Customers />} />
           <Route path="drivers" element={<Drivers />} />

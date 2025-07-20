@@ -1,64 +1,223 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const PromoPage = () => {
-    // States for applying promo code
-    const [appliedCode, setAppliedCode] = useState("");
-    const [originalAmount, setOriginalAmount] = useState(""); // Manually entered amount
-    const [finalAmount, setFinalAmount] = useState(null); // Final amount after applying promo
-    const [applyMessage, setApplyMessage] = useState("");
+axios.defaults.withCredentials = true;
 
-    // Function to apply a promo code
-    const applyPromoCode = async () => {
-        if (!originalAmount || isNaN(originalAmount) || originalAmount <= 0) {
-            setApplyMessage("Please enter a valid amount");
-            return;
+const PaymentPage = () => {
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    cardNumber: "",
+    expiry: "",
+    cvc: "",
+    amount: "",
+    promo: "",
+  });
+
+  const [userId, setUserId] = useState("");
+  const [finalAmount, setFinalAmount] = useState(null);
+  const [applyMessage, setApplyMessage] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    const fetchUserAndFare = async () => {
+      try {
+        const userRes = await axios.get("http://localhost:5000/api/auth/me");
+        const user = userRes.data.user;
+        if (user?._id) {
+          setUserId(user._id);
+          setForm((prev) => ({ ...prev, name: user.username, email: user.email }));
+
+          const rideRes = await axios.get(`http://localhost:5000/api/triphistory/latest-ride/${user._id}`);
+          const latestRide = rideRes.data;
+
+          if (latestRide?.fare) {
+            setForm((prev) => ({ ...prev, amount: latestRide.fare }));
+          }
         }
-
-        try {
-            const response = await axios.post("http://localhost:5000/api/promo/apply", {
-                code: appliedCode.trim(),
-                amount: parseFloat(originalAmount),
-            });
-
-            const discountedAmount = parseFloat(originalAmount) - (parseFloat(originalAmount) * response.data.discount) / 100;
-            setFinalAmount(discountedAmount);
-            setApplyMessage(`Promo applied! New Amount: $${discountedAmount.toFixed(2)}`);
-        } catch (error) {
-            setApplyMessage(error.response?.data?.message || "Invalid promo code");
-            setFinalAmount(null);
-        }
+      } catch (err) {
+        console.error("❌ Failed to load user or fare:", err);
+      }
     };
 
-    return (
-        <div className="p-6">
-            <h2 className="text-2xl font-bold mb-4">Apply Promo Code</h2>
+    fetchUserAndFare();
+  }, []);
 
-            {/* Apply Promo Code Section */}
-            <div className="p-4 border border-gray-300 rounded">
-                <h3 className="text-xl font-semibold mb-2">Apply Promo Code</h3>
-                <input
-                    type="number"
-                    placeholder="Enter Amount"
-                    className="border p-2 mr-2"
-                    value={originalAmount}
-                    onChange={(e) => setOriginalAmount(e.target.value)}
-                />
-                <input
-                    type="text"
-                    placeholder="Enter Promo Code"
-                    className="border p-2 mr-2"
-                    value={appliedCode}
-                    onChange={(e) => setAppliedCode(e.target.value)}
-                />
-                <button onClick={applyPromoCode} className="bg-green-500 text-white p-2">Apply</button>
-                <p>{applyMessage}</p>
-                {finalAmount !== null && (
-                    <h3 className="text-lg font-bold mt-2">Final Amount: ${finalAmount.toFixed(2)}</h3>
-                )}
-            </div>
-        </div>
-    );
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "cardNumber") {
+      if (/^\d{0,16}$/.test(value)) {
+        setForm((prev) => ({ ...prev, [name]: value }));
+      }
+    } else if (name === "expiry") {
+      if (/^\d{0,2}\/?\d{0,2}$/.test(value) && value.length <= 5) {
+        setForm((prev) => ({ ...prev, [name]: value }));
+      }
+    } else if (name === "cvc") {
+      if (/^\d{0,4}$/.test(value)) {
+        setForm((prev) => ({ ...prev, [name]: value }));
+      }
+    } else {
+      setForm((prev) => ({ ...prev, [name]: value }));
+    }
+  };
+
+  const applyPromoCode = async () => {
+    const amount = parseFloat(form.amount);
+    if (!form.promo || isNaN(amount)) {
+      setApplyMessage("Please enter a valid promo code and amount.");
+      return;
+    }
+
+    try {
+      const response = await axios.post("http://localhost:5000/api/promo/apply", {
+        code: form.promo.trim(),
+      });
+
+      const discount = response.data.discount;
+      const discountType = response.data.discountType;
+
+      let discountedAmount = amount;
+      if (discountType === "Percentage") {
+        discountedAmount = amount - (amount * discount) / 100;
+      } else if (discountType === "Fixed") {
+        discountedAmount = amount - discount;
+      }
+
+      if (discountedAmount < 0) discountedAmount = 0;
+
+      setFinalAmount(discountedAmount);
+      setApplyMessage(`Promo applied! New Amount: Rs. ${discountedAmount.toFixed(2)}`);
+    } catch (error) {
+      const msg = error.response?.data?.message || "Invalid promo code";
+      setApplyMessage(msg);
+      setFinalAmount(null);
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    try {
+      const amountToPay = finalAmount !== null ? finalAmount : parseFloat(form.amount);
+
+      const emailData = {
+        recipient: form.email,
+        subject: "Payment Confirmation",
+        message: `Hello ${form.name}, your payment of Rs. ${amountToPay.toFixed(2)} has been processed successfully.`,
+      };
+
+      const response = await axios.post("http://localhost:5000/api/email/send-email", emailData);
+      console.log("Email sent:", response);
+      alert("Payment successful!");
+    } catch (error) {
+      console.error("Error sending email:", error);
+      alert("Payment failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
+      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8">
+        <h2 className="text-3xl font-light text-center mb-6 text-orange-500">Complete Your Payment</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            name="name"
+            value={form.name}
+            onChange={handleChange}
+            placeholder="Name"
+            className="w-full border p-3 rounded-md"
+            required
+          />
+          <input
+            type="email"
+            name="email"
+            value={form.email}
+            onChange={handleChange}
+            placeholder="Email"
+            className="w-full border p-3 rounded-md"
+            required
+          />
+          <input
+            type="text"
+            name="cardNumber"
+            value={form.cardNumber}
+            onChange={handleChange}
+            placeholder="Card Number"
+            className="w-full border p-3 rounded-md"
+            maxLength={16}
+            required
+          />
+          <div className="flex gap-4">
+            <input
+              type="text"
+              name="expiry"
+              value={form.expiry}
+              onChange={handleChange}
+              placeholder="MM/YY"
+              className="w-1/2 border p-3 rounded-md"
+              maxLength={5}
+              required
+            />
+            <input
+              type="text"
+              name="cvc"
+              value={form.cvc}
+              onChange={handleChange}
+              placeholder="CVC"
+              className="w-1/2 border p-3 rounded-md"
+              maxLength={4}
+              required
+            />
+          </div>
+          <input
+            type="number"
+            name="amount"
+            value={form.amount}
+            onChange={handleChange}
+            placeholder="Amount"
+            className="w-full border p-3 rounded-md"
+            required
+          />
+          <div className="flex gap-2">
+            <input
+              type="text"
+              name="promo"
+              value={form.promo}
+              onChange={handleChange}
+              placeholder="Promo Code"
+              className="w-full border p-3 rounded-md"
+            />
+            <button
+              type="button"
+              onClick={applyPromoCode}
+              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+            >
+              Apply
+            </button>
+          </div>
+          {applyMessage && <p className="text-sm text-gray-700">{applyMessage}</p>}
+          <div className="text-right text-lg font-semibold">
+            Total: Rs. {finalAmount !== null ? finalAmount.toFixed(2) : form.amount || "0.00"}
+          </div>
+          <button
+            type="submit"
+            disabled={loading}
+            className={`w-full py-3 rounded-md text-white font-semibold ${
+              loading ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-yellow-400 to-orange-500"
+            }`}
+          >
+            {loading ? "Processing..." : "Pay Now"}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 };
 
-export default PromoPage;
+export default PaymentPage;

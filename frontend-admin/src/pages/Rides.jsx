@@ -1,4 +1,4 @@
-import CompletedRideGraph from "../components/Rides/CompletedRideGraph";
+import CompletedRideGraph from "../components/Home/CompletedRideGraph";
 import CancelledRideGraph from "../components/Rides/CancelledRideGraph";
 import CompletedRides from "../components/Rides/CompletedRides";
 import CurrentRides from "../components/Rides/CurrentRides";

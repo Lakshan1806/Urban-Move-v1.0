@@ -29,7 +29,6 @@ function Navbar() {
 
   const navItems = [
     { path: "/dashboard", label: "Home", Icon: MdOutlineMapsHomeWork },
-    { path: "/dashboard/rides", label: "Rides", Icon: FaTaxi },
     { path: "/dashboard/rentals", label: "Rentals", Icon: TbCarSuvFilled },
     { path: "/dashboard/customers", label: "Customers", Icon: BsPersonBadge },
     { path: "/dashboard/drivers", label: "Drivers", Icon: BsPersonBadgeFill },
@@ -55,7 +54,6 @@ function Navbar() {
       allowedRole: Roles.SUPER_ADMIN,
     },
   ];
-  
 
   return (
     <nav className="bg-black h-dvh flex flex-col items-center py-5 justify-between top-0 bottom-0 sticky">
@@ -71,7 +69,11 @@ function Navbar() {
           )
           .map(({ path, label, Icon }) => {
             return (
-              <Link to={path} key={path} className="button-primary flex items-center gap-4">
+              <Link
+                to={path}
+                key={path}
+                className="button-primary flex items-center gap-4"
+              >
                 <Icon className="[&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                 {label}
               </Link>
