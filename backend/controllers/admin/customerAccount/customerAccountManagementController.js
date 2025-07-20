@@ -12,19 +12,19 @@ const userAccountManagementController = {
       });
     }
     const users = await User.find().select({
-      //name: 1,
       username: 1,
       phone: 1,
       email: 1,
       photo: 1,
       avatar: 1,
       authMethod: 1,
+      isTerminated: 1,
+      isAccountVerified: 1,
     });
 
     users.map((user) => {
-        //console.log(user.photo);
+      //console.log(user.photo);
       if (user.photo) {
-        
         user.photo = user.photo
           .replace(/\\/g, "/")
           .replace("backend/uploads", "/uploads");
