@@ -694,7 +694,7 @@ const acceptRide =(async () => {
 
   return (
     <div className="flex flex-col h-screen bg-gray-100">
-      <header className="bg-blue-600 text-white p-4 shadow-md">
+      <header className=" text-black p-4 shadow-md">
         <h1 className="text-xl font-bold">Driver Ride Dashboard</h1>
       </header>
 
