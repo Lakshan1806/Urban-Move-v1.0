@@ -45,6 +45,9 @@ function RouteSelect() {
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetpasswordPage />} />
         <Route path="/chat" element={<ChatAndCall/>} />
+        <Route path="/history" element={<TripHistory/>} />
+        <Route path="/payment" element={<PaymentPage/>} />
+
         <Route
           path="/profile"
           element={

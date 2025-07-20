@@ -69,8 +69,6 @@ const TripHistory = () => {
             <thead className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
               <tr>
                 <th className={thStyle}>#</th>
-                <th className={thStyle}>Ride ID</th>
-                <th className={thStyle}>Driver ID</th>
                 <th className={thStyle}>Pickup</th>
                 <th className={thStyle}>Dropoff</th>
                 <th className={thStyle}>Fare</th>
@@ -83,8 +81,6 @@ const TripHistory = () => {
               {tripHistory.map((trip, index) => (
                 <tr key={trip._id || index} className="hover:bg-orange-50">
                   <td className={tdStyle}>{index + 1}</td>
-                  <td className={tdStyle}>{trip.rideId}</td>
-                  <td className={tdStyle}>{trip.driverId}</td>
                   <td className={tdStyle}>{trip.pickup}</td>
                   <td className={tdStyle}>{trip.dropoff}</td>
                   <td className={tdStyle}>Rs. {trip.fare}</td>
