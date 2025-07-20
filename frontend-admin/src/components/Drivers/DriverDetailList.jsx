@@ -1,7 +1,7 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 
-function DriverDetails() {
+function DriverDetailList() {
   const [user, setUser] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -51,4 +51,4 @@ function DriverDetails() {
   );
 }
 
-export default DriverDetails;
+export default DriverDetailList;
