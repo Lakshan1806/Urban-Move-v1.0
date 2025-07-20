@@ -29,6 +29,7 @@ import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
 import callLogRoutes from './routes/callLogRoutes.js';
 import "./config/passport.js";
 import promotionRoutes from "./routes/promotionRoutes.js";
+import feedbackRoutes from "./routes/feedbackRoutes.js";
 
 dotenv.config();
 const PORT = 5000;
