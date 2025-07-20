@@ -1,19 +1,21 @@
-import React, { useState, useContext, useEffect } from "react";
+import  { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import imgcl from "../signup_photos/signupcustomer.svg";
 import imgl from "../signup_photos/linervector.svg";
-import arrow from "../signup_photos/arrowvector.svg";
 import { Link } from "react-router-dom";
 import Line1 from "../signup_photos/liner1.svg";
 import GoogleLoginButton from "../components/GoogleLogin";
 import OtpVerification from "../components/OtpVerfication";
 import { FaArrowRight } from "react-icons/fa";
+import getToastSeverity from "../utils/getToastSeverity";
+import { Toast } from "primereact/toast";
 
 const Login = () => {
   const { login } = useContext(AuthContext);
   const location = useLocation();
   const navigate = useNavigate();
+  const toast = useRef(null);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -22,7 +24,6 @@ const Login = () => {
   });
 
   const [step, setStep] = useState(1);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -51,7 +52,12 @@ const Login = () => {
 
   useEffect(() => {
     if (location.search.includes("account_terminated")) {
-      setError("Your account has been terminated");
+      toast.current?.show({
+        severity: "error",
+        summary: "Account Terminated",
+        detail: "Your account has been terminated",
+        life: 4000,
+      });
     }
   }, [location]);
 
@@ -66,16 +72,30 @@ const Login = () => {
 
   const handleCredentialsSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
-      await login.verifyCredentials(formData.username, formData.password);
+      const response = await login.verifyCredentials(
+        formData.username,
+        formData.password
+      );
+      toast.current?.show({
+        severity: getToastSeverity(response?.status || 200),
+        summary: "Credentials Verified",
+        detail: "Credentials verified successfully",
+        life: 3000,
+      });
       setStep(2);
     } catch (err) {
+      const status = err.response?.status;
       const errorMsg =
         err.response?.data?.message || err.message || "Login failed";
-      setError(errorMsg);
+      toast.current?.show({
+        severity: getToastSeverity(status || 500),
+        summary: status ? `Error ${status}` : "Login Error",
+        detail: errorMsg,
+        life: 4000,
+      });
     } finally {
       setLoading(false);
     }
@@ -83,44 +103,80 @@ const Login = () => {
 
   const handlePhoneSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
       if (!validateSriLankanPhone(formData.phone)) {
-        throw new Error(
-          "Invalid phone number format (0XXXXXXXXX or +94XXXXXXXXX)"
-        );
+        toast.current?.show({
+          severity: "warn",
+          summary: "Invalid Phone Number",
+          detail: "Invalid phone number format (0XXXXXXXXX or +94XXXXXXXXX)",
+          life: 4000,
+        });
+        setLoading(false);
+        return;
       }
-      await login.verifyPhone(formData.phone);
+      const response = await login.verifyPhone(formData.phone);
+      toast.current?.show({
+        severity: getToastSeverity(response?.status || 200),
+        summary: "Verification Code Sent",
+        detail: "Verification code has been sent to your phone",
+        life: 3000,
+      });
       setStep(3);
     } catch (err) {
+      const status = err.response?.status;
+
       const errorMsg =
         err.response?.data?.message ||
         err.message ||
         "Phone verification failed";
-      setError(errorMsg);
+      toast.current?.show({
+        severity: getToastSeverity(status || 500),
+        summary: status ? `Error ${status}` : "Verification Error",
+        detail: errorMsg,
+        life: 4000,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const handleOtpVerify = async (otp) => {
-    setError("");
     setLoading(true);
 
     try {
       const response = await login.verifyOtp(otp);
       if (response.success) {
-        navigate("/");
+        toast.current?.show({
+          severity: "success",
+          summary: "Login Successful",
+          detail: "Welcome! Redirecting to dashboard...",
+          life: 3000,
+        });
+        setTimeout(() => {
+          navigate("/");
+        }, 1500);
         return { success: true };
       }
+      toast.current?.show({
+        severity: "error",
+        summary: "Verification Failed",
+        detail: "OTP verification failed",
+        life: 4000,
+      });
       return { success: false };
     } catch (err) {
+      const status = err.response?.status;
+
       const errorMsg =
         err.response?.data?.message || err.message || "OTP verification failed";
-      setError(errorMsg);
-
+      toast.current?.show({
+        severity: getToastSeverity(status || 500),
+        summary: status ? `Error ${status}` : "OTP Error",
+        detail: errorMsg,
+        life: 4000,
+      });
       if (err.response?.data?.requiredStep) {
         const stepMap = {
           "verify-credentials": 1,
@@ -137,10 +193,25 @@ const Login = () => {
 
   const handleResendOtp = async () => {
     try {
-      await login.resendOtp();
+      const response = await login.resendOtp();
+      toast.current?.show({
+        severity: getToastSeverity(response?.status || 200),
+        summary: "OTP Resent",
+        detail: "Verification code has been resent to your phone",
+        life: 3000,
+      });
       return { success: true };
     } catch (err) {
-      setError(err.message || "Failed to resend OTP");
+      const status = err.response?.status;
+      const errorMsg =
+        err.response?.data?.message || err.message || "Failed to resend OTP";
+
+      toast.current?.show({
+        severity: getToastSeverity(status || 500),
+        summary: status ? `Error ${status}` : "Resend Error",
+        detail: errorMsg,
+        life: 4000,
+      });
       throw err;
     }
   };
@@ -164,7 +235,6 @@ const Login = () => {
             <h2 className="pt-[10px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
               Sign in as a Customer
             </h2>
-            {error && <p className="text-red-500 text-center">{error}</p>}
 
             <label className="block text-[18px] sm:text-[20px] p-0.5 font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
               Username
@@ -237,7 +307,6 @@ const Login = () => {
               </p>
 
               <img src={Line1} className="h-auto w-full" alt="Line" />
-              {error && <p className="text-red-500 text-center">{error}</p>}
 
               <input
                 type="tel"
@@ -268,7 +337,6 @@ const Login = () => {
           <OtpVerification
             onVerifyOtp={handleOtpVerify}
             onResendOtp={handleResendOtp}
-            error={error}
             loading={loading}
             title="Verify your Mobile Number"
             subtitle="We sent a verification code to your phone"
@@ -276,6 +344,7 @@ const Login = () => {
           />
         )}
       </div>
+      <Toast ref={toast} position="bottom-right" />
     </div>
   );
 };

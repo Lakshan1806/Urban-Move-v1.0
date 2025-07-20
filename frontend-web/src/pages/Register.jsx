@@ -1,17 +1,19 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import imgc from "../signup_photos/signupcustomer.svg";
 import { Link } from "react-router-dom";
 import imgl from "../signup_photos/linervector.svg";
-import arrow from "../signup_photos/arrowvector.svg";
 import Line1 from "../signup_photos/liner1.svg";
 import OtpInput from "../components/otp-input";
 import success from "../signup_photos/success.svg";
 import useCountdown from "../components/hooks/useCountdown";
 import GoogleLoginButton from "../components/GoogleLogin";
 import { FaArrowRight } from "react-icons/fa";
+import getToastSeverity from "../utils/getToastSeverity";
+import { Toast } from "primereact/toast";
 
 const Register = () => {
+  const toast = useRef(null);
   const { register, registrationStep, setRegistrationStep } =
     useContext(AuthContext);
 
@@ -24,7 +26,6 @@ const Register = () => {
     emailOTP: "",
   });
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const {
@@ -89,10 +90,20 @@ const Register = () => {
 
     try {
       await register.resendOtp("phone");
-      console.log("OTP resent to your phone");
+      toast.current.show({
+        severity: "success",
+        summary: "OTP Sent",
+        detail: "OTP has been resent to your phone",
+        life: 3000,
+      });
       startPhoneTimer();
     } catch (error) {
-      console.error(error.message || "Failed to resend OTP");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to resend OTP",
+        life: 4000,
+      });
     }
   };
 
@@ -101,10 +112,20 @@ const Register = () => {
 
     try {
       await register.resendOtp("email");
-      console.log("OTP resent to your email");
+      toast.current.show({
+        severity: "success",
+        summary: "OTP Sent",
+        detail: "OTP has been resent to your email",
+        life: 3000,
+      });
       startEmailTimer();
     } catch (error) {
-      console.error(error.message || "Failed to resend OTP");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to resend OTP",
+        life: 4000,
+      });
     }
   };
 
@@ -118,7 +139,6 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -127,35 +147,78 @@ const Register = () => {
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
 
         if (!strongPasswordRegex.test(formData.password)) {
-          setError(
-            "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character"
-          );
+          toast.current.show({
+            severity: "warn",
+            summary: "Invalid Password",
+            detail:
+              "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character",
+            life: 4000,
+          });
           setLoading(false);
           return;
         }
         await register.start(formData.username, formData.password);
+        toast.current.show({
+          severity: "success",
+          summary: "Registration Started",
+          detail: "Username and password set successfully",
+          life: 3000,
+        });
       } else if (registrationStep === 2) {
         if (!validateSriLankanPhone(formData.phoneNumber)) {
-          setError(
-            "Please enter a valid Sri Lankan phone number (0XXXXXXXXX or +94XXXXXXXXX)"
-          );
+          toast.current.show({
+            severity: "warn",
+            summary: "Invalid Phone Number",
+            detail:
+              "Please enter a valid Sri Lankan phone number (0XXXXXXXXX or +94XXXXXXXXX)",
+            life: 4000,
+          });
           setLoading(false);
           return;
         }
         await register.addPhone(formData.phoneNumber);
+        toast.current.show({
+          severity: "success",
+          summary: "OTP Sent",
+          detail: "Verification code sent to your phone",
+          life: 3000,
+        });
         startPhoneTimer();
       } else if (registrationStep === 3) {
         await register.verifyPhone(formData.otp);
+        toast.current.show({
+          severity: "success",
+          summary: "Phone Verified",
+          detail: "Phone number verified successfully",
+          life: 3000,
+        });
         resetPhoneTimer();
       } else if (registrationStep === 4) {
         await register.addEmail(formData.email);
+        toast.current.show({
+          severity: "success",
+          summary: "OTP Sent",
+          detail: "Verification code sent to your email",
+          life: 3000,
+        });
         startEmailTimer();
       } else if (registrationStep === 5) {
         await register.verifyEmail(formData.emailOTP);
+        toast.current.show({
+          severity: "success",
+          summary: "Email Verified",
+          detail: "Email address verified successfully",
+          life: 3000,
+        });
         resetEmailTimer();
       }
     } catch (err) {
-      setError(err.message || "Registration failed. Please try again.");
+      toast.current.show({
+        severity: "error",
+        summary: "Registration Error",
+        detail: err.message || "Registration failed. Please try again.",
+        life: 4000,
+      });
     } finally {
       setLoading(false);
     }
@@ -173,18 +236,12 @@ const Register = () => {
 
       <div className="flex flex-col px-0.5 z-10 lg:pt-[90px]">
         {registrationStep === 1 && (
-          <form onSubmit={handleSubmit} className="lg:w-[240px] pl-2">
+          <form onSubmit={handleSubmit} className="lg:w-[240px] pl-2 ">
             <h2 className="text-center text-[18px] sm:text-[22px]  font-medium bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
               Signup as a Customer
             </h2>
-            {error && (
-              <div>
-                <p className="text-red-600 text-center text-sm font-medium">
-                  {error}
-                </p>
-              </div>
-            )}
-            <label className="block text-[18px] sm:text-[20px] p-0.5 font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
+
+            <label className="block text-[18px] sm:text-[20px] p-0.5 font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text my-1">
               Username
             </label>
             <input
@@ -198,7 +255,7 @@ const Register = () => {
               disabled={loading}
             />
 
-            <label className="block text-[18px] sm:text-[20px] font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
+            <label className="block text-[18px] sm:text-[20px] font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text my-1">
               Password
             </label>
             <input
@@ -211,7 +268,7 @@ const Register = () => {
               required
               disabled={loading}
             />
-            <div className="button-wrapper">
+            <div className="button-wrapper m-3">
               <button
                 type="submit"
                 className="button-primary flex gap-2 justify-center items-center "
@@ -244,7 +301,6 @@ const Register = () => {
               </p>
 
               <img src={Line1} className="h-auto w-full" alt="Line" />
-              {error && <p className="text-red-500 text-center">{error}</p>}
 
               <input
                 type="tel"
@@ -283,7 +339,6 @@ const Register = () => {
                 We sent a verification code to your phone
               </p>
               <img src={Line1} className="h-auto w-full" />
-              {error && <p className="text-red-500 text-center">{error}</p>}
 
               <OtpInput
                 length={6}
@@ -327,7 +382,6 @@ const Register = () => {
                 We will send a verification code to this email
               </p>
               <img src={Line1} className="h-auto w-full" />
-              {error && <p className="text-red-500 text-center">{error}</p>}
 
               <input
                 type="email"
@@ -366,7 +420,6 @@ const Register = () => {
                 We sent a verification code to your email
               </p>
               <img src={Line1} className="h-auto w-full" />
-              {error && <p className="text-red-500 text-center">{error}</p>}
 
               <OtpInput
                 length={6}
@@ -416,6 +469,7 @@ const Register = () => {
           </div>
         )}
       </div>
+      <Toast ref={toast} position="bottom-right" />
     </div>
   );
 };

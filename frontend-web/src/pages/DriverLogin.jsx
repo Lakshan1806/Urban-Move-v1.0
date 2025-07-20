@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { DriverAuthContext } from "../context/driverAuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import imgd from "../signup_photos/signindriver.svg";
@@ -10,10 +10,13 @@ import Line1 from "../signup_photos/liner1.svg";
 import useCountdown from "../components/hooks/useCountdown";
 import GoogleLoginButton from "../components/GoogleLoginDriver";
 import { FaArrowRight } from "react-icons/fa";
+import getToastSeverity from "../utils/getToastSeverity";
+import { Toast } from "primereact/toast";
 
 const DriverLogin = () => {
   const { login } = useContext(DriverAuthContext);
   const location = useLocation();
+  const toast = useRef(null);
 
   const [formData, setFormData] = useState({
     username: "",
@@ -23,7 +26,6 @@ const DriverLogin = () => {
   });
 
   const [step, setStep] = useState(1);
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const {
@@ -59,18 +61,37 @@ const DriverLogin = () => {
 
   useEffect(() => {
     if (location.search.includes("account_terminated")) {
-      setError("Your account has been terminated");
+      toast.current?.show({
+        severity: "error",
+        summary: "Account Terminated",
+        detail: "Your account has been terminated",
+        life: 4000,
+      });
     }
   }, [location]);
 
   const handleResendPhoneOtp = async () => {
     if (isPhoneActive) return;
     try {
-      await login.resendOtp();
-      console.log("New OTP sent to your phone");
+      const response = await login.resendOtp();
+      toast.current?.show({
+        severity: getToastSeverity(response?.status || 200),
+        summary: "OTP Resent",
+        detail: "Verification code has been resent to your phone",
+        life: 3000,
+      });
       startPhoneTimer();
     } catch (err) {
-      console.error(err.message || "Failed to resend OTP");
+      const status = err.response?.status;
+      const errorMsg =
+        err.response?.data?.message || err.message || "Failed to resend OTP";
+
+      toast.current?.show({
+        severity: getToastSeverity(status || 500),
+        summary: status ? `Error ${status}` : "Resend Error",
+        detail: errorMsg,
+        life: 4000,
+      });
     }
   };
 
@@ -85,34 +106,66 @@ const DriverLogin = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
       if (step === 1) {
-        await login.verifyCredentials(formData.username, formData.password);
+        const response = await login.verifyCredentials(
+          formData.username,
+          formData.password
+        );
+        toast.current?.show({
+          severity: getToastSeverity(response?.status || 200),
+          summary: "Credentials Verified",
+          detail: "Username and password verified successfully",
+          life: 3000,
+        });
         setStep(2);
       } else if (step === 2) {
         if (!validateSriLankanPhone(formData.phone)) {
-          throw new Error(
-            "Invalid  phone number format (0XXXXXXXXX or +94XXXXXXXXX)"
-          );
+          toast.current?.show({
+            severity: "warn",
+            summary: "Invalid Phone Number",
+            detail:
+              "Please enter a valid Sri Lankan phone number (0XXXXXXXXX or +94XXXXXXXXX)",
+            life: 4000,
+          });
         }
-        await login.verifyPhone(formData.phone);
+        const response = await login.verifyPhone(formData.phone);
+        toast.current?.show({
+          severity: getToastSeverity(response?.status || 200),
+          summary: "Verification Code Sent",
+          detail: "OTP has been sent to your phone number",
+          life: 3000,
+        });
         startPhoneTimer();
         setStep(3);
       } else if (step === 3) {
         const response = await login.verifyOtp(formData.otp);
         if (response.success) {
+          toast.current?.show({
+            severity: "success",
+            summary: "Login Successful",
+            detail: "Welcome! You have been logged in successfully",
+            life: 3000,
+          });
           resetPhoneTimer();
         }
-        window.location.href = "http://localhost:5174/";
+        setTimeout(() => {
+          window.location.href = "http://localhost:5174/";
+        }, 1000);
       }
     } catch (err) {
+      const status = err.response?.status;
+
       const errorMsg =
         err.response?.data?.message || err.message || "Login failed";
-      setError(errorMsg);
-
+      toast.current?.show({
+        severity: getToastSeverity(status || 500),
+        summary: status ? `Error ${status}` : "Login Error",
+        detail: errorMsg,
+        life: 4000,
+      });
       if (err.response?.data?.requiredStep) {
         const stepMap = {
           "verify-credentials": 1,
@@ -143,7 +196,6 @@ const DriverLogin = () => {
               <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
                 Sign in as a driver
               </h2>
-              {error && <p className="text-red-500 text-center">{error}</p>}
 
               <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-start">
                 Username
@@ -174,7 +226,7 @@ const DriverLogin = () => {
                   disabled={loading}
                 />
               </div>
-              <div className="flex items-center mb-6">
+              <div className="flex items-center mb-3">
                 <Link
                   to="/forgot-password"
                   className="text-sm hover:underline flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text"
@@ -182,11 +234,8 @@ const DriverLogin = () => {
                   Forgot password?
                 </Link>
               </div>
-              {error && (
-                <p className="text-red-500 font-semibold mt-2">{error}</p>
-              )}
 
-              <div className="button-wrapper">
+              <div className="button-wrapper mb-3">
                 <button
                   type="submit"
                   className="button-primary flex gap-2 justify-center items-center "
@@ -221,7 +270,6 @@ const DriverLogin = () => {
                 </p>
 
                 <img src={Line1} className="h-auto w-full" />
-                {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <input
                   type="tel"
@@ -263,7 +311,6 @@ const DriverLogin = () => {
                   We sent a verification code to your phone
                 </p>
                 <img src={Line1} className="h-auto w-full" />
-                {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <OtpInput
                   length={6}
@@ -295,6 +342,7 @@ const DriverLogin = () => {
           )}
         </form>
       </div>
+      <Toast ref={toast} position="bottom-right" />
     </div>
   );
 };

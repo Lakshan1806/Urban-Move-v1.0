@@ -1,9 +1,8 @@
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { DriverAuthContext } from "../context/driverAuthContext";
 import imgd from "../signup_photos/signindriver.svg";
 import { Link } from "react-router-dom";
 import imgl from "../signup_photos/linervector.svg";
-import arrow from "../signup_photos/arrowvector.svg";
 import Line1 from "../signup_photos/liner1.svg";
 import OtpInput from "../components/otp-input";
 import success from "../signup_photos/success.svg";
@@ -12,9 +11,12 @@ import GoogleLoginButton from "../components/GoogleLoginDriver";
 import { FaCheck, FaFileUpload } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
+import getToastSeverity from "../utils/getToastSeverity";
+import { Toast } from "primereact/toast";
 
 const DriverRegister = () => {
   const navigate = useNavigate();
+  const toast = useRef(null);
 
   const { register, registrationStep, setRegistrationStep } =
     useContext(DriverAuthContext);
@@ -33,7 +35,6 @@ const DriverRegister = () => {
     insurance: null,
   });
 
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleDocumentChange = (type) => (e) => {
@@ -44,26 +45,46 @@ const DriverRegister = () => {
   };
   const handleDocumentSubmit = async () => {
     setLoading(true);
-    setError("");
     const isPdfFile = (file) => file && file.type === "application/pdf";
 
     try {
       const files = Object.values(documents).filter(Boolean);
       if (files.length < 3) {
-        setError("Please upload all required documents");
+        toast.current?.show({
+          severity: "warn",
+          summary: "Missing Documents",
+          detail: "Please upload all required documents",
+          life: 4000,
+        });
         return;
       }
       const nonPdfFiles = files.filter((file) => !isPdfFile(file));
       if (nonPdfFiles.length > 0) {
-        setError("Only PDF files are allowed.");
+        toast.current?.show({
+          severity: "warn",
+          summary: "Invalid File Type",
+          detail: "Only PDF files are allowed.",
+          life: 4000,
+        });
         return;
       }
       const result = await register.uploadDocuments(files);
       if (result.success) {
+        toast.current.show({
+          severity: getToastSeverity(result.status),
+          summary: `uploaddocuments ${result.status}`,
+          detail: result.data.message || "documents upload successful",
+          life: 3000,
+        });
         setRegistrationStep(7);
       }
     } catch (err) {
-      setError(err.message || "Document upload failed");
+      toast.current?.show({
+        severity: "error",
+        summary: "Upload Failed",
+        detail: err.message || "Document upload failed",
+        life: 4000,
+      });
     } finally {
       setLoading(false);
     }
@@ -85,6 +106,12 @@ const DriverRegister = () => {
 
   useEffect(() => {
     if (registrationStep === 8) {
+      toast.current?.show({
+        severity: "success",
+        summary: "Account create Successful",
+        detail: "Welcome! You have been Account created in successfully",
+        life: 3000,
+      });
       const timeout = setTimeout(() => {
         window.location.href = "http://localhost:5174/";
       }, 3000);
@@ -135,10 +162,20 @@ const DriverRegister = () => {
 
     try {
       await register.resendOtp("phone");
-      console.log("OTP resent to your phone");
+      toast.current.show({
+        severity: "success",
+        summary: "OTP Sent",
+        detail: "OTP has been resent to your phone",
+        life: 3000,
+      });
       startPhoneTimer();
     } catch (error) {
-      console.error(error.message || "Failed to resend OTP");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to resend OTP",
+        life: 4000,
+      });
     }
   };
 
@@ -147,10 +184,20 @@ const DriverRegister = () => {
 
     try {
       await register.resendOtp("email");
-      console.log("OTP resent to your email");
+      toast.current.show({
+        severity: "success",
+        summary: "OTP Sent",
+        detail: "OTP has been resent to your email",
+        life: 3000,
+      });
       startEmailTimer();
     } catch (error) {
-      console.error(error.message || "Failed to resend OTP");
+      toast.current.show({
+        severity: "error",
+        summary: "Error",
+        detail: error.message || "Failed to resend OTP",
+        life: 4000,
+      });
     }
   };
 
@@ -164,7 +211,6 @@ const DriverRegister = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -173,35 +219,80 @@ const DriverRegister = () => {
           /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
 
         if (!strongPasswordRegex.test(formData.password)) {
-          setError(
-            "Password must be at least 8 characters long, contain uppercase and lowercase letters, a number, and a special character"
-          );
+          toast.current?.show({
+            severity: "warn",
+            summary: "Invalid Password",
+            detail:
+              "Password must be at least 6 characters long, contain uppercase and lowercase letters, a number, and a special character",
+            life: 4000,
+          });
           setLoading(false);
           return;
         }
         await register.start(formData.username, formData.password);
+        toast.current?.show({
+          severity: "success",
+          summary: "Account Created",
+          detail: "Username and password set successfully",
+          life: 3000,
+        });
       } else if (registrationStep === 2) {
         if (!validateSriLankanPhone(formData.phoneNumber)) {
-          setError(
-            "Please enter a valid Sri Lankan phone number (0XXXXXXXXX or +94XXXXXXXXX)"
-          );
+          toast.current?.show({
+            severity: "warn",
+            summary: "Invalid Phone Number",
+            detail:
+              "Please enter a valid Sri Lankan phone number (0XXXXXXXXX or +94XXXXXXXXX)",
+            life: 4000,
+          });
           setLoading(false);
           return;
         }
         await register.addPhone(formData.phoneNumber);
+        toast.current.show({
+          severity: "success",
+          summary: "OTP Sent",
+          detail: "Verification code sent to your phone",
+          life: 3000,
+        });
         startPhoneTimer();
       } else if (registrationStep === 3) {
         await register.verifyPhone(formData.otp);
+        toast.current.show({
+          severity: "success",
+          summary: "Phone Verified",
+          detail: "Phone number verified successfully",
+          life: 3000,
+        });
         resetPhoneTimer();
       } else if (registrationStep === 4) {
         await register.addEmail(formData.email);
+        toast.current.show({
+          severity: "success",
+          summary: "OTP Sent",
+          detail: "Verification code sent to your email",
+          life: 3000,
+        });
         startEmailTimer();
       } else if (registrationStep === 5) {
         await register.verifyEmail(formData.emailOTP);
+        toast.current.show({
+          severity: "success",
+          summary: "Email Verified",
+          detail: "Email address verified successfully",
+          life: 3000,
+        });
         resetEmailTimer();
       }
     } catch (err) {
-      setError(err.message || "Registration failed. Please try again.");
+      toast.current?.show({
+        severity: getToastSeverity(err.response?.status || 500),
+        summary: err.response?.status
+          ? `Error ${err.response.status}`
+          : "Registration Error",
+        detail: err.message || "Registration failed. Please try again.",
+        life: 4000,
+      });
     } finally {
       setLoading(false);
     }
@@ -224,7 +315,6 @@ const DriverRegister = () => {
               <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-center">
                 Signup as a driver
               </h2>
-              {error && <p className="text-red-500 text-center">{error}</p>}
 
               <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-start">
                 Username
@@ -253,11 +343,8 @@ const DriverRegister = () => {
                 required
                 disabled={loading}
               />
-              {error && (
-                <p className="text-red-500 font-semibold mt-2">{error}</p>
-              )}
 
-              <div className="button-wrapper">
+              <div className="button-wrapper my-2">
                 <button
                   type="submit"
                   className="button-primary flex gap-2 justify-center items-center"
@@ -292,7 +379,6 @@ const DriverRegister = () => {
                 </p>
 
                 <img src={Line1} className="h-auto w-full" />
-                {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <input
                   type="text"
@@ -333,7 +419,6 @@ const DriverRegister = () => {
                   We sent a verification code to your phone
                 </p>
                 <img src={Line1} className="h-auto w-full" />
-                {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <OtpInput
                   length={6}
@@ -373,14 +458,12 @@ const DriverRegister = () => {
                   className="text-grad-stroke font-[300] text-[36px]"
                   data-text="Enter your Email Address"
                 >
-                  {" "}
                   Enter your Email Address
                 </h1>
                 <p className="font-[700] text-[20px]">
                   We will send a verification code to this email
                 </p>
                 <img src={Line1} className="h-auto w-full" />
-                {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <input
                   type="email"
@@ -421,7 +504,6 @@ const DriverRegister = () => {
                   We sent a verification code to your email
                 </p>
                 <img src={Line1} className="h-auto w-full" />
-                {error && <p className="text-red-500 text-center">{error}</p>}
 
                 <OtpInput
                   length={6}
@@ -543,8 +625,6 @@ const DriverRegister = () => {
                 />
               </div>
 
-              {error && <p className="text-red-500 text-center">{error}</p>}
-
               <div className="button-wrapper">
                 <button
                   type="button"
@@ -607,6 +687,7 @@ const DriverRegister = () => {
           </div>
         )}
       </div>
+      <Toast ref={toast} position="bottom-right" />
     </div>
   );
 };
