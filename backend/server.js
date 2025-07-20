@@ -32,7 +32,7 @@ import callLogRoutes from './routes/callLogRoutes.js';
 import "./config/passport.js";
 import promotionRoutes from "./routes/promotionRoutes.js";
 import { initSocket, getIO } from './utils/socket.js';
-import fetchRoute  from './routes/fetchRoute.js';
+
 
 
 dotenv.config();
