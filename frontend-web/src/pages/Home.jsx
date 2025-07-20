@@ -78,7 +78,7 @@ function Home() {
     <div className="h-full flex flex-col">
       <div className="flex-1 flex flex-col overflow-y-auto snap-y snap-mandatory scroll-smooth min-h-0">
 
-        <section className="snap-start min-h-screen pt-24 mb-24 flex justify-between items-center w-full px-10">
+        <section className="snap-start min-h-screen pt-20 mb-24 flex justify-between items-center w-full px-10">
           {carData.map(({ image, path }, index) => (
             <div
               key={index}
