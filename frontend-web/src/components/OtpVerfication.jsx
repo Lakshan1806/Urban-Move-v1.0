@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import OtpInput from "./otp-input";
 import Line1 from "../signup_photos/liner1.svg";
 import arrow from "../signup_photos/arrowvector.svg";
+import { FaArrowRight } from "react-icons/fa";
 
 // Custom useCountdown hook
 const useCountdown = (initialSeconds = 30) => {
