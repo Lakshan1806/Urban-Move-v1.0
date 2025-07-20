@@ -76,6 +76,11 @@ adminRoutes.get(
   adminController.promotion.getBranchLocations
 );
 
+adminRoutes.get(
+  "/get_rent_bookings",
+  adminController.promotion.getRentBookings
+);
+
 adminRoutes.post(
   "/add_branch_location",
   adminController.promotion.addBranchLocation

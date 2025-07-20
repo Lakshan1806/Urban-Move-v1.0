@@ -2,6 +2,7 @@ import jwt from "jsonwebtoken";
 import Promotion from "../../../models/promotion.model.js";
 import Ride from "../../../models/RideModel.js";
 import BranchLocation from "../../../models/branchLocation.model.js";
+import Booking from "../../../models/carBookings.model.js";
 
 const promoManagementController = {
   addPromotion: async (req, res) => {
@@ -214,12 +215,12 @@ const promoManagementController = {
   },
 
   getBranchLocations: async (req, res) => {
-    /* const { token } = req.cookies;
+    const { token } = req.cookies;
     if (!token) {
       return res.status(401).json({ error: "No token provided" });
-    } */
+    }
     try {
-      //jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
       const locations = await BranchLocation.find();
 
@@ -253,6 +254,25 @@ const promoManagementController = {
     } catch (err) {
       console.error(err);
       return res.status(500).json({ error: "Failed to save location" });
+    }
+  },
+
+  getRentBookings: async (req, res) => {
+    const { token } = req.cookies;
+    /* if (!token) {
+      return res.status(401).json({ error: "No token provided" });
+    } */
+    try {
+      //jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+
+      const locations = await Booking.find();
+
+      return res.json(locations);
+    } catch (err) {
+      console.error(err);
+      return res
+        .status(500)
+        .json({ error: "Failed to fetch branch locations" });
     }
   },
 };

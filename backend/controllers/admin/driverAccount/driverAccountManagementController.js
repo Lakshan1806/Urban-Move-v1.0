@@ -1,4 +1,4 @@
-import User from "../../../models/usermodel.js";
+import Driver from "../../../models/driver.models.js";
 import jwt from "jsonwebtoken";
 
 const driverAccountManagementController = {
@@ -11,8 +11,7 @@ const driverAccountManagementController = {
         }
       });
     }
-    const users = await User.find().select({
-      //name: 1,
+    const drivers = await Driver.find().select({
       username: 1,
       phone: 1,
       email: 1,
@@ -21,17 +20,16 @@ const driverAccountManagementController = {
       authMethod: 1,
     });
 
-    users.map((user) => {
-        //console.log(user.photo);
-      if (user.photo) {
-        
-        user.photo = user.photo
+    drivers.map((driver) => {
+      //console.log(user.photo);
+      if (driver.photo) {
+        driver.photo = driver.photo
           .replace(/\\/g, "/")
           .replace("backend/uploads", "/uploads");
       }
     });
 
-    res.json(users);
+    res.json(drivers);
   },
 };
 
