@@ -8,7 +8,6 @@ import Car30 from "../assets/home_car3 0.svg";
 const BACKEND_BASE_URL = "http://localhost:5000";
 import FeedbackSlideshow from "../components/Feedback/FeedbackSlideshow";
 
-
 function Home() {
   const navigate = useNavigate();
   const [activePromos, setActivePromos] = useState([]);
@@ -38,7 +37,9 @@ function Home() {
   useEffect(() => {
     const fetchPromos = async () => {
       try {
-        const response = await axios.get(`${BACKEND_BASE_URL}/api/promotions/active`);
+        const response = await axios.get(
+          `${BACKEND_BASE_URL}/api/promotions/active`
+        );
         if (response.data?.length > 0) {
           setActivePromos(response.data);
 
@@ -84,9 +85,9 @@ function Home() {
   };
 
   return (
-    <div className="h-screen overflow-y-auto snap-y snap-mandatory scroll-smooth">
-      <div ref={topRef} className="snap-start flex flex-col items-center w-full px-10 h-screen pt-10">
-        <div className="flex justify-between items-center w-full">
+    <div className="h-full flex flex-col ">
+      <div className="flex-1 flex flex-col overflow-y-auto  min-h-0 snap-y snap-mandatory scroll-smooth h-full">
+        <div className="flex justify-between items-center w-full snap-start h-full">
           {[Car20, Car10, Car30].map((car, index) => {
             const paths = ["/ride", "/rent", "/drive"];
 
@@ -95,7 +96,11 @@ function Home() {
                 key={index}
                 className="relative w-[380px] h-[570px] overflow-hidden border-4 border-black rounded-3xl transition-transform duration-300 ease-in-out hover:scale-110"
               >
-                <img src={car} alt={`Car ${index + 1}`} className="w-full h-full object-cover" />
+                <img
+                  src={car}
+                  alt={`Car ${index + 1}`}
+                  className="w-full h-full object-cover"
+                />
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="p-[2px] rounded-2xl bg-gradient-to-r from-[#FF7C1D] to-[#FFD12E] transition-transform duration-300 ease-in-out hover:scale-105">
                     <button
@@ -110,66 +115,89 @@ function Home() {
             );
           })}
         </div>
-      </div>
 
-      <div ref={middleRef} className="snap-start flex items-center justify-center w-full h-screen">
-        <div className="relative w-[1000px] h-[390px] overflow-hidden rounded-3xl border border-gray-300 shadow-lg">
-          {imageSlides.length > 0 ? (
-            imageSlides.map((promo, index) => (
-              <img
-                key={promo._id}
-                src={promo.imageUrl}
-                alt={`Promo ${promo.code}`}
-                className={`absolute top-0 left-0 w-full h-full object-cover rounded-3xl transition-all duration-1000 ease-in-out ${
-                  index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
-                }`}
-              />
-            ))
-          ) : showTextFallback && activePromos.length > 0 ? (
-            activePromos.map((promo, index) => (
-              <div
-                key={promo._id}
-                className={`absolute top-0 left-0 w-full h-full flex items-center justify-center text-center bg-white text-black rounded-3xl px-10 transition-opacity duration-1000 ${
-                  index === currentIndex ? "opacity-100 z-10" : "opacity-0 z-0 pointer-events-none"
-                }`}
-              >
-                <div>
-                  <h2 className="text-4xl font-bold mb-4">PromoCode: {promo.code}</h2>
-                  <p className="text-2xl font-medium">
-                    {promo.discountValue}
-                    {promo.discountType === "Percentage" ? "%" : " LKR"} Off
-                  </p>
+        <div
+          ref={middleRef}
+          className="snap-start flex items-center justify-center w-full h-full"
+        >
+          <div className="relative w-[1000px] h-[390px] overflow-hidden rounded-3xl border border-gray-300 shadow-lg">
+            {imageSlides.length > 0 ? (
+              imageSlides.map((promo, index) => (
+                <img
+                  key={promo._id}
+                  src={promo.imageUrl}
+                  alt={`Promo ${promo.code}`}
+                  className={`absolute top-0 left-0 w-full h-full object-cover rounded-3xl transition-all duration-1000 ease-in-out ${
+                    index === currentIndex
+                      ? "opacity-100 z-10"
+                      : "opacity-0 z-0 pointer-events-none"
+                  }`}
+                />
+              ))
+            ) : showTextFallback && activePromos.length > 0 ? (
+              activePromos.map((promo, index) => (
+                <div
+                  key={promo._id}
+                  className={`absolute top-0 left-0 w-full h-full flex items-center justify-center text-center bg-white text-black rounded-3xl px-10 transition-opacity duration-1000 ${
+                    index === currentIndex
+                      ? "opacity-100 z-10"
+                      : "opacity-0 z-0 pointer-events-none"
+                  }`}
+                >
+                  <div>
+                    <h2 className="text-4xl font-bold mb-4">
+                      PromoCode: {promo.code}
+                    </h2>
+                    <p className="text-2xl font-medium">
+                      {promo.discountValue}
+                      {promo.discountType === "Percentage" ? "%" : " LKR"} Off
+                    </p>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="flex items-center justify-center w-full h-full text-lg text-gray-600">
+                No active promotions available.
               </div>
-            ))
-          ) : (
-            <div className="flex items-center justify-center w-full h-full text-lg text-gray-600">
-              No active promotions available.
-            </div>
-          )}
+            )}
+          </div>
         </div>
-      </div>
 
-      <div ref={bottomRef} className="snap-start flex flex-col items-center justify-center w-full text-center h-screen px-10">
-        <p className="text-black text-[50px] font-inter font-normal break-words">
-          At URBANMOVE Sri Lanka, we transform the way you travel for the better
-        </p>
-        <div className="text-black text-[30px] font-inter font-normal break-words mt-8">
-          <p>
-            Movement is our passion; it fuels our purpose. Every day, we wake up
-            <br />
-            driven to enhance your journey. We strive to redefine what it means <br />
-            to travel seamlessly - whether you’re exploring the vibrant streets of <br />
-            Colombo or heading to the serene beaches of Galle. We’re here to <br />
-            connect you to every destination, every opportunity, brand every <br />
-            adventure you seek. With us, your ride is not just a trip; it’s a <br />
-            commitment to comfort, safety, and efficiency. Experience the <br />
-            freedom of real-time travel, powered by our dedicated team, all at <br />
-            the incredible speed of now.
+        <div
+          ref={bottomRef}
+          className="snap-start flex flex-col items-center justify-center w-full text-center h-full px-10"
+        >
+          <p className="text-black text-[50px] font-inter font-normal break-words">
+            At URBANMOVE Sri Lanka, we transform the way you travel for the
+            better
           </p>
+          <div className="text-black text-[30px] font-inter font-normal break-words mt-8">
+            <p>
+              Movement is our passion; it fuels our purpose. Every day, we wake
+              up
+              <br />
+              driven to enhance your journey. We strive to redefine what it
+              means <br />
+              to travel seamlessly - whether you’re exploring the vibrant
+              streets of <br />
+              Colombo or heading to the serene beaches of Galle. We’re here to{" "}
+              <br />
+              connect you to every destination, every opportunity, brand every{" "}
+              <br />
+              adventure you seek. With us, your ride is not just a trip; it’s a{" "}
+              <br />
+              commitment to comfort, safety, and efficiency. Experience the{" "}
+              <br />
+              freedom of real-time travel, powered by our dedicated team, all at{" "}
+              <br />
+              the incredible speed of now.
+            </p>
+          </div>
+        </div>
+        <div className="snap-start h-full">
+          <FeedbackSlideshow />
         </div>
       </div>
-    <FeedbackSlideshow />
     </div>
   );
 }
