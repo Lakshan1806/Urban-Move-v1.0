@@ -71,9 +71,9 @@ const DriverRegister = () => {
       const result = await register.uploadDocuments(files);
       if (result.success) {
         toast.current.show({
-          severity: getToastSeverity(result.status),
-          summary: `uploaddocuments ${result.status}`,
-          detail: result.data.message || "documents upload successful",
+          severity: "success",
+          summary: "Upload Successful",
+          detail: result.data?.message || "documents upload successful",
           life: 3000,
         });
         setRegistrationStep(7);
