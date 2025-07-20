@@ -41,11 +41,11 @@ const rideSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'in_progress', 'completed', 'cancelled', 'scheduled','booking_accepted'],
+    enum: ['pending', 'in_progress', 'completed', 'cancelled', 'scheduled','accepted'],
     default: 'pending'
   },
   scheduledTime: {
-    type: Date
+    type: Date 
   },
   steps: [{
     distance: { text: String, value: Number },
@@ -56,7 +56,6 @@ const rideSchema = new mongoose.Schema({
       points: String
     },
     start_location: { lat: Number, lng: Number },
-    travel_mode: String
   }],
   lastUpdated: {
     type: Date,

@@ -1,6 +1,7 @@
 import express from "express";
 const rideRoutes = express.Router();
 
+
 import { 
   createRide,
   startTracking, 
@@ -17,5 +18,6 @@ rideRoutes.get('/status/:rideId', userAuth, getRideStatus);
 rideRoutes.post('/update-location', userAuth, updateDriverLocation);
 rideRoutes.post('/complete', userAuth, completeRide);
 rideRoutes.post('/cancel/:rideId', userAuth, cancelRide);  
+
 
 export default rideRoutes;

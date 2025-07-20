@@ -90,6 +90,7 @@ export const getLatestRideDetails = async (req, res) => {
         status: ride.status,
         scheduleTime: ride.scheduledTime,
         userId: ride.userId, 
+        rideId:ride._id,
         userDetails: {
           name: User.username,
           email: ride.userId?.email,
