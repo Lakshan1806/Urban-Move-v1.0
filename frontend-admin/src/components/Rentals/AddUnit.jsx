@@ -1,11 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
+import { Dropdown } from "primereact/dropdown";
 
 function AddUnit({ onSaveForm, carID }) {
   const [vin, setVin] = useState("");
   const [licensePlate, setLicensePlate] = useState("");
   const [color, setColor] = useState("");
-  const [location, setLocation] = useState("");
+  const [location, setLocation] = useState(null);
+  const [branches, setBranches] = useState([]);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("/admin/get_all_branches");
+        setBranches(response.data);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+    const intervalId = setInterval(fetchData, 10000);
+    return () => clearInterval(intervalId);
+  }, []);
 
   const handleSave = async () => {
     const newCarData = { vin, licensePlate, color, location, carID };
@@ -50,15 +67,17 @@ function AddUnit({ onSaveForm, carID }) {
         />
       </div>
 
-      <div>
-        <label htmlFor="vin">Location:</label>
-        <input
-          type="text"
-          id="location"
+      <div className="card flex justify-content-center">
+        <Dropdown
           value={location}
           onChange={(e) => setLocation(e.target.value)}
-          required
-          placeholder="Enter Location"
+          options={branches}
+          optionLabel="location"
+          optionValue="location"
+          placeholder="Select a City"
+          className="w-full md:w-14rem"
+          checkmark={true}
+          highlightOnSelect={false}
         />
       </div>
       <div className="flex flex-row items-center justify-center gap-5">

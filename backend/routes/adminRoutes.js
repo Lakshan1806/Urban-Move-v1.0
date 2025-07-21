@@ -64,6 +64,7 @@ adminRoutes.get(
   adminController.car.get.getAllDeletedCarUnits
 );
 adminRoutes.get("/get_all_car_units", adminController.car.get.getAllCarUnits);
+adminRoutes.get("/get_all_branches", adminController.car.get.getAllBranches);
 adminRoutes.get(
   "/get_all_promotions",
   adminController.promotion.getAllPromotions

@@ -3,6 +3,7 @@ import CarModel from "../../../models/carModel.model.js";
 import DeletedCarModel from "../../../models/recentlyDeletedCar.model.js";
 import DeletedCarUnit from "../../../models/recentlyDeletedUnit.model.js";
 import CarInstance from "../../../models/carInstance.model.js";
+import BranchLocation from "../../../models/branchLocation.model.js";
 
 const getController = {
   getAllCarModels: async (req, res) => {
@@ -83,6 +84,24 @@ const getController = {
     });
 
     res.json(units);
+  },
+
+  getAllBranches: async (req, res) => {
+    const { token } = req.cookies;
+    const { id } = req.query;
+
+    if (token) {
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, {}, (err, user) => {
+        if (err) {
+          return res.status(403).json({ error: "Token verification failed" });
+        }
+      });
+    }
+    const locations = await BranchLocation.find().select({
+      location: 1,
+    });
+
+    res.json(locations);
   },
 
   getAllDeletedCarUnits: async (req, res) => {
