@@ -1,7 +1,8 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
+import { FaArrowCircleRight } from "react-icons/fa";
 
-function DriverDetailList() {
+function DriverDetailList({onSelect}) {
   const [user, setUser] = useState([]);
   useEffect(() => {
     const fetchData = async () => {
@@ -41,8 +42,15 @@ function DriverDetailList() {
                 <p>Phone: {user.phone}</p>
               </div>
             </div>
-            <div className="button-wrapper">
-              <button className="button-primary">Terminate</button>
+            <div
+              className="button-wrapper"
+              onClick={() => {
+                onSelect(user);
+              }}
+            >
+              <button className="button-primary">
+                <FaArrowCircleRight className="[&>path]:fill-[url(#icon-gradient)]" />
+              </button>
             </div>
           </div>
         );
