@@ -7,7 +7,7 @@ function DriverDetail({ driver, onUpdate }) {
 
   const handleTerminate = async () => {
     try {
-      const response = await axios.patch("/admin/terminate_user", {
+      const response = await axios.patch("/admin/terminate_driver", {
         _id: driver._id,
       });
       onUpdate(response.data);
@@ -18,7 +18,7 @@ function DriverDetail({ driver, onUpdate }) {
 
   const handleRevoke = async () => {
     try {
-      const response = await axios.patch("/admin/revoke_termination", {
+      const response = await axios.patch("/admin/revoke_driver_termination", {
         _id: driver._id,
       });
       onUpdate(response.data);
@@ -44,9 +44,7 @@ function DriverDetail({ driver, onUpdate }) {
       </h3>
       <div className="flex w-full justify-center">
         <img
-          src={
-            driver.authMethod === "google" ? driver.avatar : driver.photo
-          }
+          src={driver.authMethod === "google" ? driver.avatar : driver.photo}
           alt="profile image"
           className="w-48 h-48 rounded-full object-cover"
         />
@@ -60,6 +58,10 @@ function DriverDetail({ driver, onUpdate }) {
       <p>
         Verification :{driver.isAccountVerified ? "Verified" : "Not Verified"}
       </p>
+
+      <p>Vehicle Details</p>
+      <p>Colour : {driver.carColor}</p>
+      <p>Number Plate : {driver.carNumber}</p>
       {driver.isTerminated ? (
         <div className="button-wrapper">
           <button
@@ -112,10 +114,7 @@ function DriverDetail({ driver, onUpdate }) {
       {showConfirmRevoke && (
         <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
-            <p className="mb-4">
-              {" "}
-              Revoke Termination of this driver Profile ?
-            </p>
+            <p className="mb-4"> Revoke Termination of this driver Profile ?</p>
             <div className="flex justify-end gap-2">
               <button
                 className="px-4 py-2 bg-gray-200 rounded"
