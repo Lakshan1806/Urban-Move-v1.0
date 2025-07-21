@@ -39,6 +39,8 @@ adminRoutes.post(
 
 adminRoutes.get("/get_all_admin", adminController.admin.getAllAdmin);
 adminRoutes.get("/get_all_user", adminController.customer.getAllUser);
+adminRoutes.patch("/terminate_user", adminController.customer.terminateUser);
+adminRoutes.patch("/revoke_termination", adminController.customer.revokeUserTermination);
 adminRoutes.get("/get_all_driver", adminController.driver.getAllDriver);
 adminRoutes.get("/profile", authenticateToken, adminController.auth.profile);
 adminRoutes.get("/account_info", adminController.admin.accountInfo);
