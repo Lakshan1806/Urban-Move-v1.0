@@ -1,25 +1,27 @@
 import React from 'react';
 
 const FeedbackSlide = ({ feedback }) => {
+  const userPhoto = feedback?.userId?.photo;
+  const username = feedback?.userId?.username || "Anonymous";
+  const userInitial = username.charAt(0).toUpperCase();
+
   return (
-    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto border border-gray-300 ">
+    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto border border-gray-300">
       <div className="flex items-center mb-4">
-       {feedback.userId.photo ? (
-          <img 
-            src={feedback.userId.photo} 
-            alt={feedback.userId.username} 
+        {userPhoto ? (
+          <img
+            src={userPhoto}
+            alt={username}
             className="w-12 h-12 rounded-full object-cover mr-4"
           />
         ) : (
           <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center mr-4">
-            <span className="text-gray-600 text-lg">
-              {feedback.userId.username.charAt(0).toUpperCase()}
-            </span>
+            <span className="text-gray-600 text-lg">{userInitial}</span>
           </div>
         )}
-        <h3 className="text-lg font-semibold">{feedback.userId.username}</h3>
+        <h3 className="text-lg font-semibold">{username}</h3>
       </div>
-      
+
       <div className="flex mb-4">
         {[...Array(5)].map((_, i) => (
           <svg
@@ -32,7 +34,7 @@ const FeedbackSlide = ({ feedback }) => {
           </svg>
         ))}
       </div>
-      
+
       <p className="text-gray-700 italic">"{feedback.note}"</p>
       <p className="text-sm text-gray-500 mt-2">
         {new Date(feedback.createdAt).toLocaleDateString()}
