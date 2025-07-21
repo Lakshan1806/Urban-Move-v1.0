@@ -138,10 +138,10 @@ function Home() {
         </section>
 
         <section className="snap-start min-h-screen mb-24 flex flex-col items-center justify-center w-full text-center px-10">
-          <p className="text-black text-[50px] font-inter font-normal break-words">
+          <p className="text-black text-[30px] font-inter font-normal break-words">
             At URBANMOVE Sri Lanka, we transform the way you travel for the better
           </p>
-          <div className="text-black text-[30px] font-inter font-normal break-words mt-8">
+          <div className="text-black text-[20px] font-inter font-normal break-words mt-8">
             <p>
               Movement is our passion; it fuels our purpose. Every day, we wake up<br />
               driven to enhance your journey. We strive to redefine what it means<br />
