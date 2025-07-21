@@ -53,9 +53,11 @@ function BranchLocations() {
   };
 
   return (
-    <div className="col-span-6 row-span-6 pb-0 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col gap-4 overflow-auto">
-      <div>
-        <h2 className="text-xl font-bold">Add Branch Location</h2>
+    <div className="col-span-6 row-span-6 pb-0 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex gap-4 overflow-hidden">
+      <div className="p-5">
+        <div className="sticky top-0 z-20 bg-white/30 rounded-t-xl backdrop-blur-md px-4 py-4 flex justify-center">
+          <h3 className="text-sm font-bold uppercase">Branch Locations</h3>
+        </div>
 
         <div className="flex flex-col gap-1">
           <label htmlFor="branch" className="font-medium">
@@ -69,7 +71,7 @@ function BranchLocations() {
             onChange={(e) => {
               setBranch(e.target.value);
             }}
-            placeholder="e.g. IT Faculty"
+            placeholder="e.g. Colombo"
             className="rounded border px-3 py-2"
             required
           />
@@ -115,11 +117,11 @@ function BranchLocations() {
           </div>
         </div>
 
-        <button onClick={handleSubmit} className="button-wrapper">
+        <button onClick={handleSubmit} className="button-wrapper m-4">
           <div className="button-primary">Save location</div>
         </button>
       </div>
-      <div>
+      <div className="overflow-auto h-full">
         {locations.map((location) => {
           const [lng, lat] = location.position.coordinates;
           const src = `https://maps.google.com/maps?q=${lat},${lng}&z=${

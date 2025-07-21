@@ -38,7 +38,7 @@ function CustomerDetail({ customer, onUpdate }) {
     );
   }
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-4 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto gap-4">
       <h3 className="flex justify-center text-sm font-bold uppercase">
         profile
       </h3>

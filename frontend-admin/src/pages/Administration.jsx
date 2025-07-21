@@ -16,7 +16,7 @@ function Administration() {
       <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
         <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full">
           <AdminList />
-          <AdminCard />
+          
           <AddAdmin />
         </div>
       </div>

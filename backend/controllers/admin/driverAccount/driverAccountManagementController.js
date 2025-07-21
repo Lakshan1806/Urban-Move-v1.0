@@ -20,16 +20,20 @@ const driverAccountManagementController = {
       authMethod: 1,
       isTerminated: 1,
       isAccountVerified: 1,
+      driverVerified: 1,
+      driverDocuments: 1,
       carColor: 1,
       carNumber: 1,
     });
 
-    drivers.map((driver) => {
-      //console.log(user.photo);
-      if (driver.photo) {
-        driver.photo = driver.photo
-          .replace(/\\/g, "/")
-          .replace("backend/uploads", "/uploads");
+    drivers.forEach((driver) => {
+      if (
+        Array.isArray(driver.driverDocuments) &&
+        driver.driverDocuments.length
+      ) {
+        driver.driverDocuments = driver.driverDocuments.map((docPath) =>
+          docPath.replace(/\\/g, "/").replace("backend/uploads", "/uploads")
+        );
       }
     });
 
@@ -58,6 +62,7 @@ const driverAccountManagementController = {
         authMethod: 1,
         isTerminated: 1,
         isAccountVerified: 1,
+        driverVerified: 1,
         carColor: 1,
         carNumber: 1,
       });
@@ -91,6 +96,7 @@ const driverAccountManagementController = {
         authMethod: 1,
         isTerminated: 1,
         isAccountVerified: 1,
+        driverVerified: 1,
         carColor: 1,
         carNumber: 1,
       });

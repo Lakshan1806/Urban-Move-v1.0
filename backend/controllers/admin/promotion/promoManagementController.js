@@ -3,6 +3,9 @@ import Promotion from "../../../models/promotion.model.js";
 import Ride from "../../../models/RideModel.js";
 import BranchLocation from "../../../models/branchLocation.model.js";
 import Booking from "../../../models/carBookings.model.js";
+import CarInstance from "../../../models/carInstance.model.js";
+import CarModel from "../../../models/carModel.model.js";
+import User from "../../../models/usermodel.js";
 
 const promoManagementController = {
   addPromotion: async (req, res) => {
@@ -259,20 +262,34 @@ const promoManagementController = {
 
   getRentBookings: async (req, res) => {
     const { token } = req.cookies;
-    /* if (!token) {
+    if (!token) {
       return res.status(401).json({ error: "No token provided" });
-    } */
+    }
     try {
-      //jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
 
-      const locations = await Booking.find();
+      const bookings = await Booking.find().lean();
 
-      return res.json(locations);
+      const enriched = await Promise.all(
+        bookings.map(async (bk) => {
+          const [user, carInstance, carModel] = await Promise.all([
+            User.findById(bk.userID).select("username email phone").lean(),
+
+            CarInstance.findById(bk.carInstanceID)
+              .select("vin licensePlate color")
+              .lean(),
+
+            CarModel.findById(bk.carModelID).select("make model").lean(),
+          ]);
+
+          return { ...bk, user, carInstance, carModel };
+        })
+      );
+
+      return res.json(enriched);
     } catch (err) {
       console.error(err);
-      return res
-        .status(500)
-        .json({ error: "Failed to fetch branch locations" });
+      return res.status(500).json({ error: "Failed to fetch" });
     }
   },
 };

@@ -31,7 +31,7 @@ function AddUnit({ onSaveForm, carID }) {
   };
   console.log("ref", carID);
   return (
-    <div>
+    <div className="flex flex-col gap-3">
       <div>
         <label htmlFor="vin">VIN:</label>
         <input
@@ -67,7 +67,8 @@ function AddUnit({ onSaveForm, carID }) {
         />
       </div>
 
-      <div className="card flex justify-content-center">
+      <div className="card flex flex-col justify-content-center w-full ">
+        <label htmlFor="dd-city">Select a City:</label>
         <Dropdown
           value={location}
           onChange={(e) => setLocation(e.target.value)}
@@ -78,6 +79,7 @@ function AddUnit({ onSaveForm, carID }) {
           className="w-full md:w-14rem"
           checkmark={true}
           highlightOnSelect={false}
+          
         />
       </div>
       <div className="flex flex-row items-center justify-center gap-5">

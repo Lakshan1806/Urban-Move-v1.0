@@ -32,16 +32,7 @@ function Navbar() {
     { path: "/dashboard/rentals", label: "Rentals", Icon: TbCarSuvFilled },
     { path: "/dashboard/customers", label: "Customers", Icon: BsPersonBadge },
     { path: "/dashboard/drivers", label: "Drivers", Icon: BsPersonBadgeFill },
-    {
-      path: "/dashboard/financials",
-      label: "Financials",
-      Icon: MdOutlineAttachMoney,
-    },
-    {
-      path: "/dashboard/messages",
-      label: "Messages",
-      Icon: BiMessageRoundedDetail,
-    },
+
     {
       path: "/dashboard/account",
       label: "Account",
