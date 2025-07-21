@@ -49,14 +49,15 @@ function Rent() {
               Browse our fleet and pick the perfect car for a day, a week, or
               even a month.
             </h1>
-            <div className="p-6">
+            <div className="p-6 flex flex-col items-center gap-4">
               {!showForm && (
-                <div className="button-wrapper w-full sm:w-48 px-4 py-2 text-base justify-center">
+                <div className="button-wrapper w-full sm:w-48 px-4 py-2 text-xl justify-center">
                   <button onClick={handleShowForm} className="button-primary ">
                     Rent Now
                   </button>
                 </div>
               )}
+              <RateUsButton/>
             </div>
           </div>
 
@@ -75,7 +76,6 @@ function Rent() {
 
         <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
           <Slideshow />
-          <RateUsButton/>
         </div>
 
         <div className=" h-[180px] shrink-0 snap-start">
@@ -165,18 +165,17 @@ function RateUsButton({ userId }) {
 
   return (
     <>
-    <button 
+    <div className="button-wrapper w-full sm:w-48 px-2 py-2 text-xl justify-center">
+      <button 
       onClick={() => setShowModal(true)}
-      className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded"
-      >
+      className="button-primary">
         Rate Us
       </button>
+    </div>
+    
       {showModal && <RateUsModal userId={userId} onClose={() => setShowModal(false)} />}  
     </>
   );
 }
-
-
-
 
 export default Rent;

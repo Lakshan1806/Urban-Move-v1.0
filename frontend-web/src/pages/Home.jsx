@@ -156,7 +156,7 @@ function Home() {
           </div>
         </section>
 
-        <section className="snap-start min-h-screen">
+        <section className="snap-start ">
           <FeedbackSlideshow />
         </section>
       </div>

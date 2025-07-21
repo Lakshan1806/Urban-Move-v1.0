@@ -10,7 +10,7 @@ const FeedbackSlideshow = () => {
     if (feedbacks.length > 0) {
       const timer = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % feedbacks.length);
-      }, 5000); // Change slide every 5 seconds
+      }, 3000); 
       return () => clearInterval(timer);
     }
   }, [feedbacks.length]);
@@ -20,14 +20,14 @@ const FeedbackSlideshow = () => {
   if (feedbacks.length === 0) return <div className="text-center py-8">No feedbacks yet</div>;
 
   return (
-    <div className="relative py-8 bg-gray-50">
-      <h2 className="text-2xl font-bold text-center mb-8">What Our Users Say</h2>
+    <div className="relative py-8 bg-gray-200">
+      <h2 className="text-4xl font-bold text-center mb-8 ">What Our Users Say</h2>
       
       <div className="relative h-64 overflow-hidden">
         {feedbacks.map((feedback, index) => (
           <div 
             key={feedback._id}
-            className={`absolute inset-0 transition-opacity duration-500 flex justify-center ${
+            className={`absolute inset-0 transition-opacity duration-500 flex justify-center  ${
               index === currentSlide ? 'opacity-100' : 'opacity-0'
             }`}
           >
@@ -36,13 +36,13 @@ const FeedbackSlideshow = () => {
         ))}
       </div>
       
-      <div className="flex justify-center mt-4">
+      <div className="flex justify-center mt-4 ">
         {feedbacks.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 mx-1 rounded-full ${
-              index === currentSlide ? 'bg-blue-500' : 'bg-gray-300'
+            className={`w-3 h-3 mx-1 rounded-full  ${
+              index === currentSlide ? 'bg-blue-500' : 'bg-gray-600'
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />

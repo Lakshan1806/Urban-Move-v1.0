@@ -20,21 +20,21 @@ function RentNowForm({ onClose }) {
   const [error, setError] = useState("");
   const [bookedCarId, setBookedCarId] = useState(null);
 
+  const fetchLocations = async () => {
+    setLoadingLocations(true);
+    try {
+      const res = await axios.get("/api/cars/locations");
+      setLocations(res.data.data);
+    } catch (err) {
+      console.error("Error fetching locations", err);
+      setError("Failed to load locations");
+    } finally {
+      setLoadingLocations(false);
+    }
+  };
+
   useEffect(() => {
     // Fetch branch locations when component mounts
-    const fetchLocations = async () => {
-      setLoadingLocations(true);
-      try {
-        const res = await axios.get("/api/cars/locations");
-        setLocations(res.data.data);
-      } catch (err) {
-        console.error("Error fetching locations", err);
-        setError("Failed to load locations");
-      } finally {
-        setLoadingLocations(false);
-      }
-    };
-
     fetchLocations();
   }, []);
 
@@ -182,6 +182,17 @@ function RentNowForm({ onClose }) {
     }
   };
 
+  const clearInputs = () => {
+    setFormData({
+      pickupLocation: "",
+      dropoffLocation: "",
+      pickupTime: "",
+      dropoffTime: "",
+    });
+    setAvailableCars([]);
+    setError("");
+  };
+
   return (
     <div className="p-4 relative bg-white rounded-2xl w-full max-w-2xl mx-auto">
       <h1 className="text-2xl font-bold text-center">RENT A CAR</h1>
@@ -193,6 +204,22 @@ function RentNowForm({ onClose }) {
       )}
 
       <div className="mt-4 overflow-y-auto pr-2" style={{ maxHeight: "75vh" }}>
+        <div className="flex justify-between mb-4">
+          <button
+            onClick={fetchLocations}
+            className="button-primary"
+            disabled={loadingLocations}
+          >
+            {loadingLocations ? "Refreshing..." : "Refresh Locations"}
+          </button>
+          <button
+            onClick={clearInputs}
+            className="button-primary"
+          >
+            Clear Inputs
+          </button>
+        </div>
+
         <div className="flex flex-col gap-4">
           <div>
             <label htmlFor="pickupLocation" className="block font-medium mb-1">
@@ -269,14 +296,16 @@ function RentNowForm({ onClose }) {
           {error && <p className="text-red-600 text-center">{error}</p>}
 
           {availableCars.length === 0 && (
-            <button
-              type="button"
-              onClick={fetchAvailableCar}
-              className="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700 transition w-full"
-              disabled={loadingCar || loadingLocations}
-            >
-              {loadingCar ? "Finding Car..." : "Check Availability"}
-            </button>
+            <div className="button-wrapper w-full px-2 py-2 text-xl justify-center">
+              <button
+                type="button"
+                onClick={fetchAvailableCar}
+                className="button-primary w-full"
+                disabled={loadingCar || loadingLocations}
+              >
+                {loadingCar ? "Finding Car..." : "Check Availability"}
+              </button>
+            </div>
           )}
 
           {availableCars.length > 0 && (
@@ -373,25 +402,27 @@ function RentNowForm({ onClose }) {
                       </div>
                     )}
 
-                    <button
-                      type="button"
-                      onClick={() =>
-                        handleBooking(
-                          carData.carInstanceId,
-                          carData.carModel._id
-                        )
-                      }
-                      className={`mt-6 px-6 py-2 rounded w-full text-white transition ${
-                        bookedCarId === carData.carInstanceId
-                          ? "bg-gray-500 cursor-not-allowed"
-                          : "bg-green-600 hover:bg-green-700"
-                      }`}
-                      disabled={bookedCarId === carData.carInstanceId}
-                    >
-                      {bookedCarId === carData.carInstanceId
-                        ? "Booked"
-                        : "Book This Car"}
-                    </button>
+                    <div className="button-wrapper w-full px-2 py-2 text-xl justify-center mt-6">
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleBooking(
+                            carData.carInstanceId,
+                            carData.carModel._id
+                          )
+                        }
+                        className={`button-primary w-full ${
+                          bookedCarId === carData.carInstanceId
+                            ? "bg-gray-500 cursor-not-allowed"
+                            : ""
+                        }`}
+                        disabled={bookedCarId === carData.carInstanceId}
+                      >
+                        {bookedCarId === carData.carInstanceId
+                          ? "Booked"
+                          : "Book This Car"}
+                      </button>
+                    </div>
                   </div>
                 ))}
               </div>

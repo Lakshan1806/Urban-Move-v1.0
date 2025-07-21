@@ -18,10 +18,10 @@ export const getAllFeedbacks = async (req, res) => {
     const feedbacks = await Feedback.find()
       .populate({
         path: 'userId',
-        select: 'username photo',  // Get both username and photo
-        model: 'User'    // Make sure this matches your User model name
+        select: 'username photo',  
+        model: 'User'    
       })
-      .sort({ createdAt: -1 })  // Sort by newest first
+      .sort({ createdAt: -1 })  
       .lean();
 
     res.status(200).json(feedbacks);

@@ -2,9 +2,9 @@ import React from 'react';
 
 const FeedbackSlide = ({ feedback }) => {
   return (
-    <div className="bg-white p-6 rounded-lg shadow-md max-w-md mx-auto">
+    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto border border-gray-300 ">
       <div className="flex items-center mb-4">
-        {feedback.userId.photo ? (
+       {feedback.userId.photo ? (
           <img 
             src={feedback.userId.photo} 
             alt={feedback.userId.username} 
