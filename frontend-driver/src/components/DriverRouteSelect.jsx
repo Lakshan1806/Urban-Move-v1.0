@@ -1,13 +1,12 @@
 import { Routes, Route } from "react-router-dom";
 import DriverProtectedRoute from "./DriverProtectedRoute";
-import DriverHome from "../pages/DriverRide.jsx";
 import Profile from "../pages/profile.jsx";
 import DriverRide from "../pages/DriverRide.jsx";
 
 function DriverRouteSelect() {
   return (
     <div>
-      <main className="h-dvh ">
+      <main className="h-dvh">
         <Routes>
           <Route
             path="/"

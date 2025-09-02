@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -26,9 +26,9 @@ const DeleteAccountModal = ({ userId, onClose, onSuccess }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-white bg-opacity-50  flex items-center justify-center p-4">
-      <div className="bg-gradient-to-r from-[#FF7C1D] to-[#FFD12E] p-6 rounded-lg max-w-md w-full">
-        <h3 className="text-xl font-bold mb-4 text-center">Delete Account</h3>
+    <div className="bg-opacity-50 fixed inset-0 flex items-center justify-center bg-white p-4">
+      <div className="w-full max-w-md rounded-lg bg-gradient-to-r from-[#FF7C1D] to-[#FFD12E] p-6">
+        <h3 className="mb-4 text-center text-xl font-bold">Delete Account</h3>
         <p className="mb-4 text-center">
           This will permanently remove your account. All data will be archived.
         </p>
@@ -37,30 +37,30 @@ const DeleteAccountModal = ({ userId, onClose, onSuccess }) => {
           placeholder="Reason for deletion (optional)"
           value={deleteReason}
           onChange={(e) => setDeleteReason(e.target.value)}
-          className="w-full p-2 border rounded mb-4"
+          className="mb-4 w-full rounded border p-2"
           rows={3}
         />
 
         <div className="flex justify-end gap-2">
-        <div
-              className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
-            > 
-          <button
-            onClick={onClose}
-            className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+          <div
+            className={`mx-2 flex justify-center rounded-[50px] bg-black px-[22px] py-[5px] text-[20px]`}
+          >
+            <button
+              onClick={onClose}
+              className="cursor-pointer bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-transparent"
             >
-            Cancel
-          </button>
+              Cancel
+            </button>
           </div>
           <div
-              className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
-            > 
-          <button
-            onClick={handleAccountDeletion}
-            className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+            className={`mx-2 flex justify-center rounded-[50px] bg-black px-[22px] py-[5px] text-[20px]`}
+          >
+            <button
+              onClick={handleAccountDeletion}
+              className="cursor-pointer bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-transparent"
             >
-            confirm deletion
-          </button>
+              confirm deletion
+            </button>
           </div>
         </div>
       </div>

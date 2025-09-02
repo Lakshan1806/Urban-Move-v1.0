@@ -1,4 +1,3 @@
-import React from "react";
 import OtpInput from "./otp-input";
 import Line1 from "../assets/liner1.svg";
 import arrow from "../assets/arrowvector.svg";
@@ -19,13 +18,13 @@ const EmailVerification = ({
   continueButtonText = "continue",
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-[25px] w-auto">
-      <h1 className="flex flex-col items-center [-webkit-text-stroke:1px_rgb(255,124,29)] font-[400] text-[48px]">
+    <div className="flex w-auto flex-col items-center justify-center gap-[25px]">
+      <h1 className="flex flex-col items-center text-[48px] font-[400] [-webkit-text-stroke:1px_rgb(255,124,29)]">
         {title}
       </h1>
-      <p className="font-[700] text-[20px]">{description}</p>
+      <p className="text-[20px] font-[700]">{description}</p>
       <img src={Line1} className="h-auto w-full" />
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
 
       {showEmailInput && (
         <input
@@ -33,7 +32,7 @@ const EmailVerification = ({
           placeholder="Enter your email address"
           value={initialEmail}
           onChange={(e) => onEmailChange(e.target.value)}
-          className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
+          className="w-80 rounded border border-[#FFD12E] bg-white p-2"
           required
         />
       )}
@@ -42,15 +41,15 @@ const EmailVerification = ({
         <OtpInput length={otpLength} onOtpSubmit={onOtpSubmit} />
       )}
 
-      <div className="bg-black rounded-[50px] max-w-[160px] flex justify-center items-center px-[22px] py-[5px] text-[20px]">
+      <div className="flex max-w-[160px] items-center justify-center rounded-[50px] bg-black px-[22px] py-[5px] text-[20px]">
         <button
           type="button"
           onClick={onContinue}
-          className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"
+          className="cursor-pointer bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-transparent"
         >
           {continueButtonText}
         </button>
-        <img src={arrow} className="pl-1 pt-1" />
+        <img src={arrow} className="pt-1 pl-1" />
       </div>
 
       {onResend && (

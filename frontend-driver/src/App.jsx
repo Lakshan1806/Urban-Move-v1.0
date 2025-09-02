@@ -8,7 +8,7 @@ axios.defaults.withCredentials = true;
 function App() {
   return (
     <div className="debug-outlines">
-      <div className="h-dvh ">
+      <div className="h-dvh">
         <Navbar />
         <DriverRouteSelect />
       </div>

@@ -27,5 +27,5 @@ createRoot(document.getElementById("root")).render(
         </DriverAuthProvider>
       </PrimeReactProvider>
     </BrowserRouter>
-  </StrictMode>
+  </StrictMode>,
 );

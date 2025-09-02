@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { DriverAuthContext } from "../context/DriverAuthContext-driver";
 import Logo from "../assets/Urban_Move_Colour.svg";
@@ -13,9 +13,9 @@ function NavBar() {
     console.log(
       "Navbar detected authentication change:",
       isAuthenticated,
-      driver
+      driver,
     );
-  }, [isAuthenticated, driver]); 
+  }, [isAuthenticated, driver]);
 
   const navItems = [
     { path: "/", label: "Home" },
@@ -43,9 +43,9 @@ function NavBar() {
     "font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text text-[15px] uppercase";
 
   return (
-    <nav className="bg-black w-full h-[80px] flex flex-row items-center  px-[40px] justify-between top-0 sticky">
+    <nav className="sticky top-0 flex h-[80px] w-full flex-row items-center justify-between bg-black px-[40px]">
       <header>
-        <img src={Logo} alt="Logo" className="w-[60px] h-[60px]" />
+        <img src={Logo} alt="Logo" className="h-[60px] w-[60px]" />
       </header>
       <div className="flex gap-[40px]">
         {navItems.map((item) => (
@@ -58,7 +58,7 @@ function NavBar() {
         <div className="relative">
           <button
             onClick={() => setDropdownOpen(!dropdownOpen)}
-            className="flex items-center space-x-2 px-4 py-2 border rounded-full text-orange-400 border-orange-400 hover:bg-orange-400 hover:text-black transition"
+            className="flex items-center space-x-2 rounded-full border border-orange-400 px-4 py-2 text-orange-400 transition hover:bg-orange-400 hover:text-black"
           >
             <FaUser />
             <span>ACCOUNT</span>
@@ -72,13 +72,13 @@ function NavBar() {
                 onClick={() => setDropdownOpen(false)}
               />
 
-              <div className="absolute right-0 mt-2 bg-black text-orange-400 border border-orange-400 rounded-xl p-3 space-y-2 shadow-lg z-50">
+              <div className="absolute right-0 z-50 mt-2 space-y-2 rounded-xl border border-orange-400 bg-black p-3 text-orange-400 shadow-lg">
                 {accountOptions.map((option) =>
                   option.path ? (
                     <Link
                       to={option.path}
                       key={option.path || option.label}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-800 cursor-pointer rounded"
+                      className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-800"
                       onClick={() => setDropdownOpen(false)}
                     >
                       {option.icon}
@@ -91,12 +91,12 @@ function NavBar() {
                         option.action();
                         setDropdownOpen(false);
                       }}
-                      className="flex items-center gap-2 p-2 hover:bg-gray-800 cursor-pointer rounded"
+                      className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-800"
                     >
                       {option.icon}
                       <span>{option.label}</span>
                     </div>
-                  )
+                  ),
                 )}
               </div>
             </>

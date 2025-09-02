@@ -18,16 +18,13 @@ const PhoneVerification = ({
   continueButtonText = "continue",
 }) => {
   return (
-    <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-20 ">
-      <h1
-        className="text-grad-stroke font-[300] text-[36px]"
-        data-text={title}
-      >
+    <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-20">
+      <h1 className="text-grad-stroke text-[36px] font-[300]" data-text={title}>
         {title}
       </h1>
-      <p className="font-[700] text-[20px]">{description}</p>
+      <p className="text-[20px] font-[700]">{description}</p>
       <img src={Line1} className="h-auto w-full" />
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
 
       {showPhoneInput && (
         <input
@@ -35,7 +32,7 @@ const PhoneVerification = ({
           placeholder="Enter your Mobile number"
           value={initialPhoneNumber}
           onChange={(e) => onPhoneNumberChange(e.target.value)}
-          className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
+          className="w-80 rounded border border-[#FFD12E] bg-white p-2"
           required
         />
       )}
@@ -48,7 +45,7 @@ const PhoneVerification = ({
         <button
           type="button"
           onClick={onContinue}
-          className="button-primary flex gap-2 justify-center items-center"
+          className="button-primary flex items-center justify-center gap-2"
         >
           {continueButtonText}
           <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
@@ -59,7 +56,7 @@ const PhoneVerification = ({
         <button
           onClick={onResend}
           disabled={isActive}
-          className={`${isActive ? "text-gray-400" : "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"}`}
+          className={`${isActive ? "text-gray-400" : "cursor-pointer bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-transparent"}`}
         >
           {isActive
             ? `Resend in ${secondsLeft}s`

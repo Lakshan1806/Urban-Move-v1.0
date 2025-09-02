@@ -170,7 +170,7 @@ const Profile = () => {
             phone: pendingVerification.value,
             otp: phoneVerification.otp,
             type: "phone",
-          }
+          },
         );
       } else {
         verificationResult = await emailVerification.verifyOtp(
@@ -179,7 +179,7 @@ const Profile = () => {
             email: pendingVerification.value,
             otp: emailVerification.otp,
             type: "email",
-          }
+          },
         );
       }
 
@@ -279,7 +279,7 @@ const Profile = () => {
     try {
       const response = await axios.put(
         "/auth/driver/profile/password",
-        passwordForm
+        passwordForm,
       );
       return response.data;
     } catch (err) {
@@ -410,14 +410,14 @@ const Profile = () => {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 bg-white-900 text-black rounded-lg shadow-md  mt-8 border border-gray-200">
-      <div className="flex items-center mb-6">
-        <h1 className="[-webkit-text-stroke:1px_rgb(255,124,29)] font-[700] text-[36px] flex-none">
+    <div className="bg-white-900 mx-auto mt-8 max-w-4xl rounded-lg border border-gray-200 p-4 text-black shadow-md">
+      <div className="mb-6 flex items-center">
+        <h1 className="flex-none text-[36px] font-[700] [-webkit-text-stroke:1px_rgb(255,124,29)]">
           Account
         </h1>
       </div>
 
-      <div className="flex items-center justify-center mb-6">
+      <div className="mb-6 flex items-center justify-center">
         <div className="relative">
           <img
             src={
@@ -428,10 +428,10 @@ const Profile = () => {
                 : "/default-user.png"
             }
             alt="Profile"
-            className="w-40 h-40 rounded-full object-cover border-2 border-orange-500"
+            className="h-40 w-40 rounded-full border-2 border-orange-500 object-cover"
           />
           {isEditing && (
-            <div className="absolute bottom-0 right-0 button-wrapper">
+            <div className="button-wrapper absolute right-0 bottom-0">
               <button
                 type="button"
                 className="button-primary"
@@ -453,10 +453,10 @@ const Profile = () => {
 
       {!isChangingPassword ? (
         <>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
             <div className="space-y-4">
-              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
-                <label className="block text-sm font-medium text-gray-700 mb-1">
+              <div className="rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
+                <label className="mb-1 block text-sm font-medium text-gray-700">
                   Full Name
                 </label>
                 {isEditing ? (
@@ -467,7 +467,7 @@ const Profile = () => {
                     onChange={(e) =>
                       setProfile({ ...profile, fullname: e.target.value })
                     }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                   />
                 ) : (
                   <div className="mt-1 p-2 text-gray-900">
@@ -476,7 +476,7 @@ const Profile = () => {
                 )}
               </div>
 
-              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
+              <div className="rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
                 <label className="block text-sm font-medium text-gray-700">
                   Username
                 </label>
@@ -488,14 +488,14 @@ const Profile = () => {
                     onChange={(e) =>
                       setProfile({ ...profile, username: e.target.value })
                     }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                   />
                 ) : (
                   <div className="mt-1 p-2">{profile.username || "-"}</div>
                 )}
               </div>
 
-              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
+              <div className="rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
                 <label className="block text-sm font-medium text-gray-700">
                   Email
                 </label>
@@ -508,7 +508,7 @@ const Profile = () => {
                       onChange={(e) =>
                         setProfile({ ...profile, email: e.target.value })
                       }
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                      className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                     />
                     {profile.email !== user?.email && (
                       <div className="button-wrapper">
@@ -526,7 +526,7 @@ const Profile = () => {
                   <div className="mt-1 p-2">{profile.email || "-"}</div>
                 )}
               </div>
-              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
+              <div className="rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
                 <label className="block text-sm font-medium text-gray-700">
                   Car Color
                 </label>
@@ -538,7 +538,7 @@ const Profile = () => {
                     onChange={(e) =>
                       setProfile({ ...profile, carColor: e.target.value })
                     }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                   />
                 ) : (
                   <div className="mt-1 p-2">{profile.carColor || "-"}</div>
@@ -547,7 +547,7 @@ const Profile = () => {
             </div>
 
             <div className="space-y-4">
-              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
+              <div className="rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
                 <label className="block text-sm font-medium text-gray-700">
                   Phone
                 </label>
@@ -560,7 +560,7 @@ const Profile = () => {
                       onChange={(e) =>
                         setProfile({ ...profile, phone: e.target.value })
                       }
-                      className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                      className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                     />
                     {profile.phone !== user?.phone && (
                       <div className="button-wrapper">
@@ -579,7 +579,7 @@ const Profile = () => {
                 )}
               </div>
 
-              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
+              <div className="rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
                 <label className="block text-sm font-medium text-gray-700">
                   NIC Number
                 </label>
@@ -591,14 +591,14 @@ const Profile = () => {
                     onChange={(e) =>
                       setProfile({ ...profile, nicNumber: e.target.value })
                     }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                   />
                 ) : (
                   <div className="mt-1 p-2">{profile.nicNumber || "-"}</div>
                 )}
               </div>
 
-              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
+              <div className="rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
                 <label className="block text-sm font-medium text-gray-700">
                   Age
                 </label>
@@ -610,14 +610,14 @@ const Profile = () => {
                     onChange={(e) =>
                       setProfile({ ...profile, age: e.target.value })
                     }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                   />
                 ) : (
                   <div className="mt-1 p-2">{profile.age || "-"}</div>
                 )}
               </div>
 
-              <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300">
+              <div className="rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
                 <label className="block text-sm font-medium text-gray-700">
                   Car Number
                 </label>
@@ -629,7 +629,7 @@ const Profile = () => {
                     onChange={(e) =>
                       setProfile({ ...profile, carNumber: e.target.value })
                     }
-                    className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                    className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
                   />
                 ) : (
                   <div className="mt-1 p-2">{profile.carNumber || "-"}</div>
@@ -638,7 +638,7 @@ const Profile = () => {
             </div>
           </div>
 
-          <div className="shadow-md hover:shadow-lg transition-shadow rounded-lg p-1 bg-white border border-gray-300 mt-4">
+          <div className="mt-4 rounded-lg border border-gray-300 bg-white p-1 shadow-md transition-shadow hover:shadow-lg">
             <label className="block text-sm font-medium text-gray-700">
               Address
             </label>
@@ -650,7 +650,7 @@ const Profile = () => {
                 onChange={(e) =>
                   setProfile({ ...profile, address: e.target.value })
                 }
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
               />
             ) : (
               <div className="mt-1 p-2">{profile.address || "-"}</div>
@@ -659,7 +659,7 @@ const Profile = () => {
         </>
       ) : (
         <div className="space-y-6">
-          <h2 className="text-xl font-semibold mb-4">Change Password</h2>
+          <h2 className="mb-4 text-xl font-semibold">Change Password</h2>
           <div className="space-y-4">
             <div>
               <label className="block text-sm font-medium text-gray-700">
@@ -670,7 +670,7 @@ const Profile = () => {
                 name="currentPassword"
                 value={passwordForm.currentPassword}
                 onChange={handlePasswordChange}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
               />
             </div>
             <div>
@@ -682,7 +682,7 @@ const Profile = () => {
                 name="newPassword"
                 value={passwordForm.newPassword}
                 onChange={handlePasswordChange}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
               />
             </div>
             <div>
@@ -694,14 +694,14 @@ const Profile = () => {
                 name="confirmPassword"
                 value={passwordForm.confirmPassword}
                 onChange={handlePasswordChange}
-                className="mt-1 block w-full border-gray-300 rounded-md shadow-sm p-2 border"
+                className="mt-1 block w-full rounded-md border border-gray-300 p-2 shadow-sm"
               />
             </div>
           </div>
         </div>
       )}
 
-      <div className="flex flex-row space-x-4 mt-6 justify-baseline">
+      <div className="mt-6 flex flex-row justify-baseline space-x-4">
         {isEditing || isChangingPassword ? (
           <>
             <div className="button-wrapper">
