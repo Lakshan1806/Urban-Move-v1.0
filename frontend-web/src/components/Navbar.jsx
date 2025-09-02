@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect } from "react";
+import { useState, useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import Logo from "../assets/Urban_Move_Colour.svg";
@@ -34,7 +34,7 @@ function NavBar() {
 
   const accountOptions = [
     { path: "/profile", label: "My Profile", icon: <FaUser /> },
-    {path:"/history", label: "Activities", icon: <FaBell /> },
+    { path: "/history", label: "Activities", icon: <FaBell /> },
     {
       label: "Sign Out",
       icon: <FaSignOutAlt />,

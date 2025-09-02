@@ -21,7 +21,6 @@ const MapComponent = ({
     lng: 79.8612
   };
 
-  // Custom map styles to remove unwanted elements
   const mapStyles = [
     {
       featureType: "poi",
@@ -110,13 +109,13 @@ const MapComponent = ({
         zoom={15}
         onLoad={handleMapLoad}
         options={{
-          disableDefaultUI: true, // Disables all default UI controls
-          zoomControl: false,     // Disables zoom control
+          disableDefaultUI: true, 
+          zoomControl: false,     
           gestureHandling: 'greedy',
-          styles: mapStyles,      // Applies custom styles
-          clickableIcons: false,  // Disables clickable POIs
-          minZoom: 12,            // Minimum zoom level
-          maxZoom: 18             // Maximum zoom level
+          styles: mapStyles,      
+          clickableIcons: false,  
+          minZoom: 12,            
+          maxZoom: 18             
         }}
       >
         {currentLocation && (

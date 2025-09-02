@@ -1,4 +1,3 @@
-import React from "react";
 import imgg from "../signup_photos/googlelogo.svg";
 import { useAuth } from "../context/AuthContext";
 

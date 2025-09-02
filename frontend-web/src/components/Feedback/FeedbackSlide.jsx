@@ -1,5 +1,3 @@
-import React from 'react';
-
 const FeedbackSlide = ({ feedback }) => {
   const userPhoto = feedback?.userId?.photo;
   const username = feedback?.userId?.username || "Anonymous";
@@ -26,7 +24,7 @@ const FeedbackSlide = ({ feedback }) => {
         {[...Array(5)].map((_, i) => (
           <svg
             key={i}
-            className={`w-6 h-6 ${i < feedback.rating ? 'text-yellow-400' : 'text-gray-300'}`}
+            className={`w-6 h-6 ${i < feedback.rating ? "text-yellow-400" : "text-gray-300"}`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >

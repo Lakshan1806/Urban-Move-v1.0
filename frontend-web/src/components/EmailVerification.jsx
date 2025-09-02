@@ -1,4 +1,3 @@
-import React from "react";
 import OtpInput from "./otp-input";
 import Line1 from "../signup_photos/liner1.svg";
 import arrow from "../signup_photos/arrowvector.svg";

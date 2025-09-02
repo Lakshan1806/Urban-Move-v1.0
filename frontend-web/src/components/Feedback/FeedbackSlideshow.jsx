@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react';
-import FeedbackSlide from './FeedbackSlide';
-import useFeedbacks from '../hooks/useFeedbacks';
+import { useState, useEffect } from "react";
+import FeedbackSlide from "./FeedbackSlide";
+import useFeedbacks from "../hooks/useFeedbacks";
 
 const FeedbackSlideshow = () => {
   const { feedbacks, loading, error } = useFeedbacks();
@@ -10,39 +10,48 @@ const FeedbackSlideshow = () => {
     if (feedbacks.length > 0) {
       const timer = setInterval(() => {
         setCurrentSlide((prev) => (prev + 1) % feedbacks.length);
-      }, 3000); 
+      }, 3000);
       return () => clearInterval(timer);
     }
   }, [feedbacks.length]);
 
-  if (loading) return <div className="text-center py-8">Loading feedbacks...</div>;
-  if (error) return <div className="text-center py-8 text-red-500">Error loading feedbacks</div>;
-  if (feedbacks.length === 0) return <div className="text-center py-8">No feedbacks yet</div>;
+  if (loading)
+    return <div className="text-center py-8">Loading feedbacks...</div>;
+  if (error)
+    return (
+      <div className="text-center py-8 text-red-500">
+        Error loading feedbacks
+      </div>
+    );
+  if (feedbacks.length === 0)
+    return <div className="text-center py-8">No feedbacks yet</div>;
 
   return (
     <div className="relative py-8 bg-gray-200">
-      <h2 className="text-4xl font-bold text-center mb-8 ">What Our Users Say</h2>
-      
+      <h2 className="text-4xl font-bold text-center mb-8 ">
+        What Our Users Say
+      </h2>
+
       <div className="relative h-64 overflow-hidden">
         {feedbacks.map((feedback, index) => (
-          <div 
+          <div
             key={feedback._id}
             className={`absolute inset-0 transition-opacity duration-500 flex justify-center  ${
-              index === currentSlide ? 'opacity-100' : 'opacity-0'
+              index === currentSlide ? "opacity-100" : "opacity-0"
             }`}
           >
             <FeedbackSlide feedback={feedback} />
           </div>
         ))}
       </div>
-      
+
       <div className="flex justify-center mt-4 ">
         {feedbacks.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
             className={`w-3 h-3 mx-1 rounded-full  ${
-              index === currentSlide ? 'bg-blue-500' : 'bg-gray-600'
+              index === currentSlide ? "bg-blue-500" : "bg-gray-600"
             }`}
             aria-label={`Go to slide ${index + 1}`}
           />

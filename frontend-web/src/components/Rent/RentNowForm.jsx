@@ -34,7 +34,6 @@ function RentNowForm({ onClose }) {
   };
 
   useEffect(() => {
-    // Fetch branch locations when component mounts
     fetchLocations();
   }, []);
 
@@ -100,14 +99,12 @@ function RentNowForm({ onClose }) {
         return;
       }
 
-      // Calculate total price for each car
       const pickupDate = new Date(formData.pickupTime);
       const dropoffDate = new Date(formData.dropoffTime);
       const rentalDays = Math.ceil(
         (dropoffDate - pickupDate) / (1000 * 60 * 60 * 24)
       );
 
-      // Create a map to store unique car models
       const uniqueCarModels = new Map();
 
       instances.forEach((instance) => {
@@ -117,19 +114,17 @@ function RentNowForm({ onClose }) {
           return;
         }
 
-        // If we haven't seen this car model yet, add it to our map
         if (!uniqueCarModels.has(carModel._id)) {
           const pricePerDay = Number(carModel?.price) || 0;
 
           uniqueCarModels.set(carModel._id, {
-            carInstanceId: instance._id, // We'll use the first available instance ID
+            carInstanceId: instance._id,
             carModel: carModel,
             totalPrice: rentalDays * pricePerDay,
             rentalDays,
-            availableCount: 1, // Track how many instances are available
+            availableCount: 1,
           });
         } else {
-          // If we've seen this model before, just increment the count
           const existing = uniqueCarModels.get(carModel._id);
           uniqueCarModels.set(carModel._id, {
             ...existing,

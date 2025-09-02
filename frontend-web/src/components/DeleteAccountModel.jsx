@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 
@@ -42,25 +42,25 @@ const DeleteAccountModal = ({ userId, onClose, onSuccess }) => {
         />
 
         <div className="flex justify-end gap-2">
-        <div
-              className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
-            > 
-          <button
-            onClick={onClose}
-            className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+          <div
+            className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
+          >
+            <button
+              onClick={onClose}
+              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
             >
-            Cancel
-          </button>
+              Cancel
+            </button>
           </div>
           <div
-              className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
-            > 
-          <button
-            onClick={handleAccountDeletion}
-            className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
+            className={`bg-black rounded-[50px] flex justify-center px-[22px] py-[5px] mx-2 text-[20px] `}
+          >
+            <button
+              onClick={handleAccountDeletion}
+              className="font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer "
             >
-            confirm deletion
-          </button>
+              confirm deletion
+            </button>
           </div>
         </div>
       </div>
