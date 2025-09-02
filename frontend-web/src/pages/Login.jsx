@@ -1,4 +1,4 @@
-import  { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 import imgcl from "../signup_photos/signupcustomer.svg";
@@ -77,7 +77,7 @@ const Login = () => {
     try {
       const response = await login.verifyCredentials(
         formData.username,
-        formData.password
+        formData.password,
       );
       toast.current?.show({
         severity: getToastSeverity(response?.status || 200),
@@ -217,40 +217,40 @@ const Login = () => {
   };
 
   return (
-    <div className="flex flex-col items-center px-0 py-0 h-full overflow-auto min-h-0">
+    <div className="flex h-full min-h-0 flex-col items-center overflow-auto px-0 py-0">
       {step === 1 && (
         <img
           src={imgcl}
           alt="Signup Background"
-          className="absolute z-0 mx-auto w-auto h-[700px] pr-1 "
+          className="absolute z-0 mx-auto h-[700px] w-auto pr-1"
         />
       )}
 
-      <div className="flex flex-col px-0.5 z-10 ">
+      <div className="z-10 flex flex-col px-0.5">
         {step === 1 && (
           <form
             onSubmit={handleCredentialsSubmit}
             className="w-[230px] pt-[75px]"
           >
-            <h2 className="pt-[10px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[20px] text-center">
+            <h2 className="bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text pt-[10px] text-center font-sans text-[20px] font-[400] text-transparent">
               Sign in as a Customer
             </h2>
 
-            <label className="block text-[18px] sm:text-[20px] p-0.5 font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
+            <label className="block bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text p-0.5 font-sans text-[18px] font-medium text-transparent sm:text-[20px]">
               Username
             </label>
             <input
               type="text"
               name="username"
               placeholder="Enter your username"
-              className="bg-white w-full p-2 border rounded border-[#FFD12E]"
+              className="w-full rounded border border-[#FFD12E] bg-white p-2"
               value={formData.username}
               onChange={handleChange}
               required
               disabled={loading}
             />
 
-            <label className="block text-[18px] sm:text-[20px] font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
+            <label className="block bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-[18px] font-medium text-transparent sm:text-[20px]">
               Password
             </label>
             <div className="relative">
@@ -258,17 +258,17 @@ const Login = () => {
                 type="password"
                 name="password"
                 placeholder="Enter your password"
-                className="bg-white w-full p-2 border rounded border-[#FFD12E]"
+                className="w-full rounded border border-[#FFD12E] bg-white p-2"
                 value={formData.password}
                 onChange={handleChange}
                 required
                 disabled={loading}
               />
             </div>
-            <div className="flex items-center mb-2">
+            <div className="mb-2 flex items-center">
               <Link
                 to="/forgot-password"
-                className="text-sm hover:underline flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text"
+                className="flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-sm text-transparent hover:underline"
               >
                 Forgot password?
               </Link>
@@ -277,7 +277,7 @@ const Login = () => {
             <div className="button-wrapper m-2">
               <button
                 type="submit"
-                className="button-primary flex gap-2 justify-center items-center "
+                className="button-primary flex items-center justify-center gap-2"
                 disabled={loading}
               >
                 {loading ? "PROCESSING..." : "SIGN IN"}
@@ -285,9 +285,9 @@ const Login = () => {
               </button>
             </div>
 
-            <img src={imgl} alt="Divider" className="w-full h-auto" />
+            <img src={imgl} alt="Divider" className="h-auto w-full" />
             <GoogleLoginButton />
-            <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[16px] text-center">
+            <p className="bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text pt-[15px] text-center font-sans text-[16px] font-[400] text-transparent">
               <Link to="/Register">Don't have an account? Sign up</Link>
             </p>
           </form>
@@ -295,14 +295,14 @@ const Login = () => {
 
         {step === 2 && (
           <form onSubmit={handlePhoneSubmit}>
-            <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+            <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-35">
               <h1
-                className="text-grad-stroke font-[300] text-[36px]"
+                className="text-grad-stroke text-[36px] font-[300]"
                 data-text="Enter your Mobile Number"
               >
                 Enter your Mobile Number
               </h1>
-              <p className="font-[700] text-[20px]">
+              <p className="text-[20px] font-[700]">
                 We will send a verification code to this number
               </p>
 
@@ -312,7 +312,7 @@ const Login = () => {
                 type="tel"
                 name="phone"
                 placeholder="e.g., 0771234567 or +94771234567"
-                className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
+                className="w-80 rounded border border-[#FFD12E] bg-white p-2"
                 value={formData.phone}
                 onChange={handleChange}
                 required
@@ -322,7 +322,7 @@ const Login = () => {
               <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="button-primary flex gap-2 justify-center items-center"
+                  className="button-primary flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   {loading ? "SENDING..." : "CONTINUE"}

@@ -9,7 +9,6 @@ import {
 import { io } from "socket.io-client";
 
 const DriverRide = () => {
-  // State management
   const [socket, setSocket] = useState(null);
   const [currentRide, setCurrentRide] = useState(null);
   const [rideStatus, setRideStatus] = useState("available");
@@ -29,44 +28,40 @@ const DriverRide = () => {
   const directionsServiceRef = useRef(null);
   const geocoderRef = useRef(null);
 
-  // Map configuration
   const mapContainerStyle = {
     width: "100%",
     height: "100%",
   };
 
-  // Default center - Colombo, Sri Lanka
   const defaultCenter = {
     lat: 6.9271,
     lng: 79.8612,
   };
 
-  // Sri Lanka bounds
   const sriLankaBounds = {
-    north: 10,    // Northernmost point
-    south: 5,     // Southernmost point
-    east: 82,     // Easternmost point
-    west: 79      // Westernmost point
+    north: 10,
+    south: 5,
+    east: 82,
+    west: 79,
   };
 
-  // Initialize Google Maps Autocomplete with Sri Lanka restriction
   const initAutocomplete = () => {
     if (window.google && window.google.maps) {
       autocompleteRef.current.pickup =
         new window.google.maps.places.Autocomplete(
           document.getElementById("pickup-input"),
-          { 
+          {
             types: ["geocode"],
-            componentRestrictions: { country: "lk" } // Sri Lanka only
-          }
+            componentRestrictions: { country: "lk" },
+          },
         );
       autocompleteRef.current.dropoff =
         new window.google.maps.places.Autocomplete(
           document.getElementById("dropoff-input"),
-          { 
+          {
             types: ["geocode"],
-            componentRestrictions: { country: "lk" } // Sri Lanka only
-          }
+            componentRestrictions: { country: "lk" },
+          },
         );
 
       autocompleteRef.current.pickup.addListener("place_changed", () => {
@@ -85,14 +80,13 @@ const DriverRide = () => {
     }
   };
 
-  // Get address from coordinates with Sri Lanka bias
   const getAddressFromCoordinates = (lat, lng) => {
     if (!geocoderRef.current) return;
-    
+
     geocoderRef.current.geocode(
-      { 
+      {
         location: { lat, lng },
-        region: "lk" // Sri Lanka region bias
+        region: "lk",
       },
       (results, status) => {
         if (status === "OK") {
@@ -105,11 +99,10 @@ const DriverRide = () => {
           console.error("Geocoder failed due to: " + status);
           setCurrentAddress("Could not determine address");
         }
-      }
+      },
     );
   };
 
-  // Initialize socket connection
   useEffect(() => {
     const socketInstance = io("http://localhost:5000", {
       reconnection: true,
@@ -134,7 +127,6 @@ const DriverRide = () => {
     };
   }, []);
 
-  // Initialize geolocation tracking
   useEffect(() => {
     if (navigator.geolocation) {
       const options = {
@@ -180,10 +172,10 @@ const DriverRide = () => {
               setCurrentLocation(defaultCenter);
               setCurrentAddress("Default location - Colombo, Sri Lanka");
             },
-            { enableHighAccuracy: false }
+            { enableHighAccuracy: false },
           );
         },
-        options
+        options,
       );
     } else {
       setCurrentLocation(defaultCenter);
@@ -197,20 +189,18 @@ const DriverRide = () => {
     };
   }, [currentRide, socket]);
 
-  // Initialize map, autocomplete, and services when loaded
   useEffect(() => {
     if (mapLoaded && window.google) {
       initAutocomplete();
       directionsServiceRef.current = new window.google.maps.DirectionsService();
       geocoderRef.current = new window.google.maps.Geocoder();
-      
+
       if (currentLocation) {
         getAddressFromCoordinates(currentLocation.lat, currentLocation.lng);
       }
     }
   }, [mapLoaded, currentLocation]);
 
-  // Listen for ride events
   useEffect(() => {
     if (!socket) return;
 
@@ -244,7 +234,6 @@ const DriverRide = () => {
     };
   }, [socket]);
 
-  // Calculate route when ride or location changes
   useEffect(() => {
     if (
       !currentRide ||
@@ -283,7 +272,7 @@ const DriverRide = () => {
           console.error("Directions request failed:", status);
           setDirections(null);
         }
-      }
+      },
     );
   }, [currentRide, currentLocation, rideStatus, mapLoaded]);
 
@@ -312,14 +301,14 @@ const DriverRide = () => {
       },
       (result, status) => {
         if (status === window.google.maps.DirectionsStatus.OK) {
-          const distance = result.routes[0].legs[0].distance.value; // in meters
-          const price = (distance * 0.002).toFixed(2); // Sri Lanka pricing (adjust as needed)
+          const distance = result.routes[0].legs[0].distance.value;
+          const price = (distance * 0.002).toFixed(2);
           setPriceEstimate(price);
         } else {
           console.error("Directions request failed:", status);
           setPriceEstimate(null);
         }
-      }
+      },
     );
   };
 
@@ -364,25 +353,24 @@ const DriverRide = () => {
   };
 
   return (
-    <div className="flex flex-col h-screen bg-gray-100">
-      {/* Header */}
-      <header className="bg-blue-600 text-white p-4 shadow-md">
-        <div className="flex justify-between items-center">
-          <h1 className="text-xl font-bold">Driver Ride Dashboard - Sri Lanka</h1>
+    <div className="flex h-screen flex-col bg-gray-100">
+      <header className="bg-blue-600 p-4 text-white shadow-md">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold">
+            Driver Ride Dashboard - Sri Lanka
+          </h1>
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="flex flex-1 overflow-hidden">
-        {/* Left Side - Form */}
-        <div className="w-1/3 bg-white p-4 border-r border-gray-200 overflow-y-auto">
+        <div className="w-1/3 overflow-y-auto border-r border-gray-200 bg-white p-4">
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-gray-800">
               Your Current Location
             </h2>
             {currentLocation ? (
-              <div className="bg-blue-50 p-3 rounded-lg">
-                <p className="text-gray-700 mb-2">
+              <div className="rounded-lg bg-blue-50 p-3">
+                <p className="mb-2 text-gray-700">
                   <span className="font-medium">Address:</span> {currentAddress}
                 </p>
                 <p className="text-gray-700">
@@ -405,36 +393,35 @@ const DriverRide = () => {
             )}
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="mb-1 block text-sm font-medium text-gray-700">
                 Pickup Location (Sri Lanka)
               </label>
               <input
                 id="pickup-input"
                 type="text"
                 placeholder="Enter pickup location"
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full rounded border border-gray-300 p-2"
                 value={pickupInput}
                 onChange={(e) => setPickupInput(e.target.value)}
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="mb-1 block text-sm font-medium text-gray-700">
                 Drop-off Location (Sri Lanka)
               </label>
               <input
                 id="dropoff-input"
                 type="text"
                 placeholder="Enter drop-off location"
-                className="w-full p-2 border border-gray-300 rounded"
+                className="w-full rounded border border-gray-300 p-2"
                 value={dropoffInput}
                 onChange={(e) => setDropoffInput(e.target.value)}
               />
             </div>
 
-            {/* Price Estimate */}
             {priceEstimate && (
-              <div className="bg-blue-50 p-3 rounded-lg">
+              <div className="rounded-lg bg-blue-50 p-3">
                 <p className="font-medium text-gray-700">
                   Estimated Price:{" "}
                   <span className="text-green-600">Rs. {priceEstimate}</span>
@@ -444,30 +431,29 @@ const DriverRide = () => {
 
             <button
               onClick={calculatePrice}
-              className="w-full py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+              className="w-full rounded-lg bg-blue-600 py-2 font-medium text-white shadow-md transition-colors hover:bg-blue-700"
             >
               GET PRICE ESTIMATE
             </button>
           </div>
 
-          {/* Ride Information */}
           {currentRide && (
             <div className="mt-6">
-              <h2 className="text-lg font-semibold mb-2 text-gray-800">
+              <h2 className="mb-2 text-lg font-semibold text-gray-800">
                 Current Ride:{" "}
-                <span className="capitalize text-blue-600">
+                <span className="text-blue-600 capitalize">
                   {rideStatus.replace("_", " ")}
                 </span>
               </h2>
 
-              <div className="space-y-3 bg-blue-50 p-3 rounded-lg">
+              <div className="space-y-3 rounded-lg bg-blue-50 p-3">
                 <p className="text-gray-700">
                   <span className="font-medium">Passenger:</span>{" "}
                   {currentRide.passengerId?.name || "Guest"}
                 </p>
                 <p className="text-gray-700">
                   <span className="font-medium">Fare:</span>
-                  <span className="text-green-600 font-bold">
+                  <span className="font-bold text-green-600">
                     {" "}
                     Rs. {currentRide.fare?.toFixed(2) || "0.00"}
                   </span>
@@ -492,12 +478,11 @@ const DriverRide = () => {
                 )}
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex justify-center gap-4 mt-4">
+              <div className="mt-4 flex justify-center gap-4">
                 {rideStatus === "accepted" && (
                   <button
                     onClick={startRide}
-                    className="px-6 py-2 bg-green-600 text-white font-medium rounded-lg hover:bg-green-700 transition-colors shadow-md"
+                    className="rounded-lg bg-green-600 px-6 py-2 font-medium text-white shadow-md transition-colors hover:bg-green-700"
                   >
                     Start Trip
                   </button>
@@ -506,7 +491,7 @@ const DriverRide = () => {
                 {rideStatus === "in_progress" && (
                   <button
                     onClick={completeRide}
-                    className="px-6 py-2 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+                    className="rounded-lg bg-blue-600 px-6 py-2 font-medium text-white shadow-md transition-colors hover:bg-blue-700"
                   >
                     Complete Ride
                   </button>
@@ -516,8 +501,7 @@ const DriverRide = () => {
           )}
         </div>
 
-        {/* Right Side - Map */}
-        <div className="w-2/3 relative">
+        <div className="relative w-2/3">
           <LoadScript
             googleMapsApiKey="AIzaSyBzy5MB38A69NzcnngmihjBajzg0eNZsTk"
             libraries={["places", "geometry"]}
@@ -537,13 +521,12 @@ const DriverRide = () => {
                 gestureHandling: "greedy",
                 restriction: {
                   latLngBounds: sriLankaBounds,
-                  strictBounds: false
-                }
+                  strictBounds: false,
+                },
               }}
               onDragEnd={() => {}}
               onZoomChanged={() => {}}
             >
-              {/* Current Location Marker */}
               {currentLocation && (
                 <Marker
                   position={currentLocation}
@@ -555,7 +538,6 @@ const DriverRide = () => {
                 />
               )}
 
-              {/* Path traveled */}
               {locationHistory.length > 1 && (
                 <Polyline
                   path={locationHistory.map((loc) => ({
@@ -572,7 +554,6 @@ const DriverRide = () => {
                 />
               )}
 
-              {/* Pickup Marker */}
               {currentRide && (
                 <Marker
                   position={currentRide.pickupLocation}
@@ -584,7 +565,6 @@ const DriverRide = () => {
                 />
               )}
 
-              {/* Dropoff Marker */}
               {currentRide && rideStatus === "in_progress" && (
                 <Marker
                   position={currentRide.dropoffLocation}
@@ -596,7 +576,6 @@ const DriverRide = () => {
                 />
               )}
 
-              {/* Directions Renderer */}
               {directions && (
                 <DirectionsRenderer
                   directions={directions}
@@ -616,28 +595,29 @@ const DriverRide = () => {
         </div>
       </div>
 
-      {/* Ride Request Modal */}
       {showAcceptModal && currentRide && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl w-full max-w-md">
+        <div className="bg-opacity-50 fixed inset-0 z-50 flex items-center justify-center bg-black p-4">
+          <div className="w-full max-w-md rounded-lg bg-white shadow-xl">
             <div className="p-6">
-              <h2 className="text-xl font-bold mb-4 text-gray-800">
+              <h2 className="mb-4 text-xl font-bold text-gray-800">
                 New Ride Request
               </h2>
 
-              <div className="space-y-3 mb-6 bg-blue-50 p-4 rounded-lg">
+              <div className="mb-6 space-y-3 rounded-lg bg-blue-50 p-4">
                 <p className="text-gray-700">
-                  <span className="font-medium">From:</span> {currentRide.pickup}
+                  <span className="font-medium">From:</span>{" "}
+                  {currentRide.pickup}
                 </p>
                 <p className="text-gray-700">
                   <span className="font-medium">To:</span> {currentRide.dropoff}
                 </p>
                 <p className="text-gray-700">
-                  <span className="font-medium">Distance:</span> {(currentRide.distance / 1000).toFixed(1)} km
+                  <span className="font-medium">Distance:</span>{" "}
+                  {(currentRide.distance / 1000).toFixed(1)} km
                 </p>
                 <p className="text-gray-700">
                   <span className="font-medium">Fare:</span>
-                  <span className="text-green-600 font-bold">
+                  <span className="font-bold text-green-600">
                     {" "}
                     Rs. {currentRide.fare?.toFixed(2) || "0.00"}
                   </span>
@@ -647,13 +627,13 @@ const DriverRide = () => {
               <div className="flex gap-4">
                 <button
                   onClick={declineRide}
-                  className="flex-1 py-2 bg-red-500 text-white font-medium rounded-lg hover:bg-red-600 transition-colors shadow-md"
+                  className="flex-1 rounded-lg bg-red-500 py-2 font-medium text-white shadow-md transition-colors hover:bg-red-600"
                 >
                   Decline
                 </button>
                 <button
                   onClick={acceptRide}
-                  className="flex-1 py-2 bg-green-500 text-white font-medium rounded-lg hover:bg-green-600 transition-colors shadow-md"
+                  className="flex-1 rounded-lg bg-green-500 py-2 font-medium text-white shadow-md transition-colors hover:bg-green-600"
                 >
                   Accept
                 </button>

@@ -15,7 +15,7 @@ function NavBar() {
     console.log(
       "Navbar detected authentication change:",
       isAuthenticated,
-      user
+      user,
     );
   }, [isAuthenticated, user]);
 
@@ -54,28 +54,28 @@ function NavBar() {
 
   return (
     <>
-      <nav className=" bg-black w-full  z-20 h-full px-[25px] flex flex-row items-center justify-between top-0 sticky">
-        <div className="flex justify-between items-center w-full lg:w-auto">
-          <div className="relative flex-1 flex justify-center lg:justify-start ">
-            <img src={Logo} alt="Logo" className="w-[60px] h-[60px] " />
+      <nav className="sticky top-0 z-20 flex h-full w-full flex-row items-center justify-between bg-black px-[25px]">
+        <div className="flex w-full items-center justify-between lg:w-auto">
+          <div className="relative flex flex-1 justify-center lg:justify-start">
+            <img src={Logo} alt="Logo" className="h-[60px] w-[60px]" />
           </div>
           <div className="absolute right-0 lg:hidden">
             <button
               onClick={() => setMobileOpen(!mobileOpen)}
-              className="text-orange-400 text-2xl"
+              className="text-2xl text-orange-400"
             >
               <FaBars />
             </button>
           </div>
         </div>
-        <div className="hidden lg:flex gap-8 items-center ">
+        <div className="hidden items-center gap-8 lg:flex">
           {navItems.map((item) => (
             <Link to={item.path} key={item.path} className={linkstyles1}>
               {item.label}
             </Link>
           ))}
         </div>
-        <div className="hidden lg:flex gap-[10px]">
+        <div className="hidden gap-[10px] lg:flex">
           {!isAuthenticated ? (
             accAuth.map((item) => (
               <Link to={item.path} key={item.path} className={linkstyles2}>
@@ -86,7 +86,7 @@ function NavBar() {
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center space-x-2 px-4 py-2 border rounded-full text-orange-400 border-orange-400 hover:bg-orange-400 hover:text-black transition"
+                className="flex items-center space-x-2 rounded-full border border-orange-400 px-4 py-2 text-orange-400 transition hover:bg-orange-400 hover:text-black"
               >
                 <FaUser />
                 <span>ACCOUNT</span>
@@ -100,13 +100,13 @@ function NavBar() {
                     onClick={() => setDropdownOpen(false)}
                   />
 
-                  <div className="absolute right-0 mt-2 bg-black text-orange-400 border border-orange-400 rounded-xl p-3 space-y-2 shadow-lg z-50">
+                  <div className="absolute right-0 z-50 mt-2 space-y-2 rounded-xl border border-orange-400 bg-black p-3 text-orange-400 shadow-lg">
                     {accountOptions.map((option) =>
                       option.path ? (
                         <Link
                           to={option.path}
                           key={option.path || option.label}
-                          className="flex items-center gap-2 p-2 hover:bg-gray-800 cursor-pointer rounded"
+                          className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-800"
                           onClick={() => setDropdownOpen(false)}
                         >
                           {option.icon}
@@ -119,12 +119,12 @@ function NavBar() {
                             option.action();
                             setDropdownOpen(false);
                           }}
-                          className="flex items-center gap-2 p-2 hover:bg-gray-800 cursor-pointer rounded"
+                          className="flex cursor-pointer items-center gap-2 rounded p-2 hover:bg-gray-800"
                         >
                           {option.icon}
                           <span>{option.label}</span>
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 </>
@@ -134,13 +134,13 @@ function NavBar() {
         </div>
       </nav>
       {mobileOpen && (
-        <div className="lg:hidden flex flex-col bg-black text-orange-400 px-5 py-3 gap-4 z-30 relative justify-center">
+        <div className="relative z-30 flex flex-col justify-center gap-4 bg-black px-5 py-3 text-orange-400 lg:hidden">
           {navItems.map((item) => (
             <div key={item.path} className="flex justify-center">
               <Link
                 to={item.path}
                 key={item.path}
-                className="text-lg border-b border-orange-400 pb-2"
+                className="border-b border-orange-400 pb-2 text-lg"
                 onClick={() => setMobileOpen(false)}
               >
                 {item.label}
@@ -154,7 +154,7 @@ function NavBar() {
                 <Link
                   to={item.path}
                   key={item.path}
-                  className="text-lg border-b border-orange-400 pb-2"
+                  className="border-b border-orange-400 pb-2 text-lg"
                   onClick={() => setMobileOpen(false)}
                 >
                   {item.label}
@@ -165,7 +165,7 @@ function NavBar() {
             <div className="relative">
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
-                className="flex items-center space-x-2 px-4 py-2 border rounded-full text-orange-400 border-orange-400 hover:bg-orange-400 hover:text-black transition w-full justify-center"
+                className="flex w-full items-center justify-center space-x-2 rounded-full border border-orange-400 px-4 py-2 text-orange-400 transition hover:bg-orange-400 hover:text-black"
               >
                 <FaUser />
                 <span>ACCOUNT</span>
@@ -178,13 +178,13 @@ function NavBar() {
                     className="fixed inset-0 z-40"
                     onClick={() => setDropdownOpen(false)}
                   />
-                  <div className=" mt-2 bg-black text-orange-400 border border-orange-400 rounded-xl p-3 space-y-2 shadow-lg z-50 relative">
+                  <div className="relative z-50 mt-2 space-y-2 rounded-xl border border-orange-400 bg-black p-3 text-orange-400 shadow-lg">
                     {accountOptions.map((option) =>
                       option.path ? (
                         <Link
                           to={option.path}
                           key={option.path}
-                          className="text-lg border-b border-orange-400 pb-2 flex items-center gap-2"
+                          className="flex items-center gap-2 border-b border-orange-400 pb-2 text-lg"
                           onClick={() => {
                             setMobileOpen(false);
                             setDropdownOpen(false);
@@ -196,7 +196,7 @@ function NavBar() {
                       ) : (
                         <div
                           key={option.label}
-                          className="text-lg border-b border-orange-400 pb-2 flex items-center gap-2 cursor-pointer"
+                          className="flex cursor-pointer items-center gap-2 border-b border-orange-400 pb-2 text-lg"
                           onClick={() => {
                             option.action();
                             setMobileOpen(false);
@@ -206,7 +206,7 @@ function NavBar() {
                           {option.icon}
                           {option.label}
                         </div>
-                      )
+                      ),
                     )}
                   </div>
                 </>

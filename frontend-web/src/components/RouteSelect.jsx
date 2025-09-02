@@ -44,9 +44,9 @@ function RouteSelect() {
         <Route path="/trip-history" element={<TripHistory userId={userId} />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/reset-password/:token" element={<ResetpasswordPage />} />
-        <Route path="/chat" element={<ChatAndCall/>} />
-        <Route path="/history" element={<TripHistory/>} />
-        <Route path="/payment" element={<PaymentPage/>} />
+        <Route path="/chat" element={<ChatAndCall />} />
+        <Route path="/history" element={<TripHistory />} />
+        <Route path="/payment" element={<PaymentPage />} />
 
         <Route
           path="/profile"
@@ -58,11 +58,10 @@ function RouteSelect() {
         />
         <Route path="/verify-phone" element={<GooglePhoneVerification />} />
         <Route
-            path="/verify-phone-driver"
-            element={<GooglePhoneVerificationDriver />}
-          />
+          path="/verify-phone-driver"
+          element={<GooglePhoneVerificationDriver />}
+        />
       </Routes>
-      
     </main>
   );
 }

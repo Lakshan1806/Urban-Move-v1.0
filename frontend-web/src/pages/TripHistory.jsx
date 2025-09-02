@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
@@ -38,7 +38,7 @@ const TripHistory = () => {
     try {
       const response = await axios.get(
         `http://localhost:5000/api/triphistory/${idToUse}`,
-        { withCredentials: true }
+        { withCredentials: true },
       );
       setTripHistory(response.data);
     } catch (error) {
@@ -50,8 +50,8 @@ const TripHistory = () => {
   };
 
   return (
-    <div className="p-8 font-sans bg-white min-h-screen">
-      <h2 className="text-4xl font-light bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-transparent mb-6">
+    <div className="min-h-screen bg-white p-8 font-sans">
+      <h2 className="mb-6 bg-gradient-to-r from-yellow-400 to-orange-500 bg-clip-text text-4xl font-light text-transparent">
         Trip History
       </h2>
 
@@ -65,7 +65,7 @@ const TripHistory = () => {
 
       {tripHistory.length > 0 && (
         <div className="overflow-x-auto">
-          <table className="min-w-full table-auto border border-gray-300 shadow-md rounded-lg overflow-hidden">
+          <table className="min-w-full table-auto overflow-hidden rounded-lg border border-gray-300 shadow-md">
             <thead className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white">
               <tr>
                 <th className={thStyle}>#</th>

@@ -16,19 +16,19 @@ const FeedbackSlideshow = () => {
   }, [feedbacks.length]);
 
   if (loading)
-    return <div className="text-center py-8">Loading feedbacks...</div>;
+    return <div className="py-8 text-center">Loading feedbacks...</div>;
   if (error)
     return (
-      <div className="text-center py-8 text-red-500">
+      <div className="py-8 text-center text-red-500">
         Error loading feedbacks
       </div>
     );
   if (feedbacks.length === 0)
-    return <div className="text-center py-8">No feedbacks yet</div>;
+    return <div className="py-8 text-center">No feedbacks yet</div>;
 
   return (
-    <div className="relative py-8 bg-gray-200">
-      <h2 className="text-4xl font-bold text-center mb-8 ">
+    <div className="relative bg-gray-200 py-8">
+      <h2 className="mb-8 text-center text-4xl font-bold">
         What Our Users Say
       </h2>
 
@@ -36,7 +36,7 @@ const FeedbackSlideshow = () => {
         {feedbacks.map((feedback, index) => (
           <div
             key={feedback._id}
-            className={`absolute inset-0 transition-opacity duration-500 flex justify-center  ${
+            className={`absolute inset-0 flex justify-center transition-opacity duration-500 ${
               index === currentSlide ? "opacity-100" : "opacity-0"
             }`}
           >
@@ -45,12 +45,12 @@ const FeedbackSlideshow = () => {
         ))}
       </div>
 
-      <div className="flex justify-center mt-4 ">
+      <div className="mt-4 flex justify-center">
         {feedbacks.map((_, index) => (
           <button
             key={index}
             onClick={() => setCurrentSlide(index)}
-            className={`w-3 h-3 mx-1 rounded-full  ${
+            className={`mx-1 h-3 w-3 rounded-full ${
               index === currentSlide ? "bg-blue-500" : "bg-gray-600"
             }`}
             aria-label={`Go to slide ${index + 1}`}

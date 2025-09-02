@@ -15,10 +15,10 @@ export default function GoogleLoginButton({ intent = "login" }) {
   return (
     <button
       onClick={handleClick}
-      className="bg-white w-full p-1 border rounded border-[#FFD12E] text-center mt-3 cursor-pointer flex items-center justify-center"
+      className="mt-3 flex w-full cursor-pointer items-center justify-center rounded border border-[#FFD12E] bg-white p-1 text-center"
     >
       <>
-        <img src={imgg} alt="Google" className="inline-block mr-2 h-5 w-5" />
+        <img src={imgg} alt="Google" className="mr-2 inline-block h-5 w-5" />
         {intent === "signup" ? "Sign up with Google" : "Sign in with Google"}
       </>
     </button>

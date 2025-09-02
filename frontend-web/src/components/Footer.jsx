@@ -8,8 +8,8 @@ function Footer() {
     "font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text text-[12px]  rounded-[50px]";
 
   return (
-    <nav className="bg-black w-full px-[25px]  h-[180px] py-4 flex flex-col items-center justify-between shrink-0">
-      <div className="flex flex-row justify-between w-full h-2/3">
+    <nav className="flex h-[180px] w-full shrink-0 flex-col items-center justify-between bg-black px-[25px] py-4">
+      <div className="flex h-2/3 w-full flex-row justify-between">
         <div>
           <img src={Logo} alt="Logo" className="h-full" />
         </div>

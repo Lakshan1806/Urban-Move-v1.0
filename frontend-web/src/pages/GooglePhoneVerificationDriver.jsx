@@ -182,7 +182,7 @@ const GooglePhoneVerification = () => {
           headers: {
             "Content-Type": "multipart/form-data",
           },
-        }
+        },
       );
 
       if (response.data.success && response.data.redirect) {
@@ -242,17 +242,17 @@ const GooglePhoneVerification = () => {
   };
 
   return (
-    <div className="flex flex-col items-center px-0 py-0 h-full overflow-auto min-h-0">
-      <div className="flex flex-col px-0.5 z-10 pt-[130px]">
+    <div className="flex h-full min-h-0 flex-col items-center overflow-auto px-0 py-0">
+      <div className="z-10 flex flex-col px-0.5 pt-[130px]">
         {step === 1 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto p-20">
+          <div className="flex w-auto flex-col items-center justify-center gap-[25px] p-20">
             <h1
-              className="text-grad-stroke font-[300] text-[36px]"
+              className="text-grad-stroke text-[36px] font-[300]"
               data-text="Enter your Mobile Number"
             >
               Enter your Mobile Number
             </h1>
-            <p className="font-[700] text-[20px] ">
+            <p className="text-[20px] font-[700]">
               We will send a verification code to this number
             </p>
 
@@ -263,14 +263,14 @@ const GooglePhoneVerification = () => {
               placeholder="Enter your Mobile number"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
+              className="w-80 rounded border border-[#FFD12E] bg-white p-2"
               required
             />
             <div className="button-wrapper">
               <button
                 type="button"
                 onClick={handleSendOtp}
-                className="button-primary flex gap-2 justify-center items-center "
+                className="button-primary flex items-center justify-center gap-2"
                 disabled={loading}
               >
                 {loading ? "SENDING..." : "CONTINUE"}
@@ -281,14 +281,14 @@ const GooglePhoneVerification = () => {
         )}
 
         {step === 2 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-20">
+          <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-20">
             <h1
-              className="text-grad-stroke font-[300] text-[36px]"
+              className="text-grad-stroke text-[36px] font-[300]"
               data-text="verify your Mobile Number"
             >
               verify your Mobile Number
             </h1>
-            <p className="font-[700] text-[20px]">
+            <p className="text-[20px] font-[700]">
               We will send a verification code to this number
             </p>
             <img src={Line1} className="h-auto w-full" />
@@ -299,7 +299,7 @@ const GooglePhoneVerification = () => {
               <button
                 type="button"
                 onClick={handleVerifyOtp}
-                className="button-primary flex gap-2 justify-center items-center"
+                className="button-primary flex items-center justify-center gap-2"
                 disabled={loading}
               >
                 {loading ? "SENDING..." : "CONTINUE"}
@@ -309,25 +309,25 @@ const GooglePhoneVerification = () => {
             <button
               onClick={handleResendOtp}
               disabled={isActive}
-              className={`${isActive ? "text-gray-400" : "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"}`}
+              className={`${isActive ? "text-gray-400" : "cursor-pointer bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-transparent"}`}
             >
               {isActive ? `Resend in ${secondsLeft}s` : "Resend"}
             </button>
           </div>
         )}
         {step === 3 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-15">
+          <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-15">
             <h1
-              className="text-grad-stroke font-[300] text-[36px]"
+              className="text-grad-stroke text-[36px] font-[300]"
               data-text="Submit Documents"
             >
               Submit Documents
             </h1>
             <img src={Line1} className="h-auto w-full" />
 
-            <div className="flex flex-col gap-4 w-full max-w-md">
+            <div className="flex w-full max-w-md flex-col gap-4">
               <div
-                className="flex items-center gap-4 p-3 rounded-lg cursor-pointer"
+                className="flex cursor-pointer items-center gap-4 rounded-lg p-3"
                 onClick={() => document.getElementById("license").click()}
               >
                 <div className="text-black-500 text-xl">
@@ -353,7 +353,7 @@ const GooglePhoneVerification = () => {
               </div>
 
               <div
-                className="flex items-center gap-4 p-3 rounded-lg cursor-pointer"
+                className="flex cursor-pointer items-center gap-4 rounded-lg p-3"
                 onClick={() => document.getElementById("residency").click()}
               >
                 <div className="text-black-500 text-xl">
@@ -379,7 +379,7 @@ const GooglePhoneVerification = () => {
               </div>
 
               <div
-                className="flex items-center gap-4 p-3 rounded-lg cursor-pointer"
+                className="flex cursor-pointer items-center gap-4 rounded-lg p-3"
                 onClick={() => document.getElementById("insurance").click()}
               >
                 <div className="text-black-500 text-xl">
@@ -412,7 +412,7 @@ const GooglePhoneVerification = () => {
                     loading ||
                     Object.values(documents).filter(Boolean).length < 3
                   }
-                  className="button-primary flex gap-2 justify-center items-center"
+                  className="button-primary flex items-center justify-center gap-2"
                 >
                   {loading ? "UPLOADING..." : "CONTINUE"}
                   <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />

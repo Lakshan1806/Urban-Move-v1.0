@@ -5,33 +5,67 @@ import { useNavigate } from "react-router-dom";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-// Icons components
 const MapPinIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-5 w-5"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path
+      fillRule="evenodd"
+      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+      clipRule="evenodd"
+    />
   </svg>
 );
 
 const ClockIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-    <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z" clipRule="evenodd" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-5 w-5"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path
+      fillRule="evenodd"
+      d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.414-1.415L11 9.586V6z"
+      clipRule="evenodd"
+    />
   </svg>
 );
 
 const LocationIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-5 w-5"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path
+      fillRule="evenodd"
+      d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+      clipRule="evenodd"
+    />
   </svg>
 );
 
 const RefreshIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" className="w-5 h-5" viewBox="0 0 20 20" fill="currentColor">
-    <path fillRule="evenodd" d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z" clipRule="evenodd" />
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    className="h-5 w-5"
+    viewBox="0 0 20 20"
+    fill="currentColor"
+  >
+    <path
+      fillRule="evenodd"
+      d="M4 2a1 1 0 011 1v2.101a7.002 7.002 0 0111.601 2.566 1 1 0 11-1.885.666A5.002 5.002 0 005.999 7H9a1 1 0 010 2H4a1 1 0 01-1-1V3a1 1 0 011-1zm.008 9.057a1 1 0 011.276.61A5.002 5.002 0 0014.001 13H11a1 1 0 110-2h5a1 1 0 011 1v5a1 1 0 11-2 0v-2.101a7.002 7.002 0 01-11.601-2.566 1 1 0 01.61-1.276z"
+      clipRule="evenodd"
+    />
   </svg>
 );
 
 function Ride() {
-  // State management
   const [pickup, setPickup] = useState("");
   const [dropoff, setDropoff] = useState("");
   const [routeDetails, setRouteDetails] = useState(null);
@@ -57,15 +91,12 @@ function Ride() {
   const [driverAddress, setDriverAddress] = useState("");
   const [rideProgress, setRideProgress] = useState(0);
 
-  // Google Maps API key (inserted directly)
-  const GOOGLE_MAPS_API_KEY = "AIzaSyBzy5MB38A69NzcnngmihjBajzg0eNZsTk";
+  const GOOGLE_MAPS_API_KEY = "KEY";
 
-  // Refs and hooks
   const pickupRef = useRef(null);
   const dropoffRef = useRef(null);
   const navigate = useNavigate();
 
-  // Generate Google Maps URL with proper parameters
   const generateMapUrl = (origin, destination, waypoint = null) => {
     let url = `https://www.google.com/maps/embed/v1/directions?key=${GOOGLE_MAPS_API_KEY}`;
     url += `&origin=${encodeURIComponent(origin)}`;
@@ -77,11 +108,10 @@ function Ride() {
     return url;
   };
 
-  // Get address from coordinates
   const getAddressFromCoordinates = async (lat, lng) => {
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/location/reverse-geocode?lat=${lat}&lng=${lng}`
+        `http://localhost:5000/api/location/reverse-geocode?lat=${lat}&lng=${lng}`,
       );
       if (response.data.status === "SUCCESS") {
         return response.data.address;
@@ -93,15 +123,12 @@ function Ride() {
     }
   };
 
-  // Reset all state to initial values
   const handleReset = () => {
-    // Clear any active polling
     if (pollingInterval) {
       clearInterval(pollingInterval);
       setPollingInterval(null);
     }
-    
-    // Reset all state
+
     setPickup("");
     setDropoff("");
     setRouteDetails(null);
@@ -120,19 +147,17 @@ function Ride() {
     setDriverLocation(null);
     setDriverAddress("");
     setRideProgress(0);
-    
-    // Remove active ride from localStorage
-    localStorage.removeItem('activeRide');
+
+    localStorage.removeItem("activeRide");
   };
 
-  // Load active ride from localStorage on component mount
   useEffect(() => {
     const loadActiveRide = async () => {
-      const activeRide = localStorage.getItem('activeRide');
+      const activeRide = localStorage.getItem("activeRide");
       if (activeRide) {
         const rideData = JSON.parse(activeRide);
-        setPickup(rideData.pickup || '');
-        setDropoff(rideData.dropoff || '');
+        setPickup(rideData.pickup || "");
+        setDropoff(rideData.dropoff || "");
         setRouteDetails(rideData.routeDetails || null);
         setMapUrl(rideData.mapUrl || null);
         setFare(rideData.fare || null);
@@ -140,34 +165,37 @@ function Ride() {
         setRideId(rideData.rideId || null);
         setDriverLocation(rideData.driverLocation || null);
         setRideProgress(rideData.rideProgress || 0);
-        
+
         if (rideData.driverLocation) {
           const address = await getAddressFromCoordinates(
             rideData.driverLocation.lat,
-            rideData.driverLocation.lng
+            rideData.driverLocation.lng,
           );
           setDriverAddress(address);
         }
-        
-        if (rideData.rideId && rideData.rideStatus === 'searching') {
+
+        if (rideData.rideId && rideData.rideStatus === "searching") {
           startRidePolling(rideData.rideId);
         }
       }
     };
 
-    // Check geolocation permissions
     if (navigator.permissions) {
-      navigator.permissions.query({ name: "geolocation" }).then((permissionStatus) => {
-        permissionStatus.onchange = () => {
-          console.log("Geolocation permission changed to:", permissionStatus.state);
-        };
-      });
+      navigator.permissions
+        .query({ name: "geolocation" })
+        .then((permissionStatus) => {
+          permissionStatus.onchange = () => {
+            console.log(
+              "Geolocation permission changed to:",
+              permissionStatus.state,
+            );
+          };
+        });
     }
-    
+
     loadActiveRide();
     fetchScheduledRides();
 
-    // Clean up polling interval on unmount
     return () => {
       if (pollingInterval) {
         clearInterval(pollingInterval);
@@ -175,7 +203,6 @@ function Ride() {
     };
   }, []);
 
-  // Persist ride data to localStorage
   useEffect(() => {
     if (rideId || rideStatus || routeDetails || driverLocation) {
       const activeRide = {
@@ -187,20 +214,29 @@ function Ride() {
         rideStatus,
         rideId,
         driverLocation,
-        rideProgress
+        rideProgress,
       };
-      localStorage.setItem('activeRide', JSON.stringify(activeRide));
+      localStorage.setItem("activeRide", JSON.stringify(activeRide));
     }
-  }, [pickup, dropoff, routeDetails, mapUrl, fare, rideStatus, rideId, driverLocation, rideProgress]);
+  }, [
+    pickup,
+    dropoff,
+    routeDetails,
+    mapUrl,
+    fare,
+    rideStatus,
+    rideId,
+    driverLocation,
+    rideProgress,
+  ]);
 
-  // Update map URL when route details or driver location changes
   useEffect(() => {
     if (routeDetails) {
       if (driverLocation) {
         const url = generateMapUrl(
           `${driverLocation.lat},${driverLocation.lng}`,
           dropoff,
-          pickup
+          pickup,
         );
         setMapUrl(url);
       } else {
@@ -210,7 +246,6 @@ function Ride() {
     }
   }, [driverLocation, routeDetails, pickup, dropoff]);
 
-  // Fetch scheduled rides from API
   const fetchScheduledRides = async () => {
     try {
       const response = await axios.get("http://localhost:5000/api/schedule", {
@@ -226,7 +261,6 @@ function Ride() {
     }
   };
 
-  // Fetch location suggestions for autocomplete
   const fetchSuggestions = async (input, isPickup) => {
     if (input.length < 2) {
       isPickup ? setPickupSuggestions([]) : setDropoffSuggestions([]);
@@ -236,7 +270,7 @@ function Ride() {
     setIsFetchingSuggestions(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/location/autocomplete?input=${encodeURIComponent(input)}`
+        `http://localhost:5000/api/location/autocomplete?input=${encodeURIComponent(input)}`,
       );
 
       if (response.data.suggestions) {
@@ -252,7 +286,6 @@ function Ride() {
     }
   };
 
-  // Debounce suggestion fetching
   useEffect(() => {
     const timer = setTimeout(() => {
       if (activeInput === "pickup" && pickup) {
@@ -265,7 +298,6 @@ function Ride() {
     return () => clearTimeout(timer);
   }, [pickup, dropoff, activeInput]);
 
-  // Get current location using browser geolocation
   const getCurrentLocation = async () => {
     if (!navigator.geolocation) {
       setLocationError("Geolocation is not supported by your browser");
@@ -283,7 +315,8 @@ function Ride() {
             let errorMessage;
             switch (error.code) {
               case error.PERMISSION_DENIED:
-                errorMessage = "Location access was denied. Please enable permissions in your browser settings.";
+                errorMessage =
+                  "Location access was denied. Please enable permissions in your browser settings.";
                 break;
               case error.POSITION_UNAVAILABLE:
                 errorMessage = "Location information is unavailable.";
@@ -300,13 +333,13 @@ function Ride() {
             enableHighAccuracy: true,
             timeout: 30000,
             maximumAge: 0,
-          }
+          },
         );
       });
 
       const { latitude, longitude } = position.coords;
       const response = await axios.get(
-        `http://localhost:5000/api/location/reverse-geocode?lat=${latitude}&lng=${longitude}`
+        `http://localhost:5000/api/location/reverse-geocode?lat=${latitude}&lng=${longitude}`,
       );
 
       if (response.data.status === "SUCCESS") {
@@ -323,7 +356,6 @@ function Ride() {
     }
   };
 
-  // Handle suggestion selection
   const handleSuggestionClick = (suggestion, isPickup) => {
     isPickup
       ? setPickup(suggestion.description)
@@ -332,7 +364,6 @@ function Ride() {
     setActiveInput(null);
   };
 
-  // Handle input focus for suggestions
   const handleInputFocus = (inputType) => {
     setActiveInput(inputType);
     if (inputType === "pickup" && pickup.length >= 2) {
@@ -342,7 +373,6 @@ function Ride() {
     }
   };
 
-  // Handle form submission for route calculation
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!pickup.trim() || !dropoff.trim()) {
@@ -361,7 +391,7 @@ function Ride() {
         {
           pickup: pickup.trim(),
           dropoff: dropoff.trim(),
-        }
+        },
       );
 
       if (response.data.status === "SUCCESS") {
@@ -372,17 +402,22 @@ function Ride() {
         const calculatedFare = Math.round(distanceKm * 68);
         setFare(calculatedFare);
       } else {
-        throw new Error(response.data.message || "Failed to fetch route details");
+        throw new Error(
+          response.data.message || "Failed to fetch route details",
+        );
       }
     } catch (err) {
       console.error("Route calculation error:", err);
-      setError(err.response?.data?.message || err.message || "Failed to calculate route");
+      setError(
+        err.response?.data?.message ||
+          err.message ||
+          "Failed to calculate route",
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Handle ride scheduling
   const handleScheduleRide = async () => {
     if (!pickup.trim() || !dropoff.trim()) {
       setError("Please enter both pickup and dropoff locations");
@@ -409,7 +444,7 @@ function Ride() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       if (response.data.status === "SUCCESS") {
@@ -421,13 +456,14 @@ function Ride() {
       }
     } catch (err) {
       console.error("Scheduling error:", err);
-      setError(err.response?.data?.message || err.message || "Failed to schedule ride");
+      setError(
+        err.response?.data?.message || err.message || "Failed to schedule ride",
+      );
     } finally {
       setIsScheduling(false);
     }
   };
 
-  // Start polling for ride status updates
   const startRidePolling = (rideId) => {
     if (pollingInterval) {
       clearInterval(pollingInterval);
@@ -436,9 +472,9 @@ function Ride() {
     const interval = setInterval(async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/rideRoute/status/${rideId}`
+          `http://localhost:5000/api/rideRoute/status/${rideId}`,
         );
-        
+
         if (response.data?.status === "SUCCESS") {
           const rideData = response.data.ride;
           setRideStatus(rideData.status);
@@ -446,14 +482,16 @@ function Ride() {
           if (rideData.status === "accepted") {
             setDriverLocation(rideData.driverLocation);
             setRideProgress(rideData.progress);
-            
-            // Get driver's address when location is updated
+
             const address = await getAddressFromCoordinates(
               rideData.driverLocation.lat,
-              rideData.driverLocation.lng
+              rideData.driverLocation.lng,
             );
             setDriverAddress(address);
-          } else if (rideData.status === "cancelled" || rideData.status === "completed") {
+          } else if (
+            rideData.status === "cancelled" ||
+            rideData.status === "completed"
+          ) {
             clearInterval(interval);
             setPollingInterval(null);
             handleCancelTrip();
@@ -469,7 +507,6 @@ function Ride() {
     setPollingInterval(interval);
   };
 
-  // Handle ride start
   const handleStartRide = async () => {
     try {
       setLoading(true);
@@ -483,22 +520,19 @@ function Ride() {
         : 0;
       const calculatedFare = Math.round(distanceKm * 68);
 
-      const response = await axios.post(
-        "http://localhost:5000/api/rideRoute",
-        {
-          userId: "", 
-          pickup,
-          dropoff,
-          startLocation: routeDetails?.start_location || { lat: 0, lng: 0 },
-          endLocation: routeDetails?.end_location || { lat: 0, lng: 0 },
-          distance: routeDetails?.distance || "0 km",
-          duration: routeDetails?.duration || "0 mins",
-          fare: calculatedFare,
-          status: "searching",
-          scheduledTime: showScheduleForm ? scheduledTime.toISOString() : null,
-          steps: routeDetails.steps,
-        }
-      );
+      const response = await axios.post("http://localhost:5000/api/rideRoute", {
+        userId: "",
+        pickup,
+        dropoff,
+        startLocation: routeDetails?.start_location || { lat: 0, lng: 0 },
+        endLocation: routeDetails?.end_location || { lat: 0, lng: 0 },
+        distance: routeDetails?.distance || "0 km",
+        duration: routeDetails?.duration || "0 mins",
+        fare: calculatedFare,
+        status: "searching",
+        scheduledTime: showScheduleForm ? scheduledTime.toISOString() : null,
+        steps: routeDetails.steps,
+      });
 
       if (response.data?.success) {
         setRideId(response.data.data._id);
@@ -509,19 +543,26 @@ function Ride() {
       }
     } catch (error) {
       console.error("Error starting ride:", error);
-      setError(error.response?.data?.message || error.message || "Failed to start ride");
+      setError(
+        error.response?.data?.message ||
+          error.message ||
+          "Failed to start ride",
+      );
     }
   };
 
-  // Handle trip cancellation
   const handleCancelTrip = async () => {
     try {
       if (rideId) {
-        await axios.post(`http://localhost:5000/api/rideRoute/cancel/${rideId}`, null, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+        await axios.post(
+          `http://localhost:5000/api/rideRoute/cancel/${rideId}`,
+          null,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           },
-        });
+        );
       }
     } catch (err) {
       console.error("Error cancelling ride:", err);
@@ -530,7 +571,6 @@ function Ride() {
     }
   };
 
-  // Cancel scheduled ride
   const cancelScheduledRide = async (rideId) => {
     try {
       const response = await axios.delete(
@@ -539,7 +579,7 @@ function Ride() {
           headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-        }
+        },
       );
 
       if (response.data.status === "SUCCESS") {
@@ -555,40 +595,34 @@ function Ride() {
   };
 
   return (
-    <div className="bg-white min-h-screen overflow-x-hidden w-full max-w-screen">
-      {/* Main Content */}
-      <div className="flex flex-col lg:flex-row items-start justify-center gap-8 px-4 py-8 md:px-8">
-        {/* Left Panel - Form */}
-        <div className="w-full lg:w-1/2 max-w-xl">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-transparent">
+    <div className="min-h-screen w-full max-w-screen overflow-x-hidden bg-white">
+      <div className="flex flex-col items-start justify-center gap-8 px-4 py-8 md:px-8 lg:flex-row">
+        <div className="w-full max-w-xl lg:w-1/2">
+          <h1 className="mb-6 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-center text-3xl font-bold text-transparent md:text-4xl">
             Request a ride for immediate pickup or schedule one for later
           </h1>
 
           <form
             onSubmit={handleSubmit}
-            className="bg-black p-6 md:p-8 rounded-3xl shadow-xl border-2 border-[#FF7C1D] space-y-6"
+            className="space-y-6 rounded-3xl border-2 border-[#FF7C1D] bg-black p-6 shadow-xl md:p-8"
           >
-            {/* Driver Status Banner */}
             {rideStatus === "accepted" && driverLocation && (
-              <div className="bg-green-100 p-4 rounded-lg">
-                <h3 className="text-lg font-medium text-green-800 mb-2">
+              <div className="rounded-lg bg-green-100 p-4">
+                <h3 className="mb-2 text-lg font-medium text-green-800">
                   Driver is on the way!
                 </h3>
                 <p className="text-green-700">
-                  Your driver has accepted the ride and is currently at: 
+                  Your driver has accepted the ride and is currently at:
                   <br />
                   <strong>Location:</strong> {driverAddress}
                   <br />
-                  
                 </p>
               </div>
             )}
 
-            {/* Location Inputs */}
             <div className="space-y-4">
-              {/* Pickup Location */}
-              <div className="space-y-2 relative" ref={pickupRef}>
-                <div className="flex justify-between items-center">
+              <div className="relative space-y-2" ref={pickupRef}>
+                <div className="flex items-center justify-between">
                   <label className="flex items-center gap-2 font-medium text-[#FF7C1D]">
                     <MapPinIcon />
                     Pickup Location
@@ -597,12 +631,12 @@ function Ride() {
                     type="button"
                     onClick={getCurrentLocation}
                     disabled={isGettingLocation || loading}
-                    className="flex items-center gap-1 text-sm text-[#FFD12E] hover:text-[#FF7C1D] transition-colors disabled:opacity-50"
+                    className="flex items-center gap-1 text-sm text-[#FFD12E] transition-colors hover:text-[#FF7C1D] disabled:opacity-50"
                   >
                     {isGettingLocation ? (
                       <>
                         <svg
-                          className="animate-spin h-4 w-4"
+                          className="h-4 w-4 animate-spin"
                           viewBox="0 0 24 24"
                         >
                           <circle
@@ -636,13 +670,13 @@ function Ride() {
                   value={pickup}
                   onChange={(e) => setPickup(e.target.value)}
                   onFocus={() => handleInputFocus("pickup")}
-                  className="w-full p-3 rounded-lg bg-gray-100 focus:ring-2 focus:ring-[#FF7C1D] outline-none"
+                  className="w-full rounded-lg bg-gray-100 p-3 outline-none focus:ring-2 focus:ring-[#FF7C1D]"
                   placeholder=""
                   disabled={loading || rideStatus === "searching"}
                 />
-                {/* Pickup Suggestions */}
+
                 {isFetchingSuggestions && activeInput === "pickup" && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <div className="absolute z-10 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
                     <div className="p-3 text-gray-500">
                       Searching locations...
                     </div>
@@ -651,11 +685,11 @@ function Ride() {
                 {pickupSuggestions.length > 0 &&
                   activeInput === "pickup" &&
                   !isFetchingSuggestions && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                    <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
                       {pickupSuggestions.map((suggestion, index) => (
                         <div
                           key={index}
-                          className="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100"
+                          className="cursor-pointer border-b border-gray-100 p-3 hover:bg-gray-100"
                           onClick={() =>
                             handleSuggestionClick(suggestion, true)
                           }
@@ -667,8 +701,7 @@ function Ride() {
                   )}
               </div>
 
-              {/* Dropoff Location */}
-              <div className="space-y-2 relative" ref={dropoffRef}>
+              <div className="relative space-y-2" ref={dropoffRef}>
                 <label className="flex items-center gap-2 font-medium text-[#FF7C1D]">
                   <MapPinIcon />
                   Drop-off Location
@@ -678,13 +711,13 @@ function Ride() {
                   value={dropoff}
                   onChange={(e) => setDropoff(e.target.value)}
                   onFocus={() => handleInputFocus("dropoff")}
-                  className="w-full p-3 rounded-lg bg-gray-100 focus:ring-2 focus:ring-[#FF7C1D] outline-none"
+                  className="w-full rounded-lg bg-gray-100 p-3 outline-none focus:ring-2 focus:ring-[#FF7C1D]"
                   placeholder=""
                   disabled={loading || rideStatus === "searching"}
                 />
-                {/* Dropoff Suggestions */}
+
                 {isFetchingSuggestions && activeInput === "dropoff" && (
-                  <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg">
+                  <div className="absolute z-10 mt-1 w-full rounded-lg border border-gray-200 bg-white shadow-lg">
                     <div className="p-3 text-gray-500">
                       Searching locations...
                     </div>
@@ -693,11 +726,11 @@ function Ride() {
                 {dropoffSuggestions.length > 0 &&
                   activeInput === "dropoff" &&
                   !isFetchingSuggestions && (
-                    <div className="absolute z-10 w-full mt-1 bg-white border border-gray-200 rounded-lg shadow-lg max-h-60 overflow-auto">
+                    <div className="absolute z-10 mt-1 max-h-60 w-full overflow-auto rounded-lg border border-gray-200 bg-white shadow-lg">
                       {dropoffSuggestions.map((suggestion, index) => (
                         <div
                           key={index}
-                          className="p-3 hover:bg-gray-100 cursor-pointer border-b border-gray-100"
+                          className="cursor-pointer border-b border-gray-100 p-3 hover:bg-gray-100"
                           onClick={() =>
                             handleSuggestionClick(suggestion, false)
                           }
@@ -710,9 +743,8 @@ function Ride() {
               </div>
             </div>
 
-            {/* Schedule Form */}
             {showScheduleForm && (
-              <div className="bg-black p-4 rounded-lg space-y-4">
+              <div className="space-y-4 rounded-lg bg-black p-4">
                 <h3 className="text-lg font-medium text-[#FFD12E]">
                   Schedule Your Ride
                 </h3>
@@ -728,7 +760,7 @@ function Ride() {
                     timeIntervals={15}
                     dateFormat="MMMM d, yyyy h:mm aa"
                     minDate={new Date()}
-                    className="w-full p-2 rounded bg-gray-700 text-white border border-gray-600"
+                    className="w-full rounded border border-gray-600 bg-gray-700 p-2 text-white"
                   />
                 </div>
                 <div className="flex justify-end gap-2">
@@ -743,7 +775,7 @@ function Ride() {
                     type="button"
                     onClick={handleScheduleRide}
                     disabled={isScheduling}
-                    className="px-4 py-2 bg-[#FF7C1D] text-white rounded hover:bg-[#FF6C1D] disabled:opacity-50"
+                    className="rounded bg-[#FF7C1D] px-4 py-2 text-white hover:bg-[#FF6C1D] disabled:opacity-50"
                   >
                     {isScheduling ? "Scheduling..." : "Confirm Schedule"}
                   </button>
@@ -751,12 +783,11 @@ function Ride() {
               </div>
             )}
 
-            {/* Error Messages */}
             {error && (
-              <div className="p-3 bg-red-100 text-red-700 rounded-lg flex items-start gap-2">
+              <div className="flex items-start gap-2 rounded-lg bg-red-100 p-3 text-red-700">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mt-0.5 flex-shrink-0"
+                  className="mt-0.5 h-5 w-5 flex-shrink-0"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -774,10 +805,10 @@ function Ride() {
             )}
 
             {locationError && (
-              <div className="p-3 bg-red-100 text-red-700 rounded-lg flex items-start gap-2">
+              <div className="flex items-start gap-2 rounded-lg bg-red-100 p-3 text-red-700">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-5 w-5 mt-0.5 flex-shrink-0"
+                  className="mt-0.5 h-5 w-5 flex-shrink-0"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -794,9 +825,8 @@ function Ride() {
               </div>
             )}
 
-            {/* Route Details */}
             {routeDetails && (
-              <div className="bg-gray-800 p-4 rounded-lg space-y-2">
+              <div className="space-y-2 rounded-lg bg-gray-800 p-4">
                 <div className="flex items-center gap-2 text-[#FFD12E]">
                   <ClockIcon />
                   <p className="font-medium">{routeDetails.duration}</p>
@@ -822,19 +852,18 @@ function Ride() {
               </div>
             )}
 
-            {/* Action Buttons */}
-            <div className="flex flex-col md:flex-row gap-4 justify-center">
+            <div className="flex flex-col justify-center gap-4 md:flex-row">
               {!routeDetails ? (
                 <>
                   <button
                     type="submit"
                     disabled={loading || rideStatus === "searching"}
-                    className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
+                    className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] px-6 py-3 font-medium text-black transition-opacity hover:opacity-90 disabled:opacity-50"
                   >
                     {loading ? (
                       <>
                         <svg
-                          className="animate-spin h-5 w-5 mr-3"
+                          className="mr-3 h-5 w-5 animate-spin"
                           viewBox="0 0 24 24"
                         >
                           <circle
@@ -862,7 +891,7 @@ function Ride() {
                   <button
                     type="button"
                     onClick={() => setShowScheduleForm(!showScheduleForm)}
-                    className="flex-1 px-6 py-3 border-2 border-[#ad9481] text-[#FF7C1D] font-medium rounded-full hover:bg-[#FF7C1D]/10 transition-colors"
+                    className="flex-1 rounded-full border-2 border-[#ad9481] px-6 py-3 font-medium text-[#FF7C1D] transition-colors hover:bg-[#FF7C1D]/10"
                     disabled={loading || rideStatus === "searching"}
                   >
                     {showScheduleForm ? "CANCEL SCHEDULE" : "SCHEDULE LATER"}
@@ -874,9 +903,9 @@ function Ride() {
                     <button
                       type="button"
                       disabled
-                      className="flex items-center justify-center  px-3 py-3 bg-gradient-to-r from-blue-500 to-blue-600 text-white font-medium rounded-full"
+                      className="flex items-center justify-center rounded-full bg-gradient-to-r from-blue-500 to-blue-600 px-3 py-3 font-medium text-white"
                     >
-                      <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                      <svg className="h-5 w-5 animate-spin" viewBox="0 0 24 24">
                         <circle
                           className="opacity-25"
                           cx="12"
@@ -898,26 +927,24 @@ function Ride() {
                     <button
                       type="button"
                       disabled
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-green-500 to-green-600 text-white font-medium rounded-full"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-green-500 to-green-600 px-6 py-3 font-medium text-white"
                     >
                       DRIVER ON THE WAY
                     </button>
                   ) : (
-                    
-                      <button
+                    <button
                       type="button"
                       onClick={handleStartRide}
                       disabled={rideStatus === "searching"}
-                      className="flex-1 flex items-center justify-center gap-2 px-6 py-3 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-black font-medium rounded-full hover:opacity-90 transition-opacity disabled:opacity-50"
+                      className="flex flex-1 items-center justify-center gap-2 rounded-full bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] px-6 py-3 font-medium text-black transition-opacity hover:opacity-90 disabled:opacity-50"
                     >
                       START RIDE
                     </button>
-                    
                   )}
                   <button
                     type="button"
                     onClick={handleCancelTrip}
-                    className="flex-1 px-6 py-3 bg-red-600 text-white font-medium rounded-full hover:bg-red-700 transition-colors"
+                    className="flex-1 rounded-full bg-red-600 px-6 py-3 font-medium text-white transition-colors hover:bg-red-700"
                   >
                     CANCEL TRIP
                   </button>
@@ -926,21 +953,17 @@ function Ride() {
             </div>
           </form>
 
-       
-
-          {/* Scheduled Rides Section */}
           <div className="mt-6">
             <button
               onClick={() => setShowScheduledRides(!showScheduledRides)}
-              className="w-full py-2 bg-black text-[#FFD12E] rounded-lg hover:bg-black transition-colors  "
+              className="w-full rounded-lg bg-black py-2 text-[#FFD12E] transition-colors hover:bg-black"
             >
               {showScheduledRides ? "Hide" : "View"} Scheduled Rides
             </button>
-            
 
             {showScheduledRides && (
-              <div className="mt-4 bg-black rounded-lg p-4 ">
-                <h3 className="text-lg font-medium text-[#FFD12E] mb-3">
+              <div className="mt-4 rounded-lg bg-black p-4">
+                <h3 className="mb-3 text-lg font-medium text-[#FFD12E]">
                   Your Scheduled Rides
                 </h3>
                 {scheduledRides.length === 0 ? (
@@ -950,7 +973,7 @@ function Ride() {
                     {scheduledRides.map((ride) => (
                       <li
                         key={ride._id}
-                        className="bg-gray-700 p-3 rounded-lg flex justify-between items-center"
+                        className="flex items-center justify-between rounded-lg bg-gray-700 p-3"
                       >
                         <div>
                           <p className="text-[#FF7C1D]">
@@ -962,35 +985,31 @@ function Ride() {
                         </div>
                         <button
                           onClick={() => cancelScheduledRide(ride._id)}
-                          className="px-3 py-1 bg-red-600 text-white rounded text-sm hover:bg-red-700"
+                          className="rounded bg-red-600 px-3 py-1 text-sm text-white hover:bg-red-700"
                         >
                           Cancel
                         </button>
                       </li>
                     ))}
-                    
                   </ul>
                 )}
-                
               </div>
-              
             )}
-             {/* Reset Button */}
-          <div className="mt-1 bg-black rounded-lg p-2">
-            <button
-              type="button"
-              onClick={handleReset}
-              className="w-full py-1/2 bg-black text-[#FFD12E] rounded-lg hover:bg-black transition-colors"
-            >
-              Finish Trip
-            </button>
-          </div>
+
+            <div className="mt-1 rounded-lg bg-black p-2">
+              <button
+                type="button"
+                onClick={handleReset}
+                className="py-1/2 w-full rounded-lg bg-black text-[#FFD12E] transition-colors hover:bg-black"
+              >
+                Finish Trip
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Right Panel - Illustration */}
-        <div className="w-full lg:w-1/2 flex justify-center items-center mt-8 lg:mt-0">
-          <div className="w-full h-full flex items-center justify-center">
+        <div className="mt-8 flex w-full items-center justify-center lg:mt-0 lg:w-1/2">
+          <div className="flex h-full w-full items-center justify-center">
             <img
               src={ridecar}
               alt="Ride illustration"
@@ -1000,13 +1019,12 @@ function Ride() {
         </div>
       </div>
 
-      {/* Map Section */}
       <div className="w-full px-4 pb-8">
-        <div className="w-full h-[500px] rounded-xl overflow-hidden border border-gray-200 shadow-md relative">
+        <div className="relative h-[500px] w-full overflow-hidden rounded-xl border border-gray-200 shadow-md">
           {loading && (
-            <div className="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center z-10">
-              <div className="text-white text-lg flex items-center gap-2">
-                <svg className="animate-spin h-6 w-6" viewBox="0 0 24 24">
+            <div className="bg-opacity-50 absolute inset-0 z-10 flex items-center justify-center bg-black">
+              <div className="flex items-center gap-2 text-lg text-white">
+                <svg className="h-6 w-6 animate-spin" viewBox="0 0 24 24">
                   <circle
                     className="opacity-25"
                     cx="12"
@@ -1027,7 +1045,7 @@ function Ride() {
             </div>
           )}
           {mapUrl ? (
-            <div className="relative w-full h-full">
+            <div className="relative h-full w-full">
               <iframe
                 title="Route Map"
                 width="100%"
@@ -1037,23 +1055,30 @@ function Ride() {
                 allowFullScreen
                 referrerPolicy="no-referrer-when-downgrade"
                 src={mapUrl}
-                onError={() => setError("Failed to load map. Please try again.")}
+                onError={() =>
+                  setError("Failed to load map. Please try again.")
+                }
               />
               {rideStatus === "accepted" && driverLocation && (
-                <div className="absolute bottom-4 left-4 bg-white p-3 rounded-lg shadow-md">
+                <div className="absolute bottom-4 left-4 rounded-lg bg-white p-3 shadow-md">
                   <p className="font-medium">Driver Location</p>
-                  <p><strong>Address:</strong> {driverAddress}</p>
-                  <p><strong>Coordinates:</strong> {driverLocation.lat.toFixed(4)}, {driverLocation.lng.toFixed(4)}</p>
-                  {/* <p><strong>Progress:</strong> {Math.round(rideProgress)}%</p> */}
+                  <p>
+                    <strong>Address:</strong> {driverAddress}
+                  </p>
+                  <p>
+                    <strong>Coordinates:</strong>{" "}
+                    {driverLocation.lat.toFixed(4)},{" "}
+                    {driverLocation.lng.toFixed(4)}
+                  </p>
                 </div>
               )}
             </div>
           ) : (
-            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+            <div className="flex h-full w-full items-center justify-center bg-gray-100">
               {loading || isGettingLocation ? (
                 <div className="flex flex-col items-center gap-2">
                   <svg
-                    className="animate-spin h-8 w-8 text-[#FF7C1D]"
+                    className="h-8 w-8 animate-spin text-[#FF7C1D]"
                     viewBox="0 0 24 24"
                   >
                     <circle
@@ -1075,7 +1100,9 @@ function Ride() {
                 </div>
               ) : (
                 <div className="text-center">
-                  <p className="text-gray-500 mb-4">Enter locations to see the route map</p>
+                  <p className="mb-4 text-gray-500">
+                    Enter locations to see the route map
+                  </p>
                 </div>
               )}
             </div>

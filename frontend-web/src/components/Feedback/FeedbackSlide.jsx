@@ -4,27 +4,27 @@ const FeedbackSlide = ({ feedback }) => {
   const userInitial = username.charAt(0).toUpperCase();
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow-xl max-w-md mx-auto border border-gray-300">
-      <div className="flex items-center mb-4">
+    <div className="mx-auto max-w-md rounded-lg border border-gray-300 bg-white p-6 shadow-xl">
+      <div className="mb-4 flex items-center">
         {userPhoto ? (
           <img
             src={userPhoto}
             alt={username}
-            className="w-12 h-12 rounded-full object-cover mr-4"
+            className="mr-4 h-12 w-12 rounded-full object-cover"
           />
         ) : (
-          <div className="w-12 h-12 rounded-full bg-gray-300 flex items-center justify-center mr-4">
-            <span className="text-gray-600 text-lg">{userInitial}</span>
+          <div className="mr-4 flex h-12 w-12 items-center justify-center rounded-full bg-gray-300">
+            <span className="text-lg text-gray-600">{userInitial}</span>
           </div>
         )}
         <h3 className="text-lg font-semibold">{username}</h3>
       </div>
 
-      <div className="flex mb-4">
+      <div className="mb-4 flex">
         {[...Array(5)].map((_, i) => (
           <svg
             key={i}
-            className={`w-6 h-6 ${i < feedback.rating ? "text-yellow-400" : "text-gray-300"}`}
+            className={`h-6 w-6 ${i < feedback.rating ? "text-yellow-400" : "text-gray-300"}`}
             fill="currentColor"
             viewBox="0 0 20 20"
           >
@@ -34,7 +34,7 @@ const FeedbackSlide = ({ feedback }) => {
       </div>
 
       <p className="text-gray-700 italic">"{feedback.note}"</p>
-      <p className="text-sm text-gray-500 mt-2">
+      <p className="mt-2 text-sm text-gray-500">
         {new Date(feedback.createdAt).toLocaleDateString()}
       </p>
     </div>

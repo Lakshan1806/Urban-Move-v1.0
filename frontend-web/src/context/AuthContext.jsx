@@ -1,4 +1,4 @@
-import React, {
+import {
   createContext,
   useState,
   useEffect,
@@ -281,7 +281,7 @@ const AuthProvider = ({ children }) => {
       setError(null);
       window.open(
         `http://localhost:5000/auth/google?intent=${intent}`,
-        "_self"
+        "_self",
       );
     } catch (error) {
       setError("Failed to initiate Google login");

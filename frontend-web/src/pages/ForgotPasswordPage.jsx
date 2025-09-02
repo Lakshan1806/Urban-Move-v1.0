@@ -19,15 +19,15 @@ const ForgotPasswordPage = () => {
   };
 
   return (
-    <div className="  bg-gray-800  rounded-2xl shadow-lg max-w-md mx-auto mt-44 ">
+    <div className="mx-auto mt-44 max-w-md rounded-2xl bg-gray-800 shadow-lg">
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent  bg-clip-text">
+        <h2 className="mb-6 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-center text-3xl font-bold text-transparent">
           Forgot Password
         </h2>
 
         {!isSubmitted ? (
           <form onSubmit={handleSubmit}>
-            <p className="text-gray-300 mb-6 text-center">
+            <p className="mb-6 text-center text-gray-300">
               Enter your email address and we'll send you a link to reset your
               password.
             </p>
@@ -36,15 +36,15 @@ const ForgotPasswordPage = () => {
               placeholder="Email Address"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full p-3 mb-4 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="mb-4 w-full rounded-lg bg-gray-700 p-3 text-gray-200 focus:ring-2 focus:ring-green-500 focus:outline-none"
               required
             />
             <button
-              className="w-full py-3 px-4 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent  bg-clip-text cursor-pointer "
+              className="w-full cursor-pointer bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text px-4 py-3 text-transparent"
               type="submit"
             >
               {isLoading ? (
-                <Loader className="animate-spin h-5 w-5" />
+                <Loader className="h-5 w-5 animate-spin" />
               ) : (
                 "Send Reset Link"
               )}
@@ -52,10 +52,10 @@ const ForgotPasswordPage = () => {
           </form>
         ) : (
           <div className="text-center">
-            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+            <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-green-500">
               <Mail className="h-8 w-8 text-white" />
             </div>
-            <p className="text-gray-300 mb-6">
+            <p className="mb-6 text-gray-300">
               If an account exists for {email}, you will receive a password
               reset link shortly.
             </p>
@@ -63,12 +63,12 @@ const ForgotPasswordPage = () => {
         )}
       </div>
 
-      <div className="px-8 py-4 bg-gray-900 bg-opacity-50 flex justify-center">
+      <div className="bg-opacity-50 flex justify-center bg-gray-900 px-8 py-4">
         <Link
           to={"/login"}
-          className="text-sm hover:underline flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text"
-          >
-          <ArrowLeft className="h-4 w-4 mr-2" /> Back to Login
+          className="flex items-center bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-sm text-transparent hover:underline"
+        >
+          <ArrowLeft className="mr-2 h-4 w-4" /> Back to Login
         </Link>
       </div>
     </div>

@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useState,
-  useEffect,
-  useCallback,
-  useContext,
-} from "react";
+import { createContext, useState, useCallback, useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
@@ -17,17 +11,7 @@ const DriverAuthProvider = ({ children }) => {
   const [error, setError] = useState(null);
   const [registrationStep, setRegistrationStep] = useState(1);
   const navigate = useNavigate();
-  /*   useEffect(() => {
-    const initializeAuth = async () => {
-      await checkAuth();
-      const urlParams = new URLSearchParams(window.location.search);
-      if (urlParams.get("source") === "google") {
-        navigate("/");
-      }
-    };
 
-    initializeAuth();
-  }, [checkAuth, navigate]); */
   const register = {
     start: async (username, password) => {
       try {
@@ -116,7 +100,7 @@ const DriverAuthProvider = ({ children }) => {
             headers: {
               "Content-Type": "multipart/form-data",
             },
-          }
+          },
         );
         setRegistrationStep(7);
         return response.data;
@@ -273,8 +257,8 @@ const DriverAuthProvider = ({ children }) => {
     try {
       setError(null);
       window.open(
-      `http://localhost:5000/auth/google/driver?intent=${intent}`,
-        "_self"
+        `http://localhost:5000/auth/google/driver?intent=${intent}`,
+        "_self",
       );
     } catch (error) {
       setError("Failed to initiate Google login");

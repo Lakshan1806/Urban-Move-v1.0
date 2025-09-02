@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import OtpInput from "./otp-input";
 import Line1 from "../signup_photos/liner1.svg";
 import arrow from "../signup_photos/arrowvector.svg";
 import { FaArrowRight } from "react-icons/fa";
 
-// Custom useCountdown hook
 const useCountdown = (initialSeconds = 30) => {
   const [secondsLeft, setSecondsLeft] = useState(initialSeconds);
   const [isActive, setIsActive] = useState(false);
@@ -53,7 +52,6 @@ const OtpVerification = ({
     reset: resetPhoneTimer,
   } = useCountdown(60);
 
-  // Auto-start timer when component mounts (when OTP step is reached)
   useEffect(() => {
     if (autoStartTimer) {
       startPhoneTimer();
@@ -93,14 +91,14 @@ const OtpVerification = ({
   };
 
   return (
-    <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
-      <h1 className="text-grad-stroke font-[300] text-[36px]" data-text={title}>
+    <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-35">
+      <h1 className="text-grad-stroke text-[36px] font-[300]" data-text={title}>
         {title}
       </h1>
-      <p className="font-[700] text-[20px]">{subtitle}</p>
+      <p className="text-[20px] font-[700]">{subtitle}</p>
       <img src={Line1} className="h-auto w-full" alt="Line" />
 
-      {error && <p className="text-red-500 text-center">{error}</p>}
+      {error && <p className="text-center text-red-500">{error}</p>}
 
       <form onSubmit={handleVerifySubmit}>
         <OtpInput
@@ -108,11 +106,11 @@ const OtpVerification = ({
           onOtpSubmit={handleOtpSubmit}
           disabled={loading}
         />
-        <div className="w-full flex justify-center mt-4">
+        <div className="mt-4 flex w-full justify-center">
           <div className="button-wrapper">
             <button
               type="submit"
-              className="button-primary flex gap-2 justify-center items-center"
+              className="button-primary flex items-center justify-center gap-2"
               disabled={loading || !otp || otp.length !== otpLength}
             >
               {loading ? "VERIFYING..." : "CONTINUE"}
@@ -128,7 +126,7 @@ const OtpVerification = ({
         className={`${
           isPhoneActive || loading
             ? "text-gray-400"
-            : "bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text"
+            : "bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-transparent"
         }`}
       >
         {isPhoneActive ? `Resend in ${phoneSecondsLeft}s` : "Resend OTP"}

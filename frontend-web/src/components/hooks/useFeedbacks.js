@@ -1,5 +1,5 @@
-import { useState, useEffect } from 'react';
-import axios from 'axios';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
 const useFeedbacks = () => {
   const [feedbacks, setFeedbacks] = useState([]);
@@ -9,7 +9,7 @@ const useFeedbacks = () => {
   useEffect(() => {
     const fetchFeedbacks = async () => {
       try {
-        const response = await axios.get('/api/feedbacks');
+        const response = await axios.get("/api/feedbacks");
         setFeedbacks(response.data);
         setLoading(false);
       } catch (err) {

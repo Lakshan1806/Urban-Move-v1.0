@@ -10,29 +10,28 @@ import Footer from "../components/Footer";
 
 function Drive() {
   return (
-    <div className="h-full flex flex-col ">
-      <div className="flex ">
+    <div className="flex h-full flex-col">
+      <div className="flex">
         <Navbardrive />
       </div>
-      <div className="flex-1 flex flex-col overflow-y-auto  min-h-0 snap-y snap-mandatory scroll-smooth">
-        <div className="grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
+      <div className="flex min-h-0 flex-1 snap-y snap-mandatory flex-col overflow-y-auto scroll-smooth">
+        <div className="grid h-full shrink-0 snap-start grid-cols-12 grid-rows-12">
           <Drive1stpageleft />
         </div>
-        <div className="hidden lg:grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          <div className="col-span-12 px-4 py-2 text-center font-semibold flex justify-center items-center text-xl sm:text-2xl md:text-3xl lg:text-[30px]">
+        <div className="hidden h-full shrink-0 snap-start grid-cols-12 grid-rows-12 lg:grid">
+          <div className="col-span-12 flex items-center justify-center px-4 py-2 text-center text-xl font-semibold sm:text-2xl md:text-3xl lg:text-[30px]">
             Why become a rideshare driver?
           </div>
-          <div className="col-span-12 lg:col-span-6 h-dvh">
+          <div className="col-span-12 h-dvh lg:col-span-6">
             <Drive2ndpageleft />
           </div>
-          <div className="col-span-12 lg:col-span-6 h-dvh">
+          <div className="col-span-12 h-dvh lg:col-span-6">
             <Drive2ndpageright />
           </div>
         </div>
 
-        {/* Second page - Mobile version (below lg) - Left section */}
-        <div className="lg:hidden grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          <div className="col-span-12 px-4 py-2 text-center font-semibold flex justify-center items-center text-xl sm:text-2xl md:text-3xl">
+        <div className="grid h-full shrink-0 snap-start grid-cols-12 grid-rows-12 lg:hidden">
+          <div className="col-span-12 flex items-center justify-center px-4 py-2 text-center text-xl font-semibold sm:text-2xl md:text-3xl">
             Why become a rideshare driver?
           </div>
           <div className="col-span-12 h-full">
@@ -40,85 +39,81 @@ function Drive() {
           </div>
         </div>
 
-        {/* Second page - Mobile version (below lg) - Right section */}
-        <div className="lg:hidden grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
+        <div className="grid h-full shrink-0 snap-start grid-cols-12 grid-rows-12 lg:hidden">
           <div className="col-span-12 h-full">
             <Drive2ndpageright />
           </div>
         </div>
 
-        <div className="hidden lg:grid grid-cols-12 grid-rows-12 h-screen lg:h-full shrink-0 snap-start">
-          <h1 className=" col-span-12 row-span-1 text-3xl font-semibold text-center">
+        <div className="hidden h-screen shrink-0 snap-start grid-cols-12 grid-rows-12 lg:grid lg:h-full">
+          <h1 className="col-span-12 row-span-1 text-center text-3xl font-semibold">
             Here's what you need to become a driver
           </h1>
 
           <img
             src={img3}
             alt="img3"
-            className="col-span-12  row-span-7 w-full h-full object-cover"
+            className="col-span-12 row-span-7 h-full w-full object-cover"
           />
 
-          <div className="col-span-12 row-span-5 w-full h-full ">
+          <div className="col-span-12 row-span-5 h-full w-full">
             <Drive3rdpage />
           </div>
         </div>
-        {/* 3 rd page - Mobile version (below lg) - heading & image */}
-        <div className="lg:hidden flex flex-col h-full shrink-0 snap-start">
-          <h1 className="text-2xl md:text-3xl font-semibold text-center px-4 py-4 bg-white">
+
+        <div className="flex h-full shrink-0 snap-start flex-col lg:hidden">
+          <h1 className="bg-white px-4 py-4 text-center text-2xl font-semibold md:text-3xl">
             Here's what you need to become a driver
           </h1>
           <div className="flex-1">
             <img
               src={img3}
               alt="img3"
-              className=" w-full h-full object-center"
+              className="h-full w-full object-center"
             />
           </div>
         </div>
 
-        {/* Third page - Mobile version - Content section */}
-        <div className="lg:hidden grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          <div className="col-span-12 row-span-12 w-full h-full ">
+        <div className="grid h-full shrink-0 snap-start grid-cols-12 grid-rows-12 lg:hidden">
+          <div className="col-span-12 row-span-12 h-full w-full">
             <Drive3rdpage />
           </div>
         </div>
 
-        <div className="hidden lg:grid grid-cols-12 grid-rows-12 h-screen lg:h-full shrink-0 snap-start">
-          <h1 className=" col-span-12 row-span-1 text-3xl font-semibold text-center">
+        <div className="hidden h-screen shrink-0 snap-start grid-cols-12 grid-rows-12 lg:grid lg:h-full">
+          <h1 className="col-span-12 row-span-1 text-center text-3xl font-semibold">
             Safty on the road
           </h1>
 
           <img
             src={img4}
             alt="img4"
-            className="col-span-12  row-span-7 w-full h-full object-cover"
+            className="col-span-12 row-span-7 h-full w-full object-cover"
           />
 
-          <div className="col-span-12 row-span-5 w-full h-full ">
+          <div className="col-span-12 row-span-5 h-full w-full">
             <Drive4thpage />
           </div>
         </div>
 
-        {/* 4th page - Mobile version (below lg) - heading & image */}
-        <div className="lg:hidden flex flex-col h-full shrink-0 snap-start">
-          <h1 className="text-2xl md:text-3xl font-semibold text-center px-4 py-4 bg-white">
+        <div className="flex h-full shrink-0 snap-start flex-col lg:hidden">
+          <h1 className="bg-white px-4 py-4 text-center text-2xl font-semibold md:text-3xl">
             Safty on the road
           </h1>
 
           <img
             src={img4}
             alt="img4"
-            className="col-span-12  row-span-7 w-full h-full object-cover"
+            className="col-span-12 row-span-7 h-full w-full object-cover"
           />
         </div>
 
-        {/* 4th page - Mobile version - Content section */}
-        <div className="lg:hidden grid grid-cols-12 grid-rows-12 h-full shrink-0 snap-start">
-          <div className="col-span-12 row-span-12 w-full h-full ">
+        <div className="grid h-full shrink-0 snap-start grid-cols-12 grid-rows-12 lg:hidden">
+          <div className="col-span-12 row-span-12 h-full w-full">
             <Drive4thpage />
           </div>
         </div>
-        <div className=" h-[180px] shrink-0 snap-start">
+        <div className="h-[180px] shrink-0 snap-start">
           <Footer />
         </div>
       </div>

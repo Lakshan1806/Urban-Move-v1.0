@@ -22,7 +22,7 @@ const ResetPasswordPage = () => {
     }
     if (!strongPasswordRegex.test(password)) {
       setLocalError(
-        "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character"
+        "Password must be at least 6 characters and include: uppercase, lowercase, number, and special character",
       );
       return;
     }
@@ -39,13 +39,13 @@ const ResetPasswordPage = () => {
   };
 
   return (
-    <div className="bg-gradient-to-r from-gray-900 to-gray-800 rounded-2xl shadow-lg max-w-md mx-auto mt-44">
+    <div className="mx-auto mt-44 max-w-md rounded-2xl bg-gradient-to-r from-gray-900 to-gray-800 shadow-lg">
       <div className="p-8">
-        <h2 className="text-3xl font-bold mb-6 text-center bg-gradient-to-r from-green-400 to-emerald-500 text-transparent bg-clip-text">
+        <h2 className="mb-6 bg-gradient-to-r from-green-400 to-emerald-500 bg-clip-text text-center text-3xl font-bold text-transparent">
           Reset Password
         </h2>
-        {error && <p className="text-red-500 text-sm mb-4">{error}</p>}
-        {message && <p className="text-green-500 text-sm mb-4">{message}</p>}
+        {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
+        {message && <p className="mb-4 text-sm text-green-500">{message}</p>}
 
         <form onSubmit={handleSubmit}>
           <input
@@ -53,7 +53,7 @@ const ResetPasswordPage = () => {
             placeholder="New Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
-            className="w-full p-3 mb-4 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mb-4 w-full rounded-lg bg-gray-700 p-3 text-gray-200 focus:ring-2 focus:ring-green-500 focus:outline-none"
             required
           />
 
@@ -62,12 +62,12 @@ const ResetPasswordPage = () => {
             placeholder="Confirm New Password"
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
-            className="w-full p-3 mb-4 bg-gray-700 text-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+            className="mb-4 w-full rounded-lg bg-gray-700 p-3 text-gray-200 focus:ring-2 focus:ring-green-500 focus:outline-none"
             required
           />
 
           <button
-            className="w-full py-3 px-4 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent  bg-clip-text font-bold rounded-lg cursor-pointer"
+            className="w-full cursor-pointer rounded-lg bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text px-4 py-3 font-bold text-transparent"
             type="submit"
             disabled={isLoading}
           >

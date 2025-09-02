@@ -1,4 +1,4 @@
-import React, { useState, useContext, useEffect, useRef } from "react";
+import { useState, useContext, useEffect, useRef } from "react";
 import { AuthContext } from "../context/AuthContext";
 import imgc from "../signup_photos/signupcustomer.svg";
 import { Link } from "react-router-dom";
@@ -9,7 +9,6 @@ import success from "../signup_photos/success.svg";
 import useCountdown from "../components/hooks/useCountdown";
 import GoogleLoginButton from "../components/GoogleLogin";
 import { FaArrowRight } from "react-icons/fa";
-import getToastSeverity from "../utils/getToastSeverity";
 import { Toast } from "primereact/toast";
 
 const Register = () => {
@@ -225,44 +224,44 @@ const Register = () => {
   };
 
   return (
-    <div className="flex flex-col items-center w-full h-full px-0 py-0  overflow-auto min-h-0">
+    <div className="flex h-full min-h-0 w-full flex-col items-center overflow-auto px-0 py-0">
       {registrationStep === 1 && (
         <img
           src={imgc}
           alt="Signup Background"
-          className=" absolute z-0 w-full h-[700px] hidden lg:block pt-0"
+          className="absolute z-0 hidden h-[700px] w-full pt-0 lg:block"
         />
       )}
 
-      <div className="flex flex-col px-0.5 z-10 lg:pt-[90px]">
+      <div className="z-10 flex flex-col px-0.5 lg:pt-[90px]">
         {registrationStep === 1 && (
-          <form onSubmit={handleSubmit} className="lg:w-[240px] pl-2 ">
-            <h2 className="text-center text-[18px] sm:text-[22px]  font-medium bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
+          <form onSubmit={handleSubmit} className="pl-2 lg:w-[240px]">
+            <h2 className="bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-center text-[18px] font-medium text-transparent sm:text-[22px]">
               Signup as a Customer
             </h2>
 
-            <label className="block text-[18px] sm:text-[20px] p-0.5 font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text my-1">
+            <label className="my-1 block bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text p-0.5 font-sans text-[18px] font-medium text-transparent sm:text-[20px]">
               Username
             </label>
             <input
               type="text"
               name="username"
               placeholder="Enter your username"
-              className="bg-white w-full p-1 border rounded border-[#FFD12E]"
+              className="w-full rounded border border-[#FFD12E] bg-white p-1"
               value={formData.username}
               onChange={handleChange}
               required
               disabled={loading}
             />
 
-            <label className="block text-[18px] sm:text-[20px] font-medium font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text my-1">
+            <label className="my-1 block bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-[18px] font-medium text-transparent sm:text-[20px]">
               Password
             </label>
             <input
               type="password"
               name="password"
               placeholder="Enter your password"
-              className="bg-white w-full p-1 border rounded border-[#FFD12E]"
+              className="w-full rounded border border-[#FFD12E] bg-white p-1"
               value={formData.password}
               onChange={handleChange}
               required
@@ -271,7 +270,7 @@ const Register = () => {
             <div className="button-wrapper m-3">
               <button
                 type="submit"
-                className="button-primary flex gap-2 justify-center items-center "
+                className="button-primary flex items-center justify-center gap-2"
                 disabled={loading}
               >
                 {loading ? "PROCESSING..." : "SIGN UP"}
@@ -279,9 +278,9 @@ const Register = () => {
               </button>
             </div>
 
-            <img src={imgl} alt="Divider" className="w-full h-auto" />
+            <img src={imgl} alt="Divider" className="h-auto w-full" />
             <GoogleLoginButton intent="signup" />
-            <p className="text-center text-[14px]  mt-4 font-medium bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text">
+            <p className="mt-4 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text text-center text-[14px] font-medium text-transparent">
               <Link to="/signin">Already have an account? Sign in</Link>
             </p>
           </form>
@@ -289,14 +288,14 @@ const Register = () => {
 
         {registrationStep === 2 && (
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-30">
+            <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-30">
               <h1
-                className="text-grad-stroke font-[300] text-[36px]"
+                className="text-grad-stroke text-[36px] font-[300]"
                 data-text="Enter your Mobile Number"
               >
                 Enter your Mobile Number
               </h1>
-              <p className="font-[700] text-[20px]">
+              <p className="text-[20px] font-[700]">
                 We will send a verification code to this number
               </p>
 
@@ -308,14 +307,14 @@ const Register = () => {
                 placeholder="e.g., 0771234567 or +94771234567"
                 value={formData.phoneNumber}
                 onChange={handleChange}
-                className="bg-white lg:w-80 w-full  p-2 border rounded border-[#FFD12E]"
+                className="w-full rounded border border-[#FFD12E] bg-white p-2 lg:w-80"
                 required
                 disabled={loading}
               />
               <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="button-primary flex gap-2 justify-center items-center"
+                  className="button-primary flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   {loading ? "SENDING..." : "CONTINUE"}
@@ -327,15 +326,15 @@ const Register = () => {
         )}
 
         {registrationStep === 3 && (
-          <form onSubmit={handleSubmit} className="lg:pb-0 pb-25">
-            <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-30">
+          <form onSubmit={handleSubmit} className="pb-25 lg:pb-0">
+            <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-30">
               <h1
-                className="text-grad-stroke font-[300] text-[36px]"
+                className="text-grad-stroke text-[36px] font-[300]"
                 data-text="Verify your Mobile Number"
               >
                 Verify your Mobile Number
               </h1>
-              <p className="font-[700] text-[20px]">
+              <p className="text-[20px] font-[700]">
                 We sent a verification code to your phone
               </p>
               <img src={Line1} className="h-auto w-full" />
@@ -349,7 +348,7 @@ const Register = () => {
               <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="button-primary flex gap-2 justify-center items-center"
+                  className="button-primary flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   {loading ? "VERIFYING..." : "CONTINUE"}
@@ -359,7 +358,7 @@ const Register = () => {
               <button
                 onClick={handleResendPhoneOtp}
                 disabled={isPhoneActive || loading}
-                className={`${isPhoneActive || loading ? "text-gray-400" : "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"}`}
+                className={`${isPhoneActive || loading ? "text-gray-400" : "cursor-pointer bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-transparent"}`}
               >
                 {isPhoneActive
                   ? `Resend in ${phoneSecondsLeft}s`
@@ -373,12 +372,12 @@ const Register = () => {
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col items-center justify-center gap-[25px] pt-30">
               <h1
-                className="text-grad-stroke font-[300] text-[36px]"
+                className="text-grad-stroke text-[36px] font-[300]"
                 data-text="Enter your Email Address"
               >
                 Enter your Email Address
               </h1>
-              <p className="font-[700] text-[20px] ">
+              <p className="text-[20px] font-[700]">
                 We will send a verification code to this email
               </p>
               <img src={Line1} className="h-auto w-full" />
@@ -389,14 +388,14 @@ const Register = () => {
                 placeholder="Enter your email address"
                 value={formData.email}
                 onChange={handleChange}
-                className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
+                className="w-80 rounded border border-[#FFD12E] bg-white p-2"
                 required
                 disabled={loading}
               />
               <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="button-primary flex gap-2 justify-center items-center"
+                  className="button-primary flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   {loading ? "SENDING..." : "CONTINUE"}
@@ -409,14 +408,14 @@ const Register = () => {
 
         {registrationStep === 5 && (
           <form onSubmit={handleSubmit}>
-            <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-30">
+            <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-30">
               <h1
-                className="text-grad-stroke font-[300] text-[36px]"
+                className="text-grad-stroke text-[36px] font-[300]"
                 data-text="Verify your email address"
               >
                 Verify your email address
               </h1>
-              <p className="font-[700] text-[20px]">
+              <p className="text-[20px] font-[700]">
                 We sent a verification code to your email
               </p>
               <img src={Line1} className="h-auto w-full" />
@@ -432,7 +431,7 @@ const Register = () => {
               <div className="button-wrapper">
                 <button
                   type="submit"
-                  className="button-primary flex gap-2 justify-center items-center"
+                  className="button-primary flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   {loading ? "VERIFYING..." : "CONTINUE"}
@@ -442,7 +441,7 @@ const Register = () => {
               <button
                 onClick={handleResendEmailOtp}
                 disabled={isEmailActive || loading}
-                className={`${isEmailActive || loading ? "text-gray-400" : "font-sans bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text cursor-pointer"}`}
+                className={`${isEmailActive || loading ? "text-gray-400" : "cursor-pointer bg-gradient-to-b from-[#FFD12E] to-[#FF7C1D] bg-clip-text font-sans text-transparent"}`}
               >
                 {isEmailActive
                   ? `Resend in ${emailSecondsLeft}s`
@@ -453,9 +452,9 @@ const Register = () => {
         )}
 
         {registrationStep === 6 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-30">
+          <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-30">
             <h1
-              className="text-grad-stroke font-[300] text-[36px]"
+              className="text-grad-stroke text-[36px] font-[300]"
               data-text="Account created successfully"
             >
               Account created successfully

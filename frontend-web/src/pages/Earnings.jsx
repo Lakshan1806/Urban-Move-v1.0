@@ -7,20 +7,20 @@ import earnings_pic5 from "../assets/Earnings-pics/earnings-pic5.svg";
 function Earnings() {
   return (
     <div className="">
-      <div className="bg-white px-8 ">
+      <div className="bg-white px-8">
         <div className="flex justify-between py-4">
-          <p className="text-black font-bold text-lg">EARNINGS</p>
-          <p className="text-yellow-600 font-medium cursor-pointer text-lg">
+          <p className="text-lg font-bold text-black">EARNINGS</p>
+          <p className="cursor-pointer text-lg font-medium text-yellow-600">
             Go back
           </p>
         </div>
 
-        <div className=" flex-col lg:flex-row justify-between pt-10 lg:pt-20 gap-6 flex items-center">
-          <div className="text-justify lg:w-2/7 ml-[60px] ">
-            <h1 className="text-[48px] font-bold mb-4 ">
+        <div className="flex flex-col items-center justify-between gap-6 pt-10 lg:flex-row lg:pt-20">
+          <div className="ml-[60px] text-justify lg:w-2/7">
+            <h1 className="mb-4 text-[48px] font-bold">
               Your earnings, explained
             </h1>
-            <p className="text-black text-[24px] leading-relaxed font-bold">
+            <p className="text-[24px] leading-relaxed font-bold text-black">
               There are multiple ways to earn with Urban Move. Scroll down to
               learn how your earnings are calculated and the factors that
               influence how much you can make.
@@ -31,26 +31,26 @@ function Earnings() {
             <img
               src={earnings_pic1}
               alt="Earnings"
-              className="w-[1150px] h-[600px] max-w-[1100px] rounded-[25px] "
+              className="h-[600px] w-[1150px] max-w-[1100px] rounded-[25px]"
             />
           </div>
         </div>
       </div>
       <div className="pt-[156px]">
-        <h1 class="text-[36px]  text-center mb-7 font-[700]">
+        <h1 class="mb-7 text-center text-[36px] font-[700]">
           How much can you make with Urban Move?
         </h1>
-        <p className="text-center mb-6 text-[32px] font-[400]">
+        <p className="mb-6 text-center text-[32px] font-[400]">
           Your earnings with the Driver app depend on where, when, and how often
           you choose to drive.
         </p>
 
-        <div className="grid md:grid-cols-2 gap-[248px] p-[99px]">
-          <div className=" p-4 rounded-lg">
-            <h2 className="text-[32px] font-[700] pl-[120px]">
+        <div className="grid gap-[248px] p-[99px] md:grid-cols-2">
+          <div className="rounded-lg p-4">
+            <h2 className="pl-[120px] text-[32px] font-[700]">
               Where you drive
             </h2>
-            <ul className="list-disc pl-4 mt-2 text-[24px] font-[400] text-justify">
+            <ul className="mt-2 list-disc pl-4 text-justify text-[24px] font-[400]">
               <li>
                 When demand for rides increases in certain areas, you can earn
                 more with our Demand Bonus.
@@ -62,11 +62,11 @@ function Earnings() {
             </ul>
           </div>
 
-          <div className=" p-4 rounded-lg">
-            <h2 className="text-[32px] font-[700] pl-[110px]">
+          <div className="rounded-lg p-4">
+            <h2 className="pl-[110px] text-[32px] font-[700]">
               When you're driving
             </h2>
-            <ul className="list-disc text-justify pl-4 mt-2 text-[24px] font-[400]">
+            <ul className="mt-2 list-disc pl-4 text-justify text-[24px] font-[400]">
               <li>
                 Choosing the best days and times to go online can make a
                 significant difference, and it varies by city.
@@ -79,7 +79,7 @@ function Earnings() {
           </div>
         </div>
 
-        <div className=" pt-[10px]  rounded-lg mt-6 text-center">
+        <div className="mt-6 rounded-lg pt-[10px] text-center">
           <h2 className="text-[32px] font-[700]">How much time</h2>
           <p className="mt-2 text-[24px] font-[400]">
             The amount of time you spend online is entirely up to you.
@@ -87,7 +87,7 @@ function Earnings() {
         </div>
 
         <div className="mt-6 text-center">
-          <h2 className="text-[32px] font-[700] pt-[80px]">
+          <h2 className="pt-[80px] text-[32px] font-[700]">
             How are earnings calculated?
           </h2>
           <p className="text-[24px] font-[400]">
@@ -97,30 +97,30 @@ function Earnings() {
           </p>
         </div>
         <div className=" ">
-          <h2 className="text-[32px] font-[700] pt-[80px] ml-[60px]">
+          <h2 className="ml-[60px] pt-[80px] text-[32px] font-[700]">
             It all starts with fares
           </h2>
-          <p className="text-[24px] font-[400] text-center mt-[35px]">
+          <p className="mt-[35px] text-center text-[24px] font-[400]">
             Fares are the amount you earn for completing a ride, and they vary
             depending on the time, region, or city.
           </p>
         </div>
       </div>
 
-      <div className="grid md:grid-cols-2 gap-[96px] p-[99px]">
+      <div className="grid gap-[96px] p-[99px] md:grid-cols-2">
         <div>
-          <div className=" p-4 rounded-lg">
-            <div className="center-container ">
+          <div className="rounded-lg p-4">
+            <div className="center-container">
               <img
                 src={earnings_pic2}
                 alt="Earnings"
-                className="w-[440px] h-[285px] "
+                className="h-[285px] w-[440px]"
               />
             </div>
-            <h2 className="text-[32px] font-[700] text-center">
+            <h2 className="text-center text-[32px] font-[700]">
               Per-minute and per-mile
             </h2>
-            <ul className="list-disc pl-4 mt-2 text-[24px] font-[400] text-justify">
+            <ul className="mt-2 list-disc pl-4 text-justify text-[24px] font-[400]">
               <li>
                 In some cities, you'll earn a base fare, plus additional money
                 for the time and distance you travel (these rates vary by city).
@@ -133,16 +133,16 @@ function Earnings() {
           </div>
         </div>
 
-        <div className=" p-4 rounded-lg">
+        <div className="rounded-lg p-4">
           <div className="center-container items-center">
             <img
               src={earnings_pic3}
               alt="Earnings"
-              className="w-[440px] h-[285px]   "
+              className="h-[285px] w-[440px]"
             />
           </div>
-          <h2 className="text-[32px] font-[700] text-center">Upfront Fares</h2>
-          <ul className="list-disc pl-4 mt-2 text-[24px] font-[400] text-justify">
+          <h2 className="text-center text-[32px] font-[700]">Upfront Fares</h2>
+          <ul className="mt-2 list-disc pl-4 text-justify text-[24px] font-[400]">
             <li>
               In some cities, you can see how much you'll make and where you'll
               go before you accept a trip.
@@ -158,19 +158,20 @@ function Earnings() {
           </ul>
         </div>
       </div>
-      <div className=" mx-auto p-[156px]">
-        <h1 class="text-[36px]  text-center mb-7 font-[700]">
+      <div className="mx-auto p-[156px]">
+        <h1 class="mb-7 text-center text-[36px] font-[700]">
           More factors that impact fares{" "}
         </h1>
-        <p className="text-center mb-6 text-[32px] font-[400]">
+        <p className="mb-6 text-center text-[32px] font-[400]">
           Regardless of your city or region, a few additional factors will
           determine how much you'll earn for each ride.
         </p>
 
-        <div className=" p-4 rounded-lg mt-6 text-center">
+        <div className="mt-6 rounded-lg p-4 text-center">
           <h2 className="text-[32px] font-[700]">Reservations</h2>
           <p className="mt-2 text-[24px] font-[400]">
-            Make extra money by accepting rides that passengers book in advance.{" "}
+            Make extra money by accepting rides that passengers book in
+            advance.{" "}
           </p>
         </div>
 
@@ -191,35 +192,35 @@ function Earnings() {
           </p>
         </div>
       </div>
-      <div className="mt-6  ">
-        <h2 className="text-[32px] font-[700] ml-[60px]">
+      <div className="mt-6">
+        <h2 className="ml-[60px] text-[32px] font-[700]">
           Next, add in promotions
         </h2>
-        <p className="text-[24px] font-[400] ml-[90px]">
+        <p className="ml-[90px] text-[24px] font-[400]">
           Promotions are a simple way to boost your earnings. Check the Driver
           app to stay updated on the latest promotions available to you.
         </p>
-        <div className="flex gap-[380px] justify-center items-center mt-[40px] ml-[180px] ">
-          <div className="lg:w-1/2 pr-30">
+        <div className="mt-[40px] ml-[180px] flex items-center justify-center gap-[380px]">
+          <div className="pr-30 lg:w-1/2">
             <img
               src={earnings_pic4}
               alt="Earnings"
-              className="w-[420px] h-[550px] "
+              className="h-[550px] w-[420px]"
             />
           </div>
-          <div className="lg:w-1/2 pr-30">
+          <div className="pr-30 lg:w-1/2">
             <img
               src={earnings_pic5}
               alt="Earnings"
-              className="w-[420px] h-[550px]"
+              className="h-[550px] w-[420px]"
             />
           </div>
         </div>
       </div>
-      <div className="grid md:grid-cols-2 gap-6 p-[99px]">
-        <div className=" p-4 rounded-lg">
-          <h2 className="text-[32px] font-[700] text-center">Demand Bonus</h2>
-          <ul className="list-disc pl-4 mt-2 text-[24px] font-[400] text-justify">
+      <div className="grid gap-6 p-[99px] md:grid-cols-2">
+        <div className="rounded-lg p-4">
+          <h2 className="text-center text-[32px] font-[700]">Demand Bonus</h2>
+          <ul className="mt-2 list-disc pl-4 text-justify text-[24px] font-[400]">
             <li>When demand increases, earnings for rides go up.</li>
             <li>
               Look out for Demand Bonus zones in the Driver app to boost your
@@ -228,9 +229,9 @@ function Earnings() {
           </ul>
         </div>
 
-        <div className=" p-4 rounded-lg">
-          <h2 className="text-[32px] font-[700] text-center">Quests</h2>
-          <ul className="list-disc pl-4 mt-2 text-[24px] font-[400]">
+        <div className="rounded-lg p-4">
+          <h2 className="text-center text-[32px] font-[700]">Quests</h2>
+          <ul className="mt-2 list-disc pl-4 text-[24px] font-[400]">
             <li>
               Earn extra by completing a set number of trips within a specified
               time.

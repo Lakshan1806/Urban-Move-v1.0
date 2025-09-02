@@ -299,45 +299,45 @@ const DriverRegister = () => {
   };
 
   return (
-    <div className="flex flex-col items-center px-0 py-0 h-full overflow-auto min-h-0">
+    <div className="flex h-full min-h-0 flex-col items-center overflow-auto px-0 py-0">
       {registrationStep === 1 && (
         <img
           src={imgd}
           alt="Signup Background"
-          className="absolute z-0  mx-auto w-auto h-[700px] pl-3"
+          className="absolute z-0 mx-auto h-[700px] w-auto pl-3"
         />
       )}
 
-      <div className="flex flex-col px-0.5 z-10 ">
+      <div className="z-10 flex flex-col px-0.5">
         <form onSubmit={handleSubmit} className="w-[250px] pt-[70px]">
           {registrationStep === 1 && (
             <>
-              <h2 className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-center">
+              <h2 className="bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text pt-[15px] text-center font-sans text-[18px] font-[400] text-transparent">
                 Signup as a driver
               </h2>
 
-              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-start">
+              <p className="mb-0 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text pt-[10px] text-start font-sans text-[18px] font-[400] text-transparent">
                 Username
               </p>
               <input
                 type="text"
                 name="username"
                 placeholder="Enter your username"
-                className="bg-white w-full p-2 border rounded border-[#FFD12E]"
+                className="w-full rounded border border-[#FFD12E] bg-white p-2"
                 value={formData.username}
                 onChange={handleChange}
                 required
                 disabled={loading}
               />
 
-              <p className="pt-[10px] mb-0 font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[18px] text-start">
+              <p className="mb-0 bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text pt-[10px] text-start font-sans text-[18px] font-[400] text-transparent">
                 Password
               </p>
               <input
                 type="password"
                 name="password"
                 placeholder="Enter your password"
-                className="bg-white w-full p-2 border rounded border-[#FFD12E]"
+                className="w-full rounded border border-[#FFD12E] bg-white p-2"
                 value={formData.password}
                 onChange={handleChange}
                 required
@@ -347,7 +347,7 @@ const DriverRegister = () => {
               <div className="button-wrapper my-2">
                 <button
                   type="submit"
-                  className="button-primary flex gap-2 justify-center items-center"
+                  className="button-primary flex items-center justify-center gap-2"
                   disabled={loading}
                 >
                   {loading ? "PROCESSING..." : "SIGN UP"}
@@ -355,9 +355,9 @@ const DriverRegister = () => {
                 </button>
               </div>
 
-              <img src={imgl} alt="Divider" className="w-full h-auto" />
+              <img src={imgl} alt="Divider" className="h-auto w-full" />
               <GoogleLoginButton intent="signup" />
-              <p className="pt-[15px] font-sans bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] text-transparent bg-clip-text font-[400] text-[16px] text-center">
+              <p className="bg-gradient-to-r from-[#FFD12E] to-[#FF7C1D] bg-clip-text pt-[15px] text-center font-sans text-[16px] font-[400] text-transparent">
                 <Link to="/signin">Already have an account? Sign in</Link>
               </p>
             </>
@@ -367,14 +367,14 @@ const DriverRegister = () => {
         <form onSubmit={handleSubmit}>
           {registrationStep === 2 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+              <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-35">
                 <h1
-                  className="text-grad-stroke font-[300] text-[36px]"
+                  className="text-grad-stroke text-[36px] font-[300]"
                   data-text="Enter your Mobile Number"
                 >
                   Enter your Mobile Number
                 </h1>
-                <p className="font-[700] text-[20px]">
+                <p className="text-[20px] font-[700]">
                   We will send a verification code to this number
                 </p>
 
@@ -386,14 +386,14 @@ const DriverRegister = () => {
                   placeholder="Enter your Mobile number"
                   value={formData.phoneNumber}
                   onChange={handleChange}
-                  className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
+                  className="w-80 rounded border border-[#FFD12E] bg-white p-2"
                   required
                   disabled={loading}
                 />
                 <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="button-primary flex gap-2 justify-center items-center"
+                    className="button-primary flex items-center justify-center gap-2"
                     disabled={loading}
                   >
                     {loading ? "SENDING..." : "CONTINUE"}
@@ -408,14 +408,14 @@ const DriverRegister = () => {
         <form onSubmit={handleSubmit}>
           {registrationStep === 3 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+              <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-35">
                 <h1
-                  className="text-grad-stroke font-[300] text-[36px]"
+                  className="text-grad-stroke text-[36px] font-[300]"
                   data-text="Verify your Mobile Number"
                 >
                   Verify your Mobile Number
                 </h1>
-                <p className="font-[700] text-[20px]">
+                <p className="text-[20px] font-[700]">
                   We sent a verification code to your phone
                 </p>
                 <img src={Line1} className="h-auto w-full" />
@@ -429,7 +429,7 @@ const DriverRegister = () => {
                 <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="button-primary flex gap-2 justify-center items-center"
+                    className="button-primary flex items-center justify-center gap-2"
                     disabled={loading}
                   >
                     {loading ? "VERIFYING..." : "CONTINUE"}
@@ -453,14 +453,14 @@ const DriverRegister = () => {
         <form onSubmit={handleSubmit}>
           {registrationStep === 4 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+              <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-35">
                 <h1
-                  className="text-grad-stroke font-[300] text-[36px]"
+                  className="text-grad-stroke text-[36px] font-[300]"
                   data-text="Enter your Email Address"
                 >
                   Enter your Email Address
                 </h1>
-                <p className="font-[700] text-[20px]">
+                <p className="text-[20px] font-[700]">
                   We will send a verification code to this email
                 </p>
                 <img src={Line1} className="h-auto w-full" />
@@ -471,14 +471,14 @@ const DriverRegister = () => {
                   placeholder="Enter your email address"
                   value={formData.email}
                   onChange={handleChange}
-                  className="bg-white w-80 p-2 border rounded border-[#FFD12E]"
+                  className="w-80 rounded border border-[#FFD12E] bg-white p-2"
                   required
                   disabled={loading}
                 />
                 <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="button-primary flex gap-2 justify-center items-center"
+                    className="button-primary flex items-center justify-center gap-2"
                     disabled={loading}
                   >
                     {loading ? "SENDING..." : "CONTINUE"}
@@ -493,14 +493,14 @@ const DriverRegister = () => {
         <form onSubmit={handleSubmit}>
           {registrationStep === 5 && (
             <>
-              <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+              <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-35">
                 <h1
-                  className="text-grad-stroke font-[300] text-[36px]"
+                  className="text-grad-stroke text-[36px] font-[300]"
                   data-text="Verify your email address"
                 >
                   Verify your email address
                 </h1>
-                <p className="font-[700] text-[20px]">
+                <p className="text-[20px] font-[700]">
                   We sent a verification code to your email
                 </p>
                 <img src={Line1} className="h-auto w-full" />
@@ -516,7 +516,7 @@ const DriverRegister = () => {
                 <div className="button-wrapper">
                   <button
                     type="submit"
-                    className="button-primary flex gap-2 justify-center items-center"
+                    className="button-primary flex items-center justify-center gap-2"
                     disabled={loading}
                   >
                     {loading ? "VERIFYING..." : "CONTINUE"}
@@ -537,18 +537,18 @@ const DriverRegister = () => {
           )}
         </form>
         {registrationStep === 6 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-15">
+          <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-15">
             <h1
-              className="text-grad-stroke font-[300] text-[36px]"
+              className="text-grad-stroke text-[36px] font-[300]"
               data-text="Submit Documents"
             >
               Submit Documents
             </h1>
             <img src={Line1} className="h-auto w-full" />
 
-            <div className="flex flex-col gap-4 w-full max-w-md">
+            <div className="flex w-full max-w-md flex-col gap-4">
               <div
-                className="flex items-center gap-4 p-3 rounded-lg cursor-pointer"
+                className="flex cursor-pointer items-center gap-4 rounded-lg p-3"
                 onClick={() => document.getElementById("license").click()}
               >
                 <div className="text-black-500 text-xl">
@@ -574,7 +574,7 @@ const DriverRegister = () => {
               </div>
 
               <div
-                className="flex items-center gap-4 p-3  rounded-lg cursor-pointer"
+                className="flex cursor-pointer items-center gap-4 rounded-lg p-3"
                 onClick={() => document.getElementById("residency").click()}
               >
                 <div className="text-black-500 text-xl">
@@ -600,7 +600,7 @@ const DriverRegister = () => {
               </div>
 
               <div
-                className="flex items-center gap-4 p-3 rounded-lg cursor-pointer"
+                className="flex cursor-pointer items-center gap-4 rounded-lg p-3"
                 onClick={() => document.getElementById("insurance").click()}
               >
                 <div className="text-black-500 text-xl">
@@ -629,7 +629,7 @@ const DriverRegister = () => {
                 <button
                   type="button"
                   onClick={handleDocumentSubmit}
-                  className="button-primary flex gap-2 justify-center items-center"
+                  className="button-primary flex items-center justify-center gap-2"
                   disabled={
                     loading ||
                     Object.values(documents).filter(Boolean).length < 3
@@ -643,16 +643,16 @@ const DriverRegister = () => {
           </div>
         )}
         {registrationStep === 7 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+          <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-35">
             <h1
-              className="text-grad-stroke font-[300] text-[36px]"
+              className="text-grad-stroke text-[36px] font-[300]"
               data-text="Account Verification Pending"
             >
               Account Verification Pending
             </h1>
             <img src={Line1} className="h-auto w-full" />
 
-            <p className="text-center max-w-md font-semibold">
+            <p className="max-w-md text-center font-semibold">
               Thank you for submitting your documents. Your account will be
               reviewed by the admin for verification. You will be notified once
               your account is approved.
@@ -662,7 +662,7 @@ const DriverRegister = () => {
               <button
                 type="button"
                 onClick={() => setRegistrationStep(8)}
-                className="button-primary flex gap-2 justify-center items-center"
+                className="button-primary flex items-center justify-center gap-2"
               >
                 CONTINUE
                 <FaArrowRight className="[&>path]:fill-[url(#icon-gradient)]" />
@@ -671,16 +671,16 @@ const DriverRegister = () => {
           </div>
         )}
         {registrationStep === 8 && (
-          <div className="flex flex-col items-center justify-center gap-[25px] w-auto pt-35">
+          <div className="flex w-auto flex-col items-center justify-center gap-[25px] pt-35">
             <h1
-              className="text-grad-stroke font-[300] text-[36px]"
+              className="text-grad-stroke text-[36px] font-[300]"
               data-text="Account created successfully"
             >
               Account created successfully
             </h1>
             <img src={Line1} className="h-auto w-full" />
             <div className="button-wrapper">
-              <button type="button" className="button-primary ">
+              <button type="button" className="button-primary">
                 <img src={success} alt="success" />
               </button>
             </div>

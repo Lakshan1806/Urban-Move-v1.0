@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
@@ -26,9 +26,15 @@ const PaymentPage = () => {
         const user = userRes.data.user;
         if (user?._id) {
           setUserId(user._id);
-          setForm((prev) => ({ ...prev, name: user.username, email: user.email }));
+          setForm((prev) => ({
+            ...prev,
+            name: user.username,
+            email: user.email,
+          }));
 
-          const rideRes = await axios.get(`http://localhost:5000/api/triphistory/latest-ride/${user._id}`);
+          const rideRes = await axios.get(
+            `http://localhost:5000/api/triphistory/latest-ride/${user._id}`,
+          );
           const latestRide = rideRes.data;
 
           if (latestRide?.fare) {
@@ -71,9 +77,12 @@ const PaymentPage = () => {
     }
 
     try {
-      const response = await axios.post("http://localhost:5000/api/promo/apply", {
-        code: form.promo.trim(),
-      });
+      const response = await axios.post(
+        "http://localhost:5000/api/promo/apply",
+        {
+          code: form.promo.trim(),
+        },
+      );
 
       const discount = response.data.discount;
       const discountType = response.data.discountType;
@@ -88,7 +97,9 @@ const PaymentPage = () => {
       if (discountedAmount < 0) discountedAmount = 0;
 
       setFinalAmount(discountedAmount);
-      setApplyMessage(`Promo applied! New Amount: Rs. ${discountedAmount.toFixed(2)}`);
+      setApplyMessage(
+        `Promo applied! New Amount: Rs. ${discountedAmount.toFixed(2)}`,
+      );
     } catch (error) {
       const msg = error.response?.data?.message || "Invalid promo code";
       setApplyMessage(msg);
@@ -101,7 +112,8 @@ const PaymentPage = () => {
     setLoading(true);
 
     try {
-      const amountToPay = finalAmount !== null ? finalAmount : parseFloat(form.amount);
+      const amountToPay =
+        finalAmount !== null ? finalAmount : parseFloat(form.amount);
 
       const emailData = {
         recipient: form.email,
@@ -109,7 +121,10 @@ const PaymentPage = () => {
         message: `Hello ${form.name}, your payment of Rs. ${amountToPay.toFixed(2)} has been processed successfully.`,
       };
 
-      const response = await axios.post("http://localhost:5000/api/email/send-email", emailData);
+      const response = await axios.post(
+        "http://localhost:5000/api/email/send-email",
+        emailData,
+      );
       console.log("Email sent:", response);
       alert("Payment successful!");
     } catch (error) {
@@ -121,9 +136,11 @@ const PaymentPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-6">
-      <div className="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8">
-        <h2 className="text-3xl font-light text-center mb-6 text-orange-500">Complete Your Payment</h2>
+    <div className="flex min-h-screen items-center justify-center bg-gray-100 p-6">
+      <div className="w-full max-w-2xl rounded-2xl bg-white p-8 shadow-xl">
+        <h2 className="mb-6 text-center text-3xl font-light text-orange-500">
+          Complete Your Payment
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
             type="text"
@@ -131,7 +148,7 @@ const PaymentPage = () => {
             value={form.name}
             onChange={handleChange}
             placeholder="Name"
-            className="w-full border p-3 rounded-md"
+            className="w-full rounded-md border p-3"
             required
           />
           <input
@@ -140,7 +157,7 @@ const PaymentPage = () => {
             value={form.email}
             onChange={handleChange}
             placeholder="Email"
-            className="w-full border p-3 rounded-md"
+            className="w-full rounded-md border p-3"
             required
           />
           <input
@@ -149,7 +166,7 @@ const PaymentPage = () => {
             value={form.cardNumber}
             onChange={handleChange}
             placeholder="Card Number"
-            className="w-full border p-3 rounded-md"
+            className="w-full rounded-md border p-3"
             maxLength={16}
             required
           />
@@ -160,7 +177,7 @@ const PaymentPage = () => {
               value={form.expiry}
               onChange={handleChange}
               placeholder="MM/YY"
-              className="w-1/2 border p-3 rounded-md"
+              className="w-1/2 rounded-md border p-3"
               maxLength={5}
               required
             />
@@ -170,7 +187,7 @@ const PaymentPage = () => {
               value={form.cvc}
               onChange={handleChange}
               placeholder="CVC"
-              className="w-1/2 border p-3 rounded-md"
+              className="w-1/2 rounded-md border p-3"
               maxLength={4}
               required
             />
@@ -181,7 +198,7 @@ const PaymentPage = () => {
             value={form.amount}
             onChange={handleChange}
             placeholder="Amount"
-            className="w-full border p-3 rounded-md"
+            className="w-full rounded-md border p-3"
             required
           />
           <div className="flex gap-2">
@@ -191,25 +208,32 @@ const PaymentPage = () => {
               value={form.promo}
               onChange={handleChange}
               placeholder="Promo Code"
-              className="w-full border p-3 rounded-md"
+              className="w-full rounded-md border p-3"
             />
             <button
               type="button"
               onClick={applyPromoCode}
-              className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md"
+              className="rounded-md bg-green-600 px-4 py-2 text-white hover:bg-green-700"
             >
               Apply
             </button>
           </div>
-          {applyMessage && <p className="text-sm text-gray-700">{applyMessage}</p>}
+          {applyMessage && (
+            <p className="text-sm text-gray-700">{applyMessage}</p>
+          )}
           <div className="text-right text-lg font-semibold">
-            Total: Rs. {finalAmount !== null ? finalAmount.toFixed(2) : form.amount || "0.00"}
+            Total: Rs.{" "}
+            {finalAmount !== null
+              ? finalAmount.toFixed(2)
+              : form.amount || "0.00"}
           </div>
           <button
             type="submit"
             disabled={loading}
-            className={`w-full py-3 rounded-md text-white font-semibold ${
-              loading ? "bg-gray-400 cursor-not-allowed" : "bg-gradient-to-r from-yellow-400 to-orange-500"
+            className={`w-full rounded-md py-3 font-semibold text-white ${
+              loading
+                ? "cursor-not-allowed bg-gray-400"
+                : "bg-gradient-to-r from-yellow-400 to-orange-500"
             }`}
           >
             {loading ? "Processing..." : "Pay Now"}

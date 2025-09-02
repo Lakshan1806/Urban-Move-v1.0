@@ -44,8 +44,7 @@ const OtpInput = ({ length = 4, onOtpSubmit = () => {} }) => {
           onChange={(e) => handleChange(index, e)}
           onKeyDown={(e) => handleKeyDown(index, e)}
           maxLength="1"
-          className="w-12 h-12 text-center text-xl font-semibold border-2 border-orange-400 rounded-md focus:ring-2 focus:ring-orange-500 
-                     transition-all duration-200 ease-in-out"
+          className="h-12 w-12 rounded-md border-2 border-orange-400 text-center text-xl font-semibold transition-all duration-200 ease-in-out focus:ring-2 focus:ring-orange-500"
           style={{
             borderImage: "linear-gradient(to right, #FFD12E, #FF7C1D) 1",
             borderStyle: "solid",

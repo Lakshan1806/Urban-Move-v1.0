@@ -1,26 +1,26 @@
 const IncomingCall = ({ answerCall, rejectCall, caller }) => {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
-        <div className="bg-white p-8 rounded-lg shadow-xl max-w-sm w-full">
-          <h3 className="text-xl font-bold mb-2">Incoming Call</h3>
-          <p className="mb-6">From: User {caller}</p>
-          <div className="flex justify-center gap-4">
-            <button
-              onClick={answerCall}
-              className="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            >
-              Answer
-            </button>
-            <button
-              onClick={rejectCall}
-              className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg flex items-center gap-2"
-            >
-              Decline
-            </button>
-          </div>
+  return (
+    <div className="bg-opacity-70 fixed inset-0 z-50 flex items-center justify-center bg-black">
+      <div className="w-full max-w-sm rounded-lg bg-white p-8 shadow-xl">
+        <h3 className="mb-2 text-xl font-bold">Incoming Call</h3>
+        <p className="mb-6">From: User {caller}</p>
+        <div className="flex justify-center gap-4">
+          <button
+            onClick={answerCall}
+            className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+          >
+            Answer
+          </button>
+          <button
+            onClick={rejectCall}
+            className="flex items-center gap-2 rounded-lg bg-red-500 px-4 py-2 text-white hover:bg-red-600"
+          >
+            Decline
+          </button>
         </div>
       </div>
-    );
-  };
-  
-  export default IncomingCall;
+    </div>
+  );
+};
+
+export default IncomingCall;

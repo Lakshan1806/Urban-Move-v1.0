@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 function EmailForm() {
   const [emailData, setEmailData] = useState({
@@ -14,11 +14,14 @@ function EmailForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/email/send-email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(emailData),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/email/send-email",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(emailData),
+        },
+      );
 
       const result = await response.json();
       alert(result.message);
@@ -28,8 +31,10 @@ function EmailForm() {
   };
 
   return (
-    <div className="max-w-lg mx-auto p-6 bg-white rounded-lg shadow-lg">
-      <h2 className="text-2xl font-semibold text-gray-700 text-center mb-6">Send Email</h2>
+    <div className="mx-auto max-w-lg rounded-lg bg-white p-6 shadow-lg">
+      <h2 className="mb-6 text-center text-2xl font-semibold text-gray-700">
+        Send Email
+      </h2>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
           <input
@@ -38,7 +43,7 @@ function EmailForm() {
             placeholder="Recipient Email"
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
         </div>
         <div>
@@ -48,7 +53,7 @@ function EmailForm() {
             placeholder="Subject"
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
           />
         </div>
         <div>
@@ -57,14 +62,14 @@ function EmailForm() {
             placeholder="Message"
             onChange={handleChange}
             required
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400 resize-none"
+            className="w-full resize-none rounded-lg border border-gray-300 px-4 py-2 focus:ring-2 focus:ring-blue-400 focus:outline-none"
             rows="6"
           ></textarea>
         </div>
         <div>
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-gradient-to-r from-blue-500 to-indigo-600 text-white font-semibold rounded-lg hover:bg-gradient-to-l hover:from-indigo-600 hover:to-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-400"
+            className="w-full rounded-lg bg-gradient-to-r from-blue-500 to-indigo-600 px-4 py-2 font-semibold text-white hover:bg-gradient-to-l hover:from-indigo-600 hover:to-blue-500 focus:ring-2 focus:ring-blue-400 focus:outline-none"
           >
             Send
           </button>

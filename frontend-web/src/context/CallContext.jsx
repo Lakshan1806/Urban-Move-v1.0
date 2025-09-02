@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState } from "react";
 
 const CallContext = createContext();
 
@@ -7,7 +7,7 @@ export const CallProvider = ({ children }) => {
   const [callAccepted, setCallAccepted] = useState(false);
 
   const startCall = (userId) => {
-    setCall({ to: userId, from: 'current-user' });
+    setCall({ to: userId, from: "current-user" });
   };
 
   const answerCall = () => {
@@ -20,13 +20,15 @@ export const CallProvider = ({ children }) => {
   };
 
   return (
-    <CallContext.Provider value={{ 
-      call, 
-      callAccepted, 
-      startCall, 
-      answerCall, 
-      endCall 
-    }}>
+    <CallContext.Provider
+      value={{
+        call,
+        callAccepted,
+        startCall,
+        answerCall,
+        endCall,
+      }}
+    >
       {children}
     </CallContext.Provider>
   );
