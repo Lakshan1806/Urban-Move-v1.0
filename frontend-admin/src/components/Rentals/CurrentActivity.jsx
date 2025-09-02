@@ -20,14 +20,14 @@ function CurrentActivity() {
   }, []);
 
   return (
-    <div className="col-span-6 row-span-6 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
+    <div className="col-span-6 row-span-6 overflow-auto rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       {bookings.map((booking) => {
         return (
           <div
             key={booking._id}
-            className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4"
+            className="my-2 flex flex-row gap-4 rounded p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"
           >
-            <div className="flex flex-col w-1/2">
+            <div className="flex w-1/2 flex-col">
               <h3 className="text-sm font-bold">{booking.pickupLocation}</h3>
               <h3 className="text-xl font-bold">{booking.dropoffLocation}</h3>
               <h3 className="text-xl font-bold">

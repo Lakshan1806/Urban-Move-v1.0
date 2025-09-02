@@ -30,15 +30,15 @@ function CustomerDetail({ customer, onUpdate }) {
   console.log(customer);
   if (!customer) {
     return (
-      <div className="col-span-4 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
-        <div className="flex justify-center items-center h-full text-xl font-bold">
+      <div className="col-span-4 row-span-12 overflow-auto rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
+        <div className="flex h-full items-center justify-center text-xl font-bold">
           Select
         </div>
       </div>
     );
   }
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto gap-4">
+    <div className="col-span-4 row-span-12 flex flex-col gap-4 overflow-auto rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       <h3 className="flex justify-center text-sm font-bold uppercase">
         profile
       </h3>
@@ -48,7 +48,7 @@ function CustomerDetail({ customer, onUpdate }) {
             customer.authMethod === "google" ? customer.avatar : customer.photo
           }
           alt="profile image"
-          className="w-48 h-48 rounded-full object-cover"
+          className="h-48 w-48 rounded-full object-cover"
         />
       </div>
 
@@ -84,12 +84,12 @@ function CustomerDetail({ customer, onUpdate }) {
         </div>
       )}
       {showConfirmTerminate && (
-        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="max-w-sm rounded-lg bg-white p-6 shadow-lg">
             <p className="mb-4">Really Terminate this Customer Profile ?</p>
             <div className="flex justify-end gap-2">
               <button
-                className="px-4 py-2 bg-gray-200 rounded"
+                className="rounded bg-gray-200 px-4 py-2"
                 onClick={() => setShowConfirmTerminate(false)}
               >
                 Cancel
@@ -110,15 +110,15 @@ function CustomerDetail({ customer, onUpdate }) {
         </div>
       )}
       {showConfirmRevoke && (
-        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="max-w-sm rounded-lg bg-white p-6 shadow-lg">
             <p className="mb-4">
               {" "}
               Revoke Termination of this Customer Profile ?
             </p>
             <div className="flex justify-end gap-2">
               <button
-                className="px-4 py-2 bg-gray-200 rounded"
+                className="rounded bg-gray-200 px-4 py-2"
                 onClick={() => setShowConfirmRevoke(false)}
               >
                 Cancel

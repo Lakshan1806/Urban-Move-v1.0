@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-  
+
 function CarTypes() {
   const [car, setCar] = useState([]);
   useEffect(() => {
@@ -19,8 +19,8 @@ function CarTypes() {
   }, []);
 
   return (
-    <div className="col-span-4 row-span-8  rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col gap-4 overflow-auto ">
-      <div className="sticky top-0 z-20 bg-white/30 rounded-t-3xl backdrop-blur-md px-4 py-4 flex justify-center">
+    <div className="col-span-4 row-span-8 flex flex-col gap-4 overflow-auto rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
+      <div className="sticky top-0 z-20 flex justify-center rounded-t-3xl bg-white/30 px-4 py-4 backdrop-blur-md">
         <h3 className="text-sm font-bold uppercase">Car Types</h3>
       </div>
 
@@ -28,14 +28,14 @@ function CarTypes() {
         return (
           <div
             key={cars._id}
-            className="p-4 mx-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4 "
+            className="mx-4 flex flex-row gap-4 rounded-xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"
           >
             <img
               src={cars.keyImage}
               alt="car image"
-              className="w-1/2 h-full rounded-lg object-cover"
+              className="h-full w-1/2 rounded-lg object-cover"
             />
-            <div className="flex flex-col w-1/2">
+            <div className="flex w-1/2 flex-col">
               <h3 className="text-sm font-bold">{cars.make}</h3>
               <h3 className="text-xl font-bold">{cars.model}</h3>
               <h3 className="text-xl font-bold">{cars.bodyStyle}</h3>

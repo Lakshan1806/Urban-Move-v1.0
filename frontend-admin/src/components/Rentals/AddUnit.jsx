@@ -67,7 +67,7 @@ function AddUnit({ onSaveForm, carID }) {
         />
       </div>
 
-      <div className="card flex flex-col justify-content-center w-full ">
+      <div className="card justify-content-center flex w-full flex-col">
         <label htmlFor="dd-city">Select a City:</label>
         <Dropdown
           value={location}
@@ -76,10 +76,9 @@ function AddUnit({ onSaveForm, carID }) {
           optionLabel="location"
           optionValue="location"
           placeholder="Select a City"
-          className="w-full md:w-14rem"
+          className="md:w-14rem w-full"
           checkmark={true}
           highlightOnSelect={false}
-          
         />
       </div>
       <div className="flex flex-row items-center justify-center gap-5">

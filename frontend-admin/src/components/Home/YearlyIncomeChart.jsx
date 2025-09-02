@@ -54,7 +54,7 @@ function YearlyIncomeChart() {
         type="doughnut"
         data={chartData}
         options={chartOptions}
-        className="w-full h-full"
+        className="h-full w-full"
       />
     </>
   );

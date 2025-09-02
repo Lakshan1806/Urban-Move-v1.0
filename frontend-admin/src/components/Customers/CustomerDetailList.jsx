@@ -21,22 +21,22 @@ function CustomerDetailList({ onSelect }) {
   }, []);
 
   return (
-    <div className="col-span-8 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-8 row-span-12 flex flex-col overflow-auto rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       {user.map((user) => {
         console.log(user.photo);
         return (
           <div
             key={user._id}
-            className="p-4 my-2 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-5 items-center justify-between"
+            className="my-2 flex flex-row items-center justify-between gap-5 rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"
           >
             <div className="flex flex-row gap-5">
               <img
                 src={user.authMethod === "google" ? user.avatar : user.photo}
                 alt="profile image"
-                className="w-16 h-16 rounded-full object-cover"
+                className="h-16 w-16 rounded-full object-cover"
               />
-              <div className="flex gap-4 items-center">
-                <p className="font-[750] text-[20px]">{user.username}</p>
+              <div className="flex items-center gap-4">
+                <p className="text-[20px] font-[750]">{user.username}</p>
                 <p>Email: {user.email}</p>
                 <p>Phone: {user.phone}</p>
               </div>

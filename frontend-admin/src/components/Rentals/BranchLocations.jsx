@@ -24,19 +24,6 @@ function BranchLocations() {
   }, []);
 
   const handleSubmit = async () => {
-    /* if (!branch || latitude === "" || longitude === "") {
-      return setStatus("Please fill in all fields.");
-    } */
-
-    /* const latNum = Number(latitude);
-    const lngNum = Number(longitude);
-    if (Number.isNaN(latNum) || Number.isNaN(lngNum)) {
-      return setStatus("Latitude and longitude must be numbers.");
-    }
-    if (Math.abs(latNum) > 90 || Math.abs(lngNum) > 180) {
-      return setStatus("Coordinates out of range.");
-    } */
-
     try {
       await axios.post("/admin/add_branch_location", {
         location: branch,
@@ -53,9 +40,9 @@ function BranchLocations() {
   };
 
   return (
-    <div className="col-span-6 row-span-6 pb-0 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex gap-4 overflow-hidden">
+    <div className="col-span-6 row-span-6 flex gap-4 overflow-hidden rounded-3xl pb-0 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       <div className="p-5">
-        <div className="sticky top-0 z-20 bg-white/30 rounded-t-xl backdrop-blur-md px-4 py-4 flex justify-center">
+        <div className="sticky top-0 z-20 flex justify-center rounded-t-xl bg-white/30 px-4 py-4 backdrop-blur-md">
           <h3 className="text-sm font-bold uppercase">Branch Locations</h3>
         </div>
 
@@ -121,7 +108,7 @@ function BranchLocations() {
           <div className="button-primary">Save location</div>
         </button>
       </div>
-      <div className="overflow-auto h-full">
+      <div className="h-full overflow-auto">
         {locations.map((location) => {
           const [lng, lat] = location.position.coordinates;
           const src = `https://maps.google.com/maps?q=${lat},${lng}&z=${
@@ -130,9 +117,9 @@ function BranchLocations() {
           return (
             <div
               key={location._id}
-              className="p-4 mx-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4 "
+              className="mx-4 flex flex-row gap-4 rounded-xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"
             >
-              <div className="flex flex-col w-1/2">
+              <div className="flex w-1/2 flex-col">
                 <h3 className="text-sm font-bold">{location.location}</h3>
                 <iframe
                   title={`Map of ${location.location}`}

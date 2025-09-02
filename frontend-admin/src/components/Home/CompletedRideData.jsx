@@ -12,7 +12,7 @@ function CompletedRideData() {
       let response;
       try {
         response = await axios.get("/admin/get_monthly_stats");
-        console.log("graph data",response);
+        console.log("graph data", response);
       } catch (error) {
         console.error("Error fetching data:", error);
       }

@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import axios from "axios";
-//import { FaRegUserCircle } from "react-icons/fa";
 import { PiUserGear } from "react-icons/pi";
 import { RiAccountCircleFill } from "react-icons/ri";
 import { MdEmail } from "react-icons/md";
@@ -87,9 +86,6 @@ function AccountInfo() {
     if (newPassword !== confirmPassword) {
       return;
     }
-    /* if (newPassword.length < 8) {
-      return;
-    } */
 
     try {
       //setLoading(true);
@@ -100,7 +96,7 @@ function AccountInfo() {
       setCurrentPassword("");
       setNewPassword("");
       setConfirmPassword("");
-      setTimeout(() => setShowChangePassword(false), 800); // brief success flash
+      setTimeout(() => setShowChangePassword(false), 800);
     } catch (err) {
       setStatus({
         type: "error",
@@ -109,17 +105,16 @@ function AccountInfo() {
           "Something went wrong. Please check your current password and try again.",
       });
     } finally {
-      //setLoading(false);
     }
   };
 
   return (
-    <div className="col-span-12 row-span-12 p-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col gap-10">
-      <div className="flex flex-row justify-center items-center gap-5">
+    <div className="col-span-12 row-span-12 flex flex-col gap-10 rounded-xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
+      <div className="flex flex-row items-center justify-center gap-5">
         <img
           src={imageUrl}
           alt="Profile"
-          className="w-60 h-60 rounded-full object-cover"
+          className="h-60 w-60 rounded-full object-cover"
         />
         <input
           type="file"
@@ -141,11 +136,11 @@ function AccountInfo() {
       </div>
       <p>Personal info</p>
       <div className="flex flex-col">
-        <div className="p-4 my-2  rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4 justify-around">
+        <div className="my-2 flex flex-row justify-around gap-4 rounded-xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
           <div>
-            <RiAccountCircleFill className="w-[30px] h-[30px]" />
+            <RiAccountCircleFill className="h-[30px] w-[30px]" />
             {isEditable ? (
-              <div className="flex flex-col w-[300px]">
+              <div className="flex w-[300px] flex-col">
                 <label htmlFor="fullname">Full Name</label>
                 <input
                   type="text"
@@ -165,9 +160,9 @@ function AccountInfo() {
             )}
           </div>
           <div>
-            <PiUserGear className="w-[30px] h-[30px]" />
+            <PiUserGear className="h-[30px] w-[30px]" />
             {isEditable ? (
-              <div className="flex flex-col w-[300px]">
+              <div className="flex w-[300px] flex-col">
                 <label htmlFor="username">Username</label>
                 <input
                   type="text"
@@ -187,9 +182,9 @@ function AccountInfo() {
             )}
           </div>
           <div>
-            <MdEmail className="w-[30px] h-[30px]" />
+            <MdEmail className="h-[30px] w-[30px]" />
             {isEditable ? (
-              <div className="flex flex-col w-[300px]">
+              <div className="flex w-[300px] flex-col">
                 <label htmlFor="email">Email</label>
                 <input
                   type="text"
@@ -209,9 +204,9 @@ function AccountInfo() {
             )}
           </div>
           <div>
-            <FaPhone className="w-[30px] h-[30px]" />
+            <FaPhone className="h-[30px] w-[30px]" />
             {isEditable ? (
-              <div className="flex flex-col w-[300px]">
+              <div className="flex w-[300px] flex-col">
                 <label htmlFor="phone">Phone</label>
                 <input
                   type="text"
@@ -256,7 +251,7 @@ function AccountInfo() {
           </>
         ) : (
           <>
-            <div className="button-wrapper w-1/4 ">
+            <div className="button-wrapper w-1/4">
               <button type="button" className="button-primary" onClick={onEdit}>
                 Edit
               </button>
@@ -275,8 +270,8 @@ function AccountInfo() {
       </div>
 
       {showChangePassword && (
-        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="max-w-sm rounded-lg bg-white p-6 shadow-lg">
             <h2 className="text-xl font-semibold text-gray-800">
               Change Password
             </h2>
@@ -287,7 +282,7 @@ function AccountInfo() {
                 name="current"
                 value={currentPassword}
                 onChange={(e) => setCurrentPassword(e.target.value)}
-                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-200"
+                className="mt-1 w-full rounded-lg border px-3 py-2 focus:ring focus:ring-indigo-200 focus:outline-none"
               />
             </label>
 
@@ -298,7 +293,7 @@ function AccountInfo() {
                 name="new"
                 value={newPassword}
                 onChange={(e) => setNewPassword(e.target.value)}
-                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-200"
+                className="mt-1 w-full rounded-lg border px-3 py-2 focus:ring focus:ring-indigo-200 focus:outline-none"
               />
             </label>
 
@@ -309,13 +304,13 @@ function AccountInfo() {
                 name="confirm"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className="mt-1 w-full rounded-lg border px-3 py-2 focus:outline-none focus:ring focus:ring-indigo-200"
+                className="mt-1 w-full rounded-lg border px-3 py-2 focus:ring focus:ring-indigo-200 focus:outline-none"
               />
             </label>
 
             <div className="flex justify-end gap-2">
               <button
-                className="px-4 py-2 bg-gray-200 rounded"
+                className="rounded bg-gray-200 px-4 py-2"
                 onClick={() => setShowChangePassword(false)}
               >
                 Cancel

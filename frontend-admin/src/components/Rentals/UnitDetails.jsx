@@ -53,7 +53,7 @@ function UnitDetails({ unit, onEdit }) {
   };
 
   return (
-    <div className="p-4 my-2 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row items-center gap-4 flex-none">
+    <div className="my-2 flex flex-none flex-row items-center gap-4 rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       <div className="flex flex-col">
         {isEditableUnit ? (
           <>
@@ -149,12 +149,12 @@ function UnitDetails({ unit, onEdit }) {
         </div>
       )}
       {showConfirmDelete && (
-        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="max-w-sm rounded-lg bg-white p-6 shadow-lg">
             <p className="mb-4">Really delete this unit?</p>
             <div className="flex justify-end gap-2">
               <button
-                className="px-4 py-2 bg-gray-200 rounded"
+                className="rounded bg-gray-200 px-4 py-2"
                 onClick={() => setShowConfirmDelete(false)}
               >
                 Cancel

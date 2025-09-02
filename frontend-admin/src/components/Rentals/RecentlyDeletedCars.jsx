@@ -26,7 +26,7 @@ function RecentlyDeletedCars() {
         {},
         {
           params: { id },
-        }
+        },
       );
       console.log("res :", response);
     } catch (error) {
@@ -35,21 +35,21 @@ function RecentlyDeletedCars() {
   };
 
   return (
-    <div className="col-span-4 row-span-6 pt-4 px-4 pb-0 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-4 row-span-6 flex flex-col overflow-auto rounded-3xl px-4 pt-4 pb-0 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       {car.map((cars) => {
         console.log("data :", cars);
         console.log("data :", cars.images);
         return (
           <div
             key={cars._id}
-            className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4"
+            className="my-2 flex flex-row gap-4 rounded p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"
           >
             <img
               src={cars.keyImage}
               alt="car image"
-              className="w-1/2 h-full rounded-lg object-cover"
+              className="h-full w-1/2 rounded-lg object-cover"
             />
-            <div className="flex flex-col w-1/2">
+            <div className="flex w-1/2 flex-col">
               <h3 className="text-sm font-bold">{cars.make}</h3>
               <h3 className="text-xl font-bold">{cars.model}</h3>
               <div className="button-wrapper">

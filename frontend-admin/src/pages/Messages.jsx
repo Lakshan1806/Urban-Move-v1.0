@@ -72,19 +72,19 @@ function Messages() {
   };
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="flex flex-row justify-between flex-none">
+    <div className="flex h-full flex-col">
+      <div className="flex flex-none flex-row justify-between">
         <h1
-          className="text-grad-stroke font-[700] text-[36px]"
+          className="text-grad-stroke text-[36px] font-[700]"
           data-text="Messages"
         >
           Messages
         </h1>
       </div>
-      <div className="flex-1 flex flex-col gap-3 overflow-y-auto min-h-0 snap-y snap-mandatory scroll-smooth">
-        <div className="grid grid-cols-12 grid-rows-12 gap-3 p-4 h-full shrink-0 snap-start">
-          <div className="col-span-3 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto"></div>
-          <div className="col-span-9 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto"></div>
+      <div className="flex min-h-0 flex-1 snap-y snap-mandatory flex-col gap-3 overflow-y-auto scroll-smooth">
+        <div className="grid h-full shrink-0 snap-start grid-cols-12 grid-rows-12 gap-3 p-4">
+          <div className="col-span-3 row-span-12 flex flex-col overflow-auto rounded p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"></div>
+          <div className="col-span-9 row-span-12 flex flex-col overflow-auto rounded p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"></div>
         </div>
       </div>
     </div>

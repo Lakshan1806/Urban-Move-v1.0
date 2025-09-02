@@ -70,36 +70,30 @@ function SignIn() {
   };
 
   return (
-    <div className="flex items-center justify-center h-svh">
-      <div className="max-w-[340px] flex flex-col items-center gap-[42px]">
-        <div className="flex flex-col items-center font-[700] text-[36px]">
-          <h1
-            className="text-grad-stroke"
-            data-text="Administrator"
-          >
+    <div className="flex h-svh items-center justify-center">
+      <div className="flex max-w-[340px] flex-col items-center gap-[42px]">
+        <div className="flex flex-col items-center text-[36px] font-[700]">
+          <h1 className="text-grad-stroke" data-text="Administrator">
             Administrator
           </h1>
-          <h1
-            className="text-grad-stroke"
-            data-text="Sign In"
-          >
+          <h1 className="text-grad-stroke" data-text="Sign In">
             Sign In
           </h1>
         </div>
 
-        <img src={Logo} className="w-[200px] h-[200px]" />
+        <img src={Logo} className="h-[200px] w-[200px]" />
 
         <TfiLayoutLineSolid
-          className="h-12 w-full block [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]"
+          className="block h-12 w-full [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]"
           preserveAspectRatio="none"
         />
 
         <div>
           <form
             onSubmit={handleSignin}
-            className="flex flex-col gap-[42px]  items-center "
+            className="flex flex-col items-center gap-[42px]"
           >
-            <div className="flex flex-col w-[300px]">
+            <div className="flex w-[300px] flex-col">
               <label htmlFor="username">Username</label>
               <input
                 type="text"
@@ -114,7 +108,7 @@ function SignIn() {
               />
             </div>
 
-            <div className="flex flex-col w-[300px]">
+            <div className="flex w-[300px] flex-col">
               <label htmlFor="password">Password</label>
               <input
                 type="password"

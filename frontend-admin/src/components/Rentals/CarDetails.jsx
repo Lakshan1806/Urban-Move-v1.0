@@ -95,8 +95,8 @@ function CarDetails({ car, onUpdate }) {
 
   if (!car) {
     return (
-      <div className="col-span-8 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] overflow-auto">
-        <div className="flex justify-center items-center h-full text-xl font-bold">
+      <div className="col-span-8 row-span-12 overflow-auto rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
+        <div className="flex h-full items-center justify-center text-xl font-bold">
           Select a Car
         </div>
       </div>
@@ -234,51 +234,51 @@ function CarDetails({ car, onUpdate }) {
   };
 
   return (
-    <div className="col-span-8 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] relative">
-      <div className="flex flex-col gap-5 h-full overflow-auto">
+    <div className="relative col-span-8 row-span-12 rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
+      <div className="flex h-full flex-col gap-5 overflow-auto">
         <div className="flex flex-col gap-5">
           <input
             type="file"
-            accept="image/*" 
+            accept="image/*"
             ref={fileInputRef}
             className="hidden"
             onChange={onImageSelected}
           />
-          <div className="relative group">
+          <div className="group relative">
             <img src={carImage} className="w-full rounded-lg" />
             {isEditable && (
-              <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
+              <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black opacity-0 transition-opacity group-hover:opacity-100">
                 <button
                   onClick={() => handleEditKeyImage(car.keyImage)}
-                  className="bg-white rounded-full p-2"
+                  className="rounded-full bg-white p-2"
                 >
-                  <FaRegEdit className="w-6 h-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
+                  <FaRegEdit className="h-6 w-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                 </button>
               </div>
             )}
           </div>
-          <div className="flex flex-row overflow-auto gap-5 justify-start">
+          <div className="flex flex-row justify-start gap-5 overflow-auto">
             {console.log(car.images)}
             {car.images.map((image, index) => (
-              <div className="flex-none relative group" key={index}>
+              <div className="group relative flex-none" key={index}>
                 <img
                   src={image}
                   onClick={() => setCarImage(image)}
                   className="w-50 rounded-lg object-cover"
                 />
                 {isEditable && (
-                  <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
+                  <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black opacity-0 transition-opacity group-hover:opacity-100">
                     <button
                       onClick={() => handleEditImage(image)}
-                      className="bg-white rounded-full p-2"
+                      className="rounded-full bg-white p-2"
                     >
-                      <FaRegEdit className="w-6 h-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
+                      <FaRegEdit className="h-6 w-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                     </button>
                     <button
                       onClick={() => handleDeleteImage(image)}
-                      className="bg-white rounded-full p-2"
+                      className="rounded-full bg-white p-2"
                     >
-                      <ImBin className="w-6 h-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
+                      <ImBin className="h-6 w-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                     </button>
                   </div>
                 )}
@@ -290,19 +290,19 @@ function CarDetails({ car, onUpdate }) {
         <div className="flex justify-between">
           <div>
             <div>
-              <div className="relative group">
+              <div className="group relative">
                 <img
                   src={car.logo}
                   alt="logo"
                   className="w-50 rounded-lg object-cover"
                 />
                 {isEditable && (
-                  <div className=" absolute inset-0 bg-black rounded-lg bg-opacity-50 opacity-0 group-hover:opacity-100 flex justify-center items-center gap-2 transition-opacity">
+                  <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black opacity-0 transition-opacity group-hover:opacity-100">
                     <button
                       onClick={() => handleEditLogo(car.logo ?? "")}
-                      className="bg-white rounded-full p-2"
+                      className="rounded-full bg-white p-2"
                     >
-                      <FaRegEdit className="w-6 h-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
+                      <FaRegEdit className="h-6 w-6 [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]" />
                     </button>
                   </div>
                 )}
@@ -441,7 +441,7 @@ function CarDetails({ car, onUpdate }) {
             )}
           </div>
         </div>
-        <div className="flex flex-row gap-4 flex-none overflow-auto px-4">
+        <div className="flex flex-none flex-row gap-4 overflow-auto px-4">
           {unit.map((unit) => {
             return (
               <UnitDetails
@@ -469,7 +469,7 @@ function CarDetails({ car, onUpdate }) {
 
         <div className="grid grid-cols-3 justify-items-start gap-5">
           <div className="flex gap-5">
-            <GiGearStickPattern className="w-[30px] h-[30px]" />
+            <GiGearStickPattern className="h-[30px] w-[30px]" />
             {isEditable ? (
               <div>
                 <label htmlFor="transmission">Transmission:</label>
@@ -489,7 +489,7 @@ function CarDetails({ car, onUpdate }) {
             )}
           </div>
           <div className="flex gap-5">
-            <PiSeatbelt className="w-[30px] h-[30px]" />
+            <PiSeatbelt className="h-[30px] w-[30px]" />
             {isEditable ? (
               <div>
                 <label htmlFor="seat">Seats:</label>
@@ -509,7 +509,7 @@ function CarDetails({ car, onUpdate }) {
             )}
           </div>
           <div className="flex gap-5">
-            <PiPath className="w-[30px] h-[30px]" />
+            <PiPath className="h-[30px] w-[30px]" />
             {isEditable ? (
               <div>
                 <label htmlFor="mileage">Range (km on full tank):</label>
@@ -529,7 +529,7 @@ function CarDetails({ car, onUpdate }) {
             )}
           </div>
           <div className="flex gap-5">
-            <BsFuelPump className="w-[30px] h-[30px]" />
+            <BsFuelPump className="h-[30px] w-[30px]" />
             {isEditable ? (
               <div>
                 <label htmlFor="fueltype">Fuel Type:</label>
@@ -550,7 +550,7 @@ function CarDetails({ car, onUpdate }) {
           </div>
 
           <div className="flex gap-5">
-            <PiSpeedometer className="w-[30px] h-[30px]" />
+            <PiSpeedometer className="h-[30px] w-[30px]" />
             {isEditable ? (
               <div>
                 <label htmlFor="speed">Speed:</label>
@@ -570,7 +570,7 @@ function CarDetails({ car, onUpdate }) {
             )}
           </div>
           <div className="flex gap-5">
-            <RiSteering2Line className="w-[30px] h-[30px]" />
+            <RiSteering2Line className="h-[30px] w-[30px]" />
             {isEditable ? (
               <div>
                 <label htmlFor="engine">Engine:</label>
@@ -593,12 +593,12 @@ function CarDetails({ car, onUpdate }) {
         <div>car Features</div>
       </div>
       {showConfirmDelete && (
-        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-lg shadow-lg max-w-sm">
+        <div className="fixed inset-0 z-50 flex items-center justify-center backdrop-blur-sm">
+          <div className="max-w-sm rounded-lg bg-white p-6 shadow-lg">
             <p className="mb-4">Really delete this car?</p>
             <div className="flex justify-end gap-2">
               <button
-                className="px-4 py-2 bg-gray-200 rounded"
+                className="rounded bg-gray-200 px-4 py-2"
                 onClick={() => setShowConfirmDelete(false)}
               >
                 Cancel
@@ -619,7 +619,7 @@ function CarDetails({ car, onUpdate }) {
         </div>
       )}
       {loading && (
-        <div className="absolute inset-0 backdrop-blur-sm rounded-lg bg-opacity-50  flex justify-center items-center gap-2 transition-opacity">
+        <div className="bg-opacity-50 absolute inset-0 flex items-center justify-center gap-2 rounded-lg backdrop-blur-sm transition-opacity">
           <SecondaryLoadingScreen />
         </div>
       )}

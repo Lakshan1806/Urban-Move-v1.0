@@ -23,25 +23,25 @@ function AddAdmin() {
   };
 
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col h-full justify-center gap-5">
-      <div className="flex flex-row  justify-center flex-none">
+    <div className="col-span-4 row-span-12 flex h-full flex-col justify-center gap-5 rounded p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
+      <div className="flex flex-none flex-row justify-center">
         <h1
-          className="text-grad-stroke font-[700] text-[36px]"
+          className="text-grad-stroke text-[36px] font-[700]"
           data-text="Add admin account"
         >
           Add admin account
         </h1>
       </div>
       <div className="flex flex-row justify-center pb-8">
-        <img src={Logo} className="w-[200px] h-[200px]" />
+        <img src={Logo} className="h-[200px] w-[200px]" />
       </div>
 
       <TfiLayoutLineSolid
-        className="h-12 w-full block flex-none [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]"
+        className="block h-12 w-full flex-none [&>path:not([fill='none'])]:fill-[url(#icon-gradient)]"
         preserveAspectRatio="none"
       />
       <div>
-        <form onSubmit={addAdmin} className="flex flex-col gap-10 pb-8 px-8">
+        <form onSubmit={addAdmin} className="flex flex-col gap-10 px-8 pb-8">
           <div className="flex flex-col">
             <label htmlFor="username">Username</label>
             <input

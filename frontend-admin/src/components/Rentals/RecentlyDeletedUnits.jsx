@@ -20,7 +20,7 @@ function RecentlyDeletedUnits() {
   }, []);
 
   const onRestore = async (unitID, carID) => {
-    console.log("both ids",unitID, carID);
+    console.log("both ids", unitID, carID);
     try {
       const response = await axios.post(
         "/admin/restore_car_units",
@@ -30,7 +30,7 @@ function RecentlyDeletedUnits() {
             carID: carID,
             unitID: unitID,
           },
-        }
+        },
       );
       console.log("res :", response);
     } catch (error) {
@@ -39,12 +39,12 @@ function RecentlyDeletedUnits() {
   };
 
   return (
-    <div className="col-span-8 row-span-6 pt-4 px-4 pb-0 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-8 row-span-6 flex flex-col overflow-auto rounded-3xl px-4 pt-4 pb-0 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       {unit.map((unit) => {
         return (
           <div
             key={unit._id}
-            className="p-4 my-2  rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-4"
+            className="my-2 flex flex-row gap-4 rounded p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"
           >
             {/* <img
               src={cars.keyImage}

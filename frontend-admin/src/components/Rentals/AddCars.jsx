@@ -43,7 +43,7 @@ function AddCars({ onSaveForm }) {
       return;
     } else {
       const previewUrls = Array.from(files).map((file) =>
-        URL.createObjectURL(file)
+        URL.createObjectURL(file),
       );
       setImageUrl(previewUrls);
       setTempImage(files);
@@ -108,7 +108,7 @@ function AddCars({ onSaveForm }) {
     }
   };
   return (
-    <div className="col-span-4 row-span-12 p-4 rounded-3xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col h-full overflow-auto">
+    <div className="col-span-4 row-span-12 flex h-full flex-col overflow-auto rounded-3xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       <div className="flex flex-col">
         <div>
           <h2>Add Car Details</h2>
@@ -118,7 +118,7 @@ function AddCars({ onSaveForm }) {
               alt={"preview"}
               className="w-50 rounded-lg object-cover"
             />
-            <div className="flex flex-row overflow-auto gap-2">
+            <div className="flex flex-row gap-2 overflow-auto">
               {imageUrl.map((url, index) => (
                 <img
                   key={index}

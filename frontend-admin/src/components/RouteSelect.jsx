@@ -14,7 +14,7 @@ import Roles from "../context/roles";
 function RouteSelect() {
   return (
     <div>
-      <main className="h-dvh py-[20px] px-[50px] overflow-hidden">
+      <main className="h-dvh overflow-hidden px-[50px] py-[20px]">
         <Routes>
           <Route index element={<Home />} />
           <Route path="rentals" element={<Rentals />} />

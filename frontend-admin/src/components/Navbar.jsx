@@ -2,12 +2,9 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import Logo from "../assets/Urban_Move_Colour.svg";
 import { MdOutlineMapsHomeWork } from "react-icons/md";
-import { FaTaxi } from "react-icons/fa6";
 import { TbCarSuvFilled } from "react-icons/tb";
 import { BsPersonBadge } from "react-icons/bs";
 import { BsPersonBadgeFill } from "react-icons/bs";
-import { MdOutlineAttachMoney } from "react-icons/md";
-import { BiMessageRoundedDetail } from "react-icons/bi";
 import { IoPersonCircleOutline } from "react-icons/io5";
 import { FaUserShield } from "react-icons/fa6";
 import { useNavigate } from "react-router-dom";
@@ -47,16 +44,16 @@ function Navbar() {
   ];
 
   return (
-    <nav className="bg-black h-dvh flex flex-col items-center py-5 justify-between top-0 bottom-0 sticky">
+    <nav className="sticky top-0 bottom-0 flex h-dvh flex-col items-center justify-between bg-black py-5">
       <header>
-        <img src={Logo} alt="Logo" className="w-[148px] h-[139px]" />
+        <img src={Logo} alt="Logo" className="h-[139px] w-[148px]" />
       </header>
 
-      <div className="flex flex-col min-h-[500px] justify-between ">
+      <div className="flex min-h-[500px] flex-col justify-between">
         {navItems
           .filter(
             (item) =>
-              !item.allowedRole || (user && user.role === item.allowedRole)
+              !item.allowedRole || (user && user.role === item.allowedRole),
           )
           .map(({ path, label, Icon }) => {
             return (

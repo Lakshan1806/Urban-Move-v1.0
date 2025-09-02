@@ -20,18 +20,18 @@ function AdminList() {
   }, []);
 
   return (
-    <div className="col-span-8 row-span-12 p-4 rounded-xl shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-col overflow-auto">
+    <div className="col-span-8 row-span-12 flex flex-col overflow-auto rounded-xl p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]">
       {user.map((admin) => {
         console.log(admin.photo);
         return (
           <div
             key={admin._id}
-            className="p-4 my-2 rounded shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)] flex flex-row gap-5 items-center"
+            className="my-2 flex flex-row items-center gap-5 rounded p-4 shadow-[0px_10px_20px_0px_rgba(0,_0,_0,_0.15)]"
           >
             <img
               src={admin.photo || null}
               alt="profile image"
-              className="w-24 h-24 rounded-full object-cover"
+              className="h-24 w-24 rounded-full object-cover"
             />
             <div>
               <h3 className="text-lg font-bold">{admin.name}</h3>
