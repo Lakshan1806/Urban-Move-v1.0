@@ -8,7 +8,7 @@ import {
 } from "./emailTemplates.js";
 
 dotenv.config({
-  path: "C:/Users/USER/Videos/Software-Development-Project/.env",
+  path: "",
 });
 
 const transporter = nodemailer.createTransport({
