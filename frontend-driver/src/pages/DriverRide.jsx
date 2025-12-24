@@ -879,7 +879,7 @@ const DriverRide = () => {
 
         <div className="relative w-2/3">
           <LoadScript
-            googleMapsApiKey="AIzaSyBzy5MB38A69NzcnngmihjBajzg0eNZsTk"
+            googleMapsApiKey=""
             libraries={["places", "geometry"]}
             onLoad={handleMapLoad}
             onError={handleMapError}
