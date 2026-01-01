@@ -1,6 +1,6 @@
-import Ride from '../models/RideModel.js';
-import { getRouteDetails } from '../utils/getRouteDetails.js';
-import { calculateFare } from '../utils/distanceCalculations.js';
+import Ride from '../../../models/RideModel.js';
+import { getRouteDetails } from '../../../utils/getRouteDetails.js';
+import { calculateFare } from '../../../utils/distanceCalculations.js';
 
 export const scheduleRide = async (req, res) => {
   try {

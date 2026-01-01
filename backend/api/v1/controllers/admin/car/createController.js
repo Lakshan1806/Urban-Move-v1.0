@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import CarModel from "../../../models/carModel.model.js";
-import CarInstance from "../../../models/carInstance.model.js";
+import CarModel from "../../../../../models/carModel.model.js";
+import CarInstance from "../../../../../models/carInstance.model.js";
 
 const createController = {
   addCarModel: async (req, res) => {

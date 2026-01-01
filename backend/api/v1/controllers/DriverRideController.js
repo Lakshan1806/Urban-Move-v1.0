@@ -1,6 +1,6 @@
 //import { CgOpenCollective } from 'react-icons/cg';
-import DriverRide from '../models/DriverRideModel.js';
-import { getIO } from '../utils/socket.js';
+import DriverRide from '../../../models/DriverRideModel.js';
+import { getIO } from '../../../utils/socket.js';
 
 
 export const saveRide = async (req, res) => {

@@ -1,5 +1,5 @@
-import Ride from "../models/RideModel.js";
-import user from "../models/usermodel.js"
+import Ride from "../../../models/RideModel.js";
+import user from "../../../models/usermodel.js"
 
 export const getLatestPickupLocation = async (req, res) => {
   try {

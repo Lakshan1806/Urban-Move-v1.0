@@ -1,4 +1,4 @@
-import Ride from "../models/RideModel.js";
+import Ride from "../../../models/RideModel.js";
 
 const acceptRide = async (req, res) => {
   try {

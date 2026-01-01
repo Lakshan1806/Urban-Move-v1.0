@@ -1,6 +1,6 @@
 import axios from 'axios';
-import { getRouteDetails } from '../utils/getRouteDetails.js';
-import { calculateFare } from '../utils/distanceCalculations.js';
+import { getRouteDetails } from '../../../utils/getRouteDetails.js';
+import { calculateFare } from '../../../utils/distanceCalculations.js';
 
 export const autocomplete = async (req, res) => {
   const { input } = req.query;

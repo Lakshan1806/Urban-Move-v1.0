@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import driverModel from "../models/driver.models.js";
+import driverModel from "../../../models/driver.models.js";
 
 const driverAuth = async (req, res, next) => {
   const token = req.cookies.token;

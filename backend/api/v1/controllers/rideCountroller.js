@@ -1,7 +1,7 @@
 //live tracking implements
-import Ride from '../models/RideModel.js';
-import { calculateRouteProgress } from '../utils/distanceCalculations.js';
-import { getRouteDetails } from '../utils/getRouteDetails.js';
+import Ride from '../../../models/RideModel.js';
+import { calculateRouteProgress } from '../../../utils/distanceCalculations.js';
+import { getRouteDetails } from '../../../utils/getRouteDetails.js';
 
 // Start tracking a ride
 export const startTracking = async (req, res) => {

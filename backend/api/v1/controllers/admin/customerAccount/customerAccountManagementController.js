@@ -1,4 +1,4 @@
-import User from "../../../models/usermodel.js";
+import User from "../../../../../models/usermodel.js";
 import jwt from "jsonwebtoken";
 
 const userAccountManagementController = {

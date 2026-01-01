@@ -1,4 +1,4 @@
-import Ride from '../models/DriverRideModel.js';
+import Ride from '../../../models/DriverRideModel.js';
 
 export const declineRide = async (req, res) => {
   try {
