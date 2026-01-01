@@ -10,3 +10,7 @@ uploads/driverDocuments/*
 !uploads/user/.gitkeep
 !uploads/driver/.gitkeep
 !uploads/driverDocuments/.gitkeep
+.env
+node_modules
+combined.log
+error.log
