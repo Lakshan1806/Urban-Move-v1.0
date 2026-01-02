@@ -4,7 +4,7 @@ import {
   updateDriverLocation,
   getDriverAcceptance
 } from '../controllers/driverAcceptanceController.js';
-import driverAuth from '../middlewares/driverAuth.js';
+import driverAuth from '../../../middlewares/driverAuth.js';
 
 
 const router = express.Router();

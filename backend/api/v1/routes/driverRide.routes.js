@@ -6,7 +6,7 @@ import {
   startRide,
   completeRide
 } from '../controllers/driverRide.controller.js';
-import { protectDriver } from '../middleware/authMiddleware.js';
+import { protectDriver } from '../../../middleware/authMiddleware.js';
 import {
   validateRideRequest,
   validateRideId,

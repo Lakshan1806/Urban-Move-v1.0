@@ -10,7 +10,7 @@ import {
   completeRide,
   cancelRide  
 } from '../controllers/rideCountroller.js';
-import userAuth from '../middlewares/userAuth.js';
+import userAuth from '../../../middlewares/userAuth.js';
 
 rideRoutes.post('/', userAuth, createRide);
 rideRoutes.post('/start-tracking', userAuth, startTracking);

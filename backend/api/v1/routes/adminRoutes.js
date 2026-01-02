@@ -1,9 +1,9 @@
 import express from "express";
 import adminController from "../controllers/admin/adminController.js";
-import adminUpload from "../middlewares/adminMulter.js";
-import carUpload from "../middlewares/carsMulter.js";
-import promotionUpload from "../middlewares/promotionsMulter.js";
-import authenticateToken from "../middlewares/adminTokenAuthenticator.js";
+import adminUpload from "../../../middlewares/adminMulter.js";
+import carUpload from "../../../middlewares/carsMulter.js";
+import promotionUpload from "../../../middlewares/promotionsMulter.js";
+import authenticateToken from "../../../middlewares/adminTokenAuthenticator.js";
 
 const adminRoutes = express.Router();
 

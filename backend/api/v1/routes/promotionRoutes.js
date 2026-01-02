@@ -1,5 +1,5 @@
 import express from "express";
-import { applyPromoCode, getActivePromotions } from "../controllers/promotionController.js";
+//import { applyPromoCode, getActivePromotions } from "../controllers/promotionController.js";
 
 const router = express.Router();
 
