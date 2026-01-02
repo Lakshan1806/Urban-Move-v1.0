@@ -4,7 +4,7 @@ import {
   getFromSession,
 } from "../../../../utils/sessionHelpers.js";
 import { handleErrors, validationError } from "../../../../utils/errorHandler.js";
-import otpService from "../../services/otpService.js";
+import otpService from "../../../../services/otpService.js";
 import generateJwtToken from "../../../../utils/generateJWTToken.js";
 import nodemailer from "../../../../utils/nodemailer.js";
 import userModel from "../../../../models/usermodel.js";

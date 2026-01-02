@@ -1,6 +1,6 @@
-import otpModel from "../../../models/otpModels.js";
-import sendSMS from "../../../utils/sendSms.js";
-import nodemailer from "../../../utils/nodemailer.js";
+import otpModel from "../models/otpModels.js";
+import sendSMS from "../utils/sendSms.js";
+import nodemailer from "../utils/nodemailer.js";
 
 const EXPIRY_MINUTES = 5;
 
