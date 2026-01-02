@@ -23,14 +23,12 @@ import liveTrackingRoutes from './api/v1/routes/liveTrackingRoutes.js';
 import driverAcceptanceRoutes from './api/v1/routes/driverAcceptanceRoutes.js';
 import fetchRoute from './api/v1/routes/fetchRoute.js';
 import tripHistoryRoutes from "./api/v1/routes/tripHistoryRoutes.js";
-import promoRoutes from "./api/v1/routes/promotionRoutes.js";
 import { emailRoutes } from "./api/v1/routes/email.js";
 import messageRoutes from "./api/v1/routes/messageRoutes.js";
 import checkAndCreateAdmin from "./utils/adminInitialSetup.js";
 import schedulePromoCleanup from "./utils/schedulePromoCleanup.js";
 import callLogRoutes from './api/v1/routes/callLogRoutes.js';
 import "./config/passport.js";
-import promotionRoutes from "./api/v1/routes/promotionRoutes.js";
 import { initSocket, getIO } from './utils/socket.js';
 
 
@@ -99,11 +97,9 @@ app.use("/api/live-tracking", liveTrackingRoutes);
 app.use('/api/driver-acceptance', driverAcceptanceRoutes);
 app.use('/api/driver-acceptance', fetchRoute);
 app.use("/api/triphistory", tripHistoryRoutes);
-app.use("/api/promo", promoRoutes);
 app.use("/api/email", emailRoutes);
 app.use("/api/messages", messageRoutes);
 app.use('/api/call-log', callLogRoutes);
-app.use("/api/promotions", promotionRoutes);
 app.use('/api/driver-acceptance', fetchRoute);
 
 
