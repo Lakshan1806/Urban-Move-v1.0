@@ -1,15 +1,15 @@
 {
-  "name": "cab-booking-system",
+  "name": "urban-move-v1.0",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "src/server.js",
   "scripts": {
-    "dev": "nodemon server.js",
-    "start": "node server.js",
+    "dev": "nodemon src/server.js",
+    "start": "node src/server.js",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Lakshan1806/Software-Development-Project.git"
+    "url": "git+https://github.com/Lakshan1806/Urban-Move-v1.0.git"
   },
   "type": "module",
   "keywords": [
@@ -23,9 +23,9 @@
   "author": "Your Name",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Lakshan1806/Software-Development-Project/issues"
+    "url": "https://github.com/Lakshan1806/Urban-Move-v1.0/issues"
   },
-  "homepage": "https://github.com/Lakshan1806/Software-Development-Project#readme",
+  "homepage": "https://github.com/Lakshan1806/Urban-Move-v1.0#readme",
   "description": "A cab booking system with user authentication, ride management, and real-time tracking.",
   "dependencies": {
     "axios": "^1.9.0",
