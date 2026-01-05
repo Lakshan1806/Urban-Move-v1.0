@@ -1,6 +1,6 @@
 import express from "express";
 import rentalController from "../controllers/rent/rentalController.js";
-import { getAvailableCars } from "../controllers/carController.js";
+import { getAvailableCars } from "../../cars/controllers/carController.js";
 import userController from "../controllers/user/userController.js";
 import userAuth from "../../../middlewares/userAuth.js";
 import passport from "passport";
@@ -17,7 +17,7 @@ import userModel from "../../../models/usermodel.js";
 import driverModel from "../../../models/driver.models.js";
 import driverAuth from "../../../middlewares/driverAuth.js";
 import "../../../config/passportDriver.js";
-import feedbackRoutes from "./feedbackRoutes.js";
+import feedbackRoutes from "../../feedback/routes/feedbackRoutes.js";
 
 dotenv.config();
 

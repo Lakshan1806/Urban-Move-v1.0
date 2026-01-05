@@ -1,47 +1,51 @@
-import adminRoutes from "./adminRoutes.js";
-import userRoutes from "./userRoute.js";
-import rideRoutes from "./rideRoutes.js";
-import scheduleRoutes from "./scheduleRoutes.js";
-import carRoutes from "./carRoutes.js";
-import locationRoutes from "./locationRoute.js";
-import driverFetchRoutes from "./DriverfetchRoute.js";
-import driverRideRoutes from "./driverRideRoutes.js";
-import feedbackRoutes from "./feedbackRoutes.js";
-import liveTrackingRoutes from "./liveTrackingRoutes.js";
-import driverAcceptanceRoutes from "./driverAcceptanceRoutes.js";
-import fetchRoute from "./fetchRoute.js";
-import tripHistoryRoutes from "./tripHistoryRoutes.js";
-import { emailRoutes } from "./email.js";
-import messageRoutes from "./messageRoutes.js";
-import callLogRoutes from "./callLogRoutes.js";
+import { Router } from "express";
 
-const registerRoutes = (app) => {
-  const routeBindings = [
-    ["/auth", userRoutes],
-    ["/user", userRoutes],
-    ["/api/auth", userRoutes],
-    ["/admin", adminRoutes],
-    ["/api/admin", adminRoutes],
-    ["/api/cars", carRoutes],
-    ["/api/rideRoute", rideRoutes],
-    ["/api/schedule", scheduleRoutes],
-    ["/api/location", locationRoutes],
-    ["/api/driver", driverFetchRoutes],
-    ["/api/driver-rides", driverRideRoutes],
-    ["/api/driverrides", driverRideRoutes],
-    ["/api/live-tracking", liveTrackingRoutes],
-    ["/api/driver-acceptance", driverAcceptanceRoutes],
-    ["/api/driver-acceptance", fetchRoute],
-    ["/api/triphistory", tripHistoryRoutes],
-    ["/api/email", emailRoutes],
-    ["/api/messages", messageRoutes],
-    ["/api/call-log", callLogRoutes],
-    ["/api/feedbacks", feedbackRoutes],
-  ];
+import adminRoutes from "../../../modules/admin/routes/adminRoutes.js";
+import userRoutes from "../../../modules/users/routes/userRoute.js";
+import rideRoutes from "../../../modules/rides/routes/rideRoutes.js";
+import scheduleRoutes from "../../../modules/schedules/routes/scheduleRoutes.js";
+import carRoutes from "../../../modules/cars/routes/carRoutes.js";
+import locationRoutes from "../../../modules/location/routes/locationRoute.js";
+import driverFetchRoutes from "../../../modules/drivers/routes/DriverfetchRoute.js";
+import driverRideRoutes from "../../../modules/drivers/routes/driverRideRoutes.js";
+import feedbackRoutes from "../../../modules/feedback/routes/feedbackRoutes.js";
+import liveTrackingRoutes from "../../../modules/tracking/routes/liveTrackingRoutes.js";
+import driverAcceptanceRoutes from "../../../modules/drivers/routes/driverAcceptanceRoutes.js";
+import fetchRoute from "../../../modules/drivers/routes/fetchRoute.js";
+import tripHistoryRoutes from "../../../modules/rides/routes/tripHistoryRoutes.js";
+import { emailRoutes } from "../../../modules/messaging/routes/email.js";
+import messageRoutes from "../../../modules/messaging/routes/messageRoutes.js";
+import callLogRoutes from "../../../modules/messaging/routes/callLogRoutes.js";
 
-  routeBindings.forEach(([path, router]) => {
-    app.use(path, router);
+export const v1RouteBindings = [
+  ["/auth", userRoutes],
+  ["/user", userRoutes],
+  ["/admin", adminRoutes],
+  ["/cars", carRoutes],
+  ["/rideRoute", rideRoutes],
+  ["/schedule", scheduleRoutes],
+  ["/location", locationRoutes],
+  ["/driver", driverFetchRoutes],
+  ["/driver-rides", driverRideRoutes],
+  ["/driverrides", driverRideRoutes],
+  ["/live-tracking", liveTrackingRoutes],
+  ["/driver-acceptance", driverAcceptanceRoutes],
+  ["/driver-acceptance", fetchRoute],
+  ["/triphistory", tripHistoryRoutes],
+  ["/email", emailRoutes],
+  ["/messages", messageRoutes],
+  ["/call-log", callLogRoutes],
+  ["/feedbacks", feedbackRoutes],
+];
+
+const createV1Router = () => {
+  const router = Router();
+
+  v1RouteBindings.forEach(([path, subRouter]) => {
+    router.use(path, subRouter);
   });
+
+  return router;
 };
 
-export default registerRoutes;
+export default createV1Router;

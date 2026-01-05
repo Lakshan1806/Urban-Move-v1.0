@@ -1,5 +1,5 @@
 import express from "express";
-import adminController from "../controllers/admin/adminController.js";
+import adminController from "../controllers/adminController.js";
 import adminUpload from "../../../middlewares/adminMulter.js";
 import carUpload from "../../../middlewares/carsMulter.js";
 import promotionUpload from "../../../middlewares/promotionsMulter.js";

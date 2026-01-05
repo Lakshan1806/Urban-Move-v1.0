@@ -9,7 +9,7 @@ import { fileURLToPath } from "url";
 
 import "./config/env.js";
 import "./config/passport.js";
-import registerRoutes from "./api/v1/routes/index.js";
+import registerApiRoutes from "./api/index.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,7 +49,7 @@ const createApp = () => {
   app.use(cookieParser());
   app.use("/uploads", express.static(path.join(__dirname, "..", "uploads")));
 
-  registerRoutes(app);
+  registerApiRoutes(app);
 
   app.get("/", (req, res) => {
     res.send("Server is ready");

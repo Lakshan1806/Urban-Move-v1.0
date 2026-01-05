@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import path from "path";
 import fs from "fs/promises";
-import CarModel from "../../../../../models/carModel.model.js";
-import CarInstance from "../../../../../models/carInstance.model.js";
-import RecentlyDeletedCar from "../../../../../models/recentlyDeletedCar.model.js";
-import RecentlyDeletedUnit from "../../../../../models/recentlyDeletedUnit.model.js";
+import CarModel from "../../../../models/carModel.model.js";
+import CarInstance from "../../../../models/carInstance.model.js";
+import RecentlyDeletedCar from "../../../../models/recentlyDeletedCar.model.js";
+import RecentlyDeletedUnit from "../../../../models/recentlyDeletedUnit.model.js";
 
 const deleteController = {
   deleteCarImage: async (req, res) => {
