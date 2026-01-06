@@ -1,4 +1,4 @@
-import DriverRide from "../../../models/DriverRide.js";
+import DriverRide from "#models/DriverRide.js";
 
 //Get all trips for a user
 export const getUserTripHistory = async (req, res) => {
@@ -33,3 +33,5 @@ export const getLatestUserRide = async (req, res) => {
     res.status(500).json({ error: "Failed to fetch latest ride" });
   }
 };
+
+

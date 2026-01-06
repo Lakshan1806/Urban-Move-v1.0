@@ -4,7 +4,7 @@ import {
   getLiveTrackingLocations,
   clearLiveTracking
 } from '../controllers/liveTrackingController.js';
-import driverAuth from '../../../middlewares/driverAuth.js';
+import driverAuth from '#middlewares/driverAuth.js';
 
 const router = express.Router();
 

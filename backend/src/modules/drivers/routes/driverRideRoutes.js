@@ -1,7 +1,7 @@
 import express from 'express';
 import { saveRide, getDriverRides } from '../controllers/DriverRideController.js';
-import driverAuth from '../../../middlewares/driverAuth.js';
-import DriverRide from '../../../models/DriverRide.js';
+import driverAuth from '#middlewares/driverAuth.js';
+import DriverRide from '#models/DriverRide.js';
 
 const router = express.Router();
 
@@ -26,3 +26,5 @@ router.get("/latest-ride/:userId", async (req, res) => {
 
 
 export default router;
+
+

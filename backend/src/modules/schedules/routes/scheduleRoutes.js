@@ -4,7 +4,7 @@ import {
   cancelScheduledRide, 
   getScheduledRides 
 } from '../controllers/scheduleController.js';
-import userAuth from '../../../middlewares/userAuth.js';
+import userAuth from '#middlewares/userAuth.js';
 
 const router = express.Router();
 
@@ -18,3 +18,4 @@ router.delete('/:rideId', userAuth, cancelScheduledRide);
 router.get('/', userAuth, getScheduledRides);
 
 export default router;
+

@@ -1,6 +1,6 @@
 import jwt from "jsonwebtoken";
-import CarModel from "../../../../models/carModel.model.js";
-import CarInstance from "../../../../models/carInstance.model.js";
+import CarModel from "#models/carModel.model.js";
+import CarInstance from "#models/carInstance.model.js";
 import fs from "fs/promises";
 import path from "path";
 
@@ -221,3 +221,5 @@ const updateController = {
 
 export default updateController;
 //logo-1749320195054-437139927-Nissan.svg
+
+

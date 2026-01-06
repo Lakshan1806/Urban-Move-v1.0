@@ -26,6 +26,16 @@
     "url": "https://github.com/Lakshan1806/Urban-Move-v1.0/issues"
   },
   "homepage": "https://github.com/Lakshan1806/Urban-Move-v1.0#readme",
+  "imports": {
+    "#api/*": "./src/api/*",
+    "#config/*": "./src/config/*",
+    "#middlewares/*": "./src/middlewares/*",
+    "#models/*": "./src/models/*",
+    "#modules/*": "./src/modules/*",
+    "#services/*": "./src/services/*",
+    "#sockets/*": "./src/sockets/*",
+    "#utils/*": "./src/utils/*"
+  },
   "description": "A cab booking system with user authentication, ride management, and real-time tracking.",
   "dependencies": {
     "axios": "^1.9.0",

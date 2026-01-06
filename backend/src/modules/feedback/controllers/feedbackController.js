@@ -1,5 +1,5 @@
-import Feedback from "../../../models/feedback.model.js";
-import User from "../../../models/usermodel.js";
+import Feedback from "#models/feedback.model.js";
+import User from "#models/usermodel.js";
 
 export const createFeedback = async (req, res) => {
   const { userId, rating, note } = req.body;
@@ -30,3 +30,4 @@ export const getAllFeedbacks = async (req, res) => {
     res.status(500).json({ message: "Error fetching feedbacks", error });
   }
 };
+

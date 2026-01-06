@@ -1,4 +1,4 @@
-import Driver from "../../../../models/driver.models.js";
+import Driver from "#models/driver.models.js";
 import jwt from "jsonwebtoken";
 
 const driverAccountManagementController = {
@@ -110,3 +110,5 @@ const driverAccountManagementController = {
 };
 
 export default driverAccountManagementController;
+
+

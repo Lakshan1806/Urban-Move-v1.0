@@ -1,23 +1,23 @@
 import express from "express";
 import rentalController from "../controllers/rent/rentalController.js";
-import { getAvailableCars } from "../../cars/controllers/carController.js";
+import { getAvailableCars } from "#modules/cars/controllers/carController.js";
 import userController from "../controllers/user/userController.js";
-import userAuth from "../../../middlewares/userAuth.js";
+import userAuth from "#middlewares/userAuth.js";
 import passport from "passport";
-import generateJwtToken from "../../../utils/generateJWTToken.js";
+import generateJwtToken from "#utils/generateJWTToken.js";
 import dotenv from "dotenv";
-import sendOtp from "../../../utils/sendOtp.js";
-import validateOtp from "../../../utils/validateOtp.js";
-import otpModel from "../../../models/otpModels.js";
-import userUpload from "../../../middlewares/userMulter.js";
-import { validateRegistrationStep } from "../../../middlewares/registrationMiddleware.js";
-import { validateRequest } from "../../../middlewares/validationMiddleware.js";
-import driverUpload from "../../../middlewares/driverUpload.js";
-import userModel from "../../../models/usermodel.js";
-import driverModel from "../../../models/driver.models.js";
-import driverAuth from "../../../middlewares/driverAuth.js";
-import "../../../config/passportDriver.js";
-import feedbackRoutes from "../../feedback/routes/feedbackRoutes.js";
+import sendOtp from "#utils/sendOtp.js";
+import validateOtp from "#utils/validateOtp.js";
+import otpModel from "#models/otpModels.js";
+import userUpload from "#middlewares/userMulter.js";
+import { validateRegistrationStep } from "#middlewares/registrationMiddleware.js";
+import { validateRequest } from "#middlewares/validationMiddleware.js";
+import driverUpload from "#middlewares/driverUpload.js";
+import userModel from "#models/usermodel.js";
+import driverModel from "#models/driver.models.js";
+import driverAuth from "#middlewares/driverAuth.js";
+import "#config/passportDriver.js";
+import feedbackRoutes from "#modules/feedback/routes/feedbackRoutes.js";
 
 dotenv.config();
 
@@ -410,3 +410,5 @@ userRoutes.post(
 
 
 export default userRoutes;
+
+

@@ -1,6 +1,6 @@
 import express from 'express';
 import { autocomplete, reverseGeocode, trackRoute } from '../controllers/locationController.js';
-import userAuth from '../../../middlewares/userAuth.js';
+import userAuth from '#middlewares/userAuth.js';
 
 const router = express.Router();
 
@@ -14,4 +14,5 @@ router.get('/reverse-geocode', reverseGeocode);
 router.post('/track', userAuth, trackRoute);
 
 export default router;
+
 

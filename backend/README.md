@@ -21,6 +21,7 @@ backend/
       v1/routes/index.js    # v1 router composition
 
     modules/
+      auth/ (routes/)
       admin/ (routes/, controllers/)
       cars/  (routes/, controllers/)
       drivers/ (routes/, controllers/)
@@ -38,10 +39,10 @@ backend/
     utils/
 
     config/
-      env.js
-      db.js
-      passport.js
-      passportDriver.js
+    env.js
+    db.js
+    passport.js
+    passportDriver.js
 
     jobs/                  # cron/scheduled work
     sockets/
@@ -51,3 +52,14 @@ backend/
 ```
 
 This keeps API surface (routing) thin and pushes logic into domain modules.
+
+## Path aliases
+Defined in `package.json#imports` for cleaner ESM imports:
+- `#api/*` → `src/api/*`
+- `#config/*` → `src/config/*`
+- `#middlewares/*` → `src/middlewares/*`
+- `#models/*` → `src/models/*`
+- `#modules/*` → `src/modules/*`
+- `#services/*` → `src/services/*`
+- `#sockets/*` → `src/sockets/*`
+- `#utils/*` → `src/utils/*`

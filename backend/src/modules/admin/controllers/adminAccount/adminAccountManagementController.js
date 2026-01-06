@@ -1,8 +1,8 @@
-import Admin from "../../../../models/admin.model.js";
+import Admin from "#models/admin.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import generateRandomPassword from "../../../../utils/passwordGenerator.js";
-import sendWelcomeMail from "../../../../utils/mailer.js";
+import generateRandomPassword from "#utils/passwordGenerator.js";
+import sendWelcomeMail from "#utils/mailer.js";
 
 const adminAccountManagementController = {
   changePassword: async (req, res) => {
@@ -152,3 +152,5 @@ const adminAccountManagementController = {
 };
 
 export default adminAccountManagementController;
+
+

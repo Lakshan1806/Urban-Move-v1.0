@@ -1,5 +1,5 @@
 import dotenv from "dotenv";
-import nodemailer from "../../../../utils/nodemailer.js";
+import nodemailer from "#utils/nodemailer.js";
 import bcrypt from "bcrypt";
 import crypto from "crypto";
 
@@ -160,3 +160,5 @@ const userPasswordController = (Model, role) => ({
   },
 });
 export default userPasswordController;
+
+

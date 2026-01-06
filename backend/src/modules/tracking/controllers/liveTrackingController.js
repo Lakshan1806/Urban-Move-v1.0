@@ -1,4 +1,4 @@
-import DriverRide from '../../../models/DriverRideModel.js';
+import DriverRide from '#models/DriverRideModel.js';
 
 export const saveLiveLocation = async (req, res) => {
   try {
@@ -154,3 +154,4 @@ export const clearLiveTracking = async (req, res) => {
     });
   }
 };
+

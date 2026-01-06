@@ -2,14 +2,14 @@ import {
   saveToSession,
   clearFromSession,
   getFromSession,
-} from "../../../../utils/sessionHelpers.js";
-import { handleErrors, validationError } from "../../../../utils/errorHandler.js";
-import otpService from "../../../../services/otpService.js";
-import generateJwtToken from "../../../../utils/generateJWTToken.js";
-import nodemailer from "../../../../utils/nodemailer.js";
-import userModel from "../../../../models/usermodel.js";
+} from "#utils/sessionHelpers.js";
+import { handleErrors, validationError } from "#utils/errorHandler.js";
+import otpService from "#services/otpService.js";
+import generateJwtToken from "#utils/generateJWTToken.js";
+import nodemailer from "#utils/nodemailer.js";
+import userModel from "#models/usermodel.js";
 import bcrypt from "bcrypt";
-import driverModel from "../../../../models/driver.models.js";
+import driverModel from "#models/driver.models.js";
 
 const SESSION_REGISTRATION_KEY = "registration";
 const SESSION_LOGIN_KEY = "loginProcess";
@@ -931,3 +931,5 @@ const userAuthController = {
   },
 };
 export default userAuthController;
+
+

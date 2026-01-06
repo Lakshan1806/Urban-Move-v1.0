@@ -1,4 +1,4 @@
-import DriverRide from '../../../models/DriverRideModel.js';
+import DriverRide from '#models/DriverRideModel.js';
 import { calculateRoute } from '../services/maps.service.js';
 import { notifyNearbyDrivers, notifyPassenger } from '../services/notification.service.js';
 
@@ -177,3 +177,4 @@ export const completeRide = async (req, res) => {
     });
   }
 };
+

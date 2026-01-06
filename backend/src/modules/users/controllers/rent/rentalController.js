@@ -1,4 +1,4 @@
-import CarModel from "../../../../models/carModel.model.js";
+import CarModel from "#models/carModel.model.js";
 
 const rentalController = {
   
@@ -22,3 +22,4 @@ const rentalController = {
 };
 
 export default rentalController;
+

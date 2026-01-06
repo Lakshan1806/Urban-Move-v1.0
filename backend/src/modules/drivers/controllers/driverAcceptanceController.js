@@ -1,4 +1,4 @@
-import DriverAcceptance from '../../../models/DriverAcceptance.js';
+import DriverAcceptance from '#models/DriverAcceptance.js';
 
 
 export const acceptRide = async (req, res) => {
@@ -117,3 +117,5 @@ export const getDriverAcceptance = async (req, res) => {
     });
   }
 };
+
+
