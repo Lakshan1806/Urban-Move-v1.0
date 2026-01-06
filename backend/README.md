@@ -4,7 +4,7 @@
 
 - Primary mount: `/api/v1/...`.
 - Legacy mounts kept temporarily: `/api/...` and bare `/auth`, `/cars`, etc. (served by the same v1 router). Plan to deprecate these once clients are moved.
-- Add future versions by registering `/api/v2/...` (recommended: keep each version isolated).
+- Add future versions by registering `/api/v2/...`.
 
 ## Current structure (module-first)
 
