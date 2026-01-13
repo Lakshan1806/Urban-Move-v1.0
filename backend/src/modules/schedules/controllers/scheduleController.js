@@ -1,4 +1,4 @@
-import Ride from '#models/RideModel.js';
+import Ride from '#modules/rides/models/RideModel.js';
 import { getRouteDetails } from '#utils/getRouteDetails.js';
 import { calculateFare } from '#utils/distanceCalculations.js';
 

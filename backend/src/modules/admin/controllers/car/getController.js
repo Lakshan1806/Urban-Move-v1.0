@@ -1,9 +1,9 @@
 import jwt from "jsonwebtoken";
-import CarModel from "#models/carModel.model.js";
-import DeletedCarModel from "#models/recentlyDeletedCar.model.js";
-import DeletedCarUnit from "#models/recentlyDeletedUnit.model.js";
-import CarInstance from "#models/carInstance.model.js";
-import BranchLocation from "#models/branchLocation.model.js";
+import CarModel from "#modules/cars/models/carModel.model.js";
+import DeletedCarModel from "#modules/cars/models/recentlyDeletedCar.model.js";
+import DeletedCarUnit from "#modules/cars/models/recentlyDeletedUnit.model.js";
+import CarInstance from "#modules/cars/models/carInstance.model.js";
+import BranchLocation from "#modules/location/models/branchLocation.model.js";
 
 const getController = {
   getAllCarModels: async (req, res) => {

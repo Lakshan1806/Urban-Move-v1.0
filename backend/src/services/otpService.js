@@ -1,4 +1,4 @@
-import otpModel from "../models/otpModels.js";
+import otpModel from "#modules/auth/models/otpModels.js";
 import sendSMS from "../utils/sendSms.js";
 import nodemailer from "../utils/nodemailer.js";
 

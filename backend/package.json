@@ -30,7 +30,6 @@
     "#api/*": "./src/api/*",
     "#config/*": "./src/config/*",
     "#middlewares/*": "./src/middlewares/*",
-    "#models/*": "./src/models/*",
     "#modules/*": "./src/modules/*",
     "#services/*": "./src/services/*",
     "#sockets/*": "./src/sockets/*",

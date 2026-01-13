@@ -1,24 +1,34 @@
-const express = require("express");
-const PromoCode = require("../models/PromoCode");
+import express from "express";
+import Promotion from "#modules/admin/models/promotion.model.js";
+
 const router = express.Router();
 
 router.post("/process-payment", async (req, res) => {
-    try {
-        const { amount, promoCode } = req.body;
-        let finalAmount = amount;
+  try {
+    const { amount, promoCode } = req.body;
+    let finalAmount = amount;
 
-        if (promoCode) {
-            const promo = await PromoCode.findOne({ code: promoCode });
-            if (promo && promo.isActive && promo.expirationDate > new Date() && promo.usedCount < promo.usageLimit) {
-                finalAmount -= (amount * promo.discount) / 100; 
-            }
+    if (promoCode) {
+      const promo = await Promotion.findOne({ code: promoCode.toUpperCase() });
+
+      if (
+        promo &&
+        promo.isActive &&
+        promo.expiresAt > new Date() &&
+        promo.usedCount < promo.maxUses
+      ) {
+        if (promo.discountType === "Percentage") {
+          finalAmount -= (amount * promo.discountValue) / 100;
+        } else {
+          finalAmount -= promo.discountValue;
         }
-
-
-        res.json({ message: "Payment successful", amountPaid: finalAmount });
-    } catch (error) {
-        res.status(500).json({ error: error.message });
+      }
     }
+
+    res.json({ message: "Payment successful", amountPaid: finalAmount });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
 });
 
-module.exports = router;
+export default router;

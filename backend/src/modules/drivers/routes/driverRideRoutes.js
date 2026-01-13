@@ -1,7 +1,7 @@
 import express from 'express';
 import { saveRide, getDriverRides } from '../controllers/DriverRideController.js';
 import driverAuth from '#middlewares/driverAuth.js';
-import DriverRide from '#models/DriverRide.js';
+import DriverRide from '#modules/rides/models/DriverRide.js';
 
 const router = express.Router();
 

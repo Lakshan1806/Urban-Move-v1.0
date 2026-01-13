@@ -1,4 +1,4 @@
-import Promotion from "../models/promotion.model.js";
+import Promotion from "#modules/admin/models/promotion.model.js";
 import cron from "node-cron";
 
 function schedulePromoCleanup() {

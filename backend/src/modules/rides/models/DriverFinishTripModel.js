@@ -1,6 +1,6 @@
-const DriverFinishTrip = require('../models/DriverFinishTripModel');
+import DriverRide from "./DriverRideModel.js";
 
-exports.saveDriverRide = async (req, res) => {
+export const saveDriverRide = async (req, res) => {
   try {
     const {
       rideId,
@@ -26,7 +26,7 @@ exports.saveDriverRide = async (req, res) => {
       });
     }
 
-    const newRide = new DriverFinishTrip({
+    const newRide = new DriverRide({
       rideId,
       driverId,
       userId,
@@ -61,11 +61,11 @@ exports.saveDriverRide = async (req, res) => {
   }
 };
 
-exports.getDriverRides = async (req, res) => {
+export const getDriverRides = async (req, res) => {
   try {
     const { driverId } = req.params;
     
-    const rides = await DriverFinishTrip.find({ driverId })
+    const rides = await DriverRide.find({ driverId })
       .sort({ createdAt: -1 })
       .populate('userId', 'name email phone');
 

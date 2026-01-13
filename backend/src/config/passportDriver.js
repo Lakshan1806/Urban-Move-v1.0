@@ -1,6 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
-import driverModel from "../models/driver.models.js";
+import driverModel from "#modules/drivers/models/driver.models.js";
 import logger from "../utils/logger.js";
 
 passport.use(

@@ -1,11 +1,11 @@
 import jwt from "jsonwebtoken";
-import Promotion from "#models/promotion.model.js";
-import Ride from "#models/RideModel.js";
-import BranchLocation from "#models/branchLocation.model.js";
-import Booking from "#models/carBookings.model.js";
-import CarInstance from "#models/carInstance.model.js";
-import CarModel from "#models/carModel.model.js";
-import User from "#models/usermodel.js";
+import Promotion from "#modules/admin/models/promotion.model.js";
+import Ride from "#modules/rides/models/RideModel.js";
+import BranchLocation from "#modules/location/models/branchLocation.model.js";
+import Booking from "#modules/cars/models/carBookings.model.js";
+import CarInstance from "#modules/cars/models/carInstance.model.js";
+import CarModel from "#modules/cars/models/carModel.model.js";
+import User from "#modules/users/models/usermodel.js";
 
 const promoManagementController = {
   addPromotion: async (req, res) => {

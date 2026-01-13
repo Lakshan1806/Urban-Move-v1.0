@@ -1,5 +1,5 @@
 //live tracking implements
-import Ride from '#models/RideModel.js';
+import Ride from '#modules/rides/models/RideModel.js';
 import { calculateRouteProgress } from '#utils/distanceCalculations.js';
 import { getRouteDetails } from '#utils/getRouteDetails.js';
 

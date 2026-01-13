@@ -1,4 +1,4 @@
-import Ride from '#models/RideModel.js';
+import Ride from '#modules/rides/models/RideModel.js';
 import mongoose from 'mongoose';
 
 // Assign driver to ride

@@ -1,5 +1,5 @@
 //import { CgOpenCollective } from 'react-icons/cg';
-import DriverRide from '#models/DriverRideModel.js';
+import DriverRide from '#modules/rides/models/DriverRideModel.js';
 import { getIO } from '#utils/socket.js';
 
 

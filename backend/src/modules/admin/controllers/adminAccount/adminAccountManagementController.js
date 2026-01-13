@@ -1,4 +1,4 @@
-import Admin from "#models/admin.model.js";
+import Admin from "#modules/admin/models/admin.model.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import generateRandomPassword from "#utils/passwordGenerator.js";

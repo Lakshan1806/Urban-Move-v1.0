@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
-import ArchivedUser from "#models/archivedUser.model.js";
+import ArchivedUser from "#modules/users/models/archivedUser.model.js";
 import nodemailer from "#utils/nodemailer.js";
-import ArchivedDriver from "#models/archivedDriver.models.js";
+import ArchivedDriver from "#modules/users/models/archivedDriver.models.js";
 
 dotenv.config();
 

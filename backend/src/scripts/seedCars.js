@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import Car from "../models/car.model.js";
+import CarModel from "#modules/cars/models/carModel.model.js";
 
 // MongoDB connection string (Update with your database URI)
 const MONGO_URI = "mongodb://127.0.0.1:27017/Urban_Move"; // Change "yourDatabase" to your actual database name
@@ -131,11 +131,11 @@ const cars = [
 const seedCars = async () => {
   try {
     // Delete existing car records
-    await Car.deleteMany({});
+    await CarModel.deleteMany({});
     console.log("Deleted existing car data");
 
     // Insert new cars
-    const createdCars = await Car.insertMany(cars);
+    const createdCars = await CarModel.insertMany(cars);
     console.log(`Seeded ${createdCars.length} cars successfully`);
 
     // Close database connection

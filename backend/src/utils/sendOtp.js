@@ -1,6 +1,6 @@
 import nodemailer from "./nodemailer.js";
 import sendSMS from "./sendSms.js";
-import otpModel from "../models/otpModels.js";
+import otpModel from "#modules/auth/models/otpModels.js";
 
 const sendOtp = async (req, res) => {
   try {

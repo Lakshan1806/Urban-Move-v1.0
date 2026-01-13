@@ -1,6 +1,6 @@
 import generateRandomPassword from "./passwordGenerator.js";
 import sendWelcomeMail from "./mailer.js";
-import Admin from "../models/admin.model.js";
+import Admin from "#modules/admin/models/admin.model.js";
 
 async function checkAndCreateAdmin() {
   try {

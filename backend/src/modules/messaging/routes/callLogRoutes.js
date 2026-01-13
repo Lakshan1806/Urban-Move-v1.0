@@ -1,6 +1,6 @@
 import express from 'express';
-import CallLog from '#models/CallLog.js';
-import DriverRide from '#models/DriverRide.js';
+import CallLog from '#modules/messaging/models/CallLog.js';
+import DriverRide from '#modules/rides/models/DriverRide.js';
 
 const router = express.Router();
 
