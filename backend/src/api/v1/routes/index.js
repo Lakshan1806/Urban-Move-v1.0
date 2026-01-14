@@ -2,7 +2,7 @@ import { Router } from "express";
 
 import adminRoutes from "#modules/admin/routes/adminRoutes.js";
 import authRoutes from "#modules/auth/routes/authRoutes.js";
-import userRoutes from "#modules/users/routes/userRoute.js";
+//import userRoutes from "#modules/users/routes/userRoute.js";
 import rideRoutes from "#modules/rides/routes/rideRoutes.js";
 import scheduleRoutes from "#modules/schedules/routes/scheduleRoutes.js";
 import carRoutes from "#modules/cars/routes/carRoutes.js";
@@ -20,7 +20,7 @@ import callLogRoutes from "#modules/messaging/routes/callLogRoutes.js";
 
 export const v1RouteBindings = [
   ["/auth", authRoutes],
-  ["/user", userRoutes],
+  //["/user", userRoutes],
   ["/admin", adminRoutes],
   ["/cars", carRoutes],
   ["/rideRoute", rideRoutes],

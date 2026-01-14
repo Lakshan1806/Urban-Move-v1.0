@@ -1,4 +1,4 @@
-import express from "express";
+/*import express from "express";
 import rentalController from "../controllers/rent/rentalController.js";
 import { getAvailableCars } from "#modules/cars/controllers/carController.js";
 import userController from "../controllers/user/userController.js";
@@ -23,12 +23,12 @@ dotenv.config();
 
 const userRoutes = express.Router();
 
-const userregisterController = userController.auth.createAuthController(
+/*const userregisterController = userController.auth.createAuthController(
   userModel,
   "user",
   "registration"
-);
-
+);*/
+/*
 userRoutes.post("/logout", userController.auth.logout);
 userRoutes.post("/google/verify-phone", userController.auth.verifyGooglePhone);
 userRoutes.post(
@@ -411,4 +411,4 @@ userRoutes.post(
 
 export default userRoutes;
 
-
+*/
