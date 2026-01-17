@@ -1,105 +1,104 @@
-import express from "express";
+import { Router } from "express";
 import adminController from "../controllers/adminController.js";
 import adminUpload from "#middlewares/adminMulter.js";
 import carUpload from "#middlewares/carsMulter.js";
 import promotionUpload from "#middlewares/promotionsMulter.js";
 import authenticateToken from "#middlewares/adminTokenAuthenticator.js";
 
-const adminRoutes = express.Router();
+const adminRouter = Router();
 
-adminRoutes.post("/login", adminController.auth.login);
-adminRoutes.post("/logout", adminController.auth.logout);
-adminRoutes.patch("/change_password", adminController.admin.changePassword);
-adminRoutes.post("/add_admin", adminController.admin.addAdmin);
-adminRoutes.post(
+adminRouter.post("/login", adminController.auth.login);
+adminRouter.post("/logout", adminController.auth.logout);
+adminRouter.patch("/change_password", adminController.admin.changePassword);
+adminRouter.post("/add_admin", adminController.admin.addAdmin);
+adminRouter.post(
   "/update_details",
   adminUpload.single("photo"),
-  adminController.admin.updateDetails
+  adminController.admin.updateDetails,
 );
-adminRoutes.post(
+adminRouter.post(
   "/add_car_model",
   carUpload.fields([
     { name: "keyImage", maxCount: 1 },
     { name: "photos", maxCount: 10 },
   ]),
-  adminController.car.create.addCarModel
+  adminController.car.create.addCarModel,
 );
-adminRoutes.post(
+adminRouter.post(
   "/update_car_model",
   carUpload.none(),
-  adminController.car.update.updateCarModel
+  adminController.car.update.updateCarModel,
 );
-adminRoutes.post("/add_unit", adminController.car.create.addCarUnit);
-adminRoutes.post("/update_car_unit", adminController.car.update.updateCarUnit);
-adminRoutes.post(
+adminRouter.post("/add_unit", adminController.car.create.addCarUnit);
+adminRouter.post("/update_car_unit", adminController.car.update.updateCarUnit);
+adminRouter.post(
   "/add_promotion",
   promotionUpload.single("promoImage"),
-  adminController.promotion.addPromotion
+  adminController.promotion.addPromotion,
 );
 
-adminRoutes.get("/get_all_admin", adminController.admin.getAllAdmin);
-adminRoutes.get("/get_all_user", adminController.customer.getAllUser);
-adminRoutes.patch("/terminate_user", adminController.customer.terminateUser);
-adminRoutes.patch("/terminate_driver", adminController.driver.terminateDriver);
-
-adminRoutes.patch(
+adminRouter.get("/get_all_admin", adminController.admin.getAllAdmin);
+adminRouter.get("/get_all_user", adminController.customer.getAllUser);
+adminRouter.patch("/terminate_user", adminController.customer.terminateUser);
+adminRouter.patch("/terminate_driver", adminController.driver.terminateDriver);
+adminRouter.patch(
   "/revoke_termination",
-  adminController.customer.revokeUserTermination
+  adminController.customer.revokeUserTermination,
 );
-adminRoutes.patch(
+adminRouter.patch(
   "/revoke_driver_termination",
-  adminController.driver.revokeDriverTermination
+  adminController.driver.revokeDriverTermination,
 );
 
-adminRoutes.get("/get_all_driver", adminController.driver.getAllDriver);
-adminRoutes.get("/profile", authenticateToken, adminController.auth.profile);
-adminRoutes.get("/account_info", adminController.admin.accountInfo);
-adminRoutes.get("/get_all_car_models", adminController.car.get.getAllCarModels);
-adminRoutes.get(
+adminRouter.get("/get_all_driver", adminController.driver.getAllDriver);
+adminRouter.get("/profile", authenticateToken, adminController.auth.profile);
+adminRouter.get("/account_info", adminController.admin.accountInfo);
+adminRouter.get("/get_all_car_models", adminController.car.get.getAllCarModels);
+adminRouter.get(
   "/get_all_deleted_car_models",
-  adminController.car.get.getAllDeletedCarModels
+  adminController.car.get.getAllDeletedCarModels,
 );
-adminRoutes.get(
+adminRouter.get(
   "/get_all_deleted_car_units",
-  adminController.car.get.getAllDeletedCarUnits
+  adminController.car.get.getAllDeletedCarUnits,
 );
-adminRoutes.get("/get_all_car_units", adminController.car.get.getAllCarUnits);
-adminRoutes.get("/get_all_branches", adminController.car.get.getAllBranches);
-adminRoutes.get(
+adminRouter.get("/get_all_car_units", adminController.car.get.getAllCarUnits);
+adminRouter.get("/get_all_branches", adminController.car.get.getAllBranches);
+adminRouter.get(
   "/get_all_promotions",
-  adminController.promotion.getAllPromotions
+  adminController.promotion.getAllPromotions,
 );
-adminRoutes.get(
+adminRouter.get(
   "/get_all_Expired_promotions",
-  adminController.promotion.getAllExpiredPromotions
+  adminController.promotion.getAllExpiredPromotions,
 );
 
-adminRoutes.get(
+adminRouter.get(
   "/get_yearly_income",
-  adminController.promotion.calculateYearlyIncome
+  adminController.promotion.calculateYearlyIncome,
 );
 
-adminRoutes.get(
+adminRouter.get(
   "/get_monthly_stats",
-  adminController.promotion.getMonthlyRideStats
+  adminController.promotion.getMonthlyRideStats,
 );
 
-adminRoutes.get(
+adminRouter.get(
   "/get_branch_locations",
-  adminController.promotion.getBranchLocations
+  adminController.promotion.getBranchLocations,
 );
 
-adminRoutes.get(
+adminRouter.get(
   "/get_rent_bookings",
-  adminController.promotion.getRentBookings
+  adminController.promotion.getRentBookings,
 );
 
-adminRoutes.post(
+adminRouter.post(
   "/add_branch_location",
-  adminController.promotion.addBranchLocation
+  adminController.promotion.addBranchLocation,
 );
 
-adminRoutes.patch(
+adminRouter.patch(
   "/update_car_image",
   carUpload.fields([
     { name: "keyImage", maxCount: 1 },
@@ -107,34 +106,33 @@ adminRoutes.patch(
     { name: "newImage", maxCount: 1 },
     { name: "logo", maxCount: 1 },
   ]),
-  adminController.car.update.updateKeyImage
+  adminController.car.update.updateKeyImage,
 );
 
-adminRoutes.patch(
+adminRouter.patch(
   "/deactivate_promotion",
-  adminController.promotion.deactivatePromotion
+  adminController.promotion.deactivatePromotion,
 );
 
-adminRoutes.delete(
+adminRouter.delete(
   "/delete_car_image",
-  adminController.car.delete.deleteCarImage
+  adminController.car.delete.deleteCarImage,
 );
-adminRoutes.delete(
+adminRouter.delete(
   "/delete_car_model",
-  adminController.car.delete.deleteCarModel
+  adminController.car.delete.deleteCarModel,
 );
-adminRoutes.delete(
+adminRouter.delete(
   "/delete_car_unit",
-  adminController.car.delete.deleteCarUnit
+  adminController.car.delete.deleteCarUnit,
 );
-adminRoutes.post(
+adminRouter.post(
   "/restore_car_models",
-  adminController.car.delete.restoreCarModel
+  adminController.car.delete.restoreCarModel,
 );
 
-adminRoutes.post(
+adminRouter.post(
   "/restore_car_units",
-  adminController.car.delete.restoreCarUnit
+  adminController.car.delete.restoreCarUnit,
 );
-export default adminRoutes;
-
+export default adminRouter;
