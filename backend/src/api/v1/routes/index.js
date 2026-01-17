@@ -1,7 +1,9 @@
 import { Router } from "express";
 
+import authRouter, {
+  mountPath as authPath,
+} from "#modules/auth/routes/authRoutes.js";
 import adminRoutes from "#modules/admin/routes/adminRoutes.js";
-import authRoutes from "#modules/auth/routes/authRoutes.js";
 //import userRoutes from "#modules/users/routes/userRoute.js";
 import rideRoutes from "#modules/rides/routes/rideRoutes.js";
 import scheduleRoutes from "#modules/schedules/routes/scheduleRoutes.js";
@@ -19,7 +21,7 @@ import messageRoutes from "#modules/messaging/routes/messageRoutes.js";
 import callLogRoutes from "#modules/messaging/routes/callLogRoutes.js";
 
 export const v1RouteBindings = [
-  ["/auth", authRoutes],
+  [authPath, authRouter],
   //["/user", userRoutes],
   ["/admin", adminRoutes],
   ["/cars", carRoutes],
