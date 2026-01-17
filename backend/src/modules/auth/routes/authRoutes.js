@@ -6,6 +6,7 @@ export const mountPath = "/auth";
 
 const authRouter = Router();
 
-//authRouter.use("/", userRoutes);
+//authRouter.post("/login", adminController.auth.login);
+//authRouter.post("/logout", adminController.auth.logout);
 
 export default authRouter;
