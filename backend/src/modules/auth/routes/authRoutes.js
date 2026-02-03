@@ -8,5 +8,7 @@ const authRouter = Router();
 
 //authRouter.post("/login", adminController.auth.login);
 //authRouter.post("/logout", adminController.auth.logout);
+//authRouter.post("/profile", adminController.auth.profile);
+
 
 export default authRouter;
