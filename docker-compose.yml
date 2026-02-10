@@ -5,6 +5,12 @@ services:
       - "5000:5000"
     env_file:
       - ./backend/.env
+    volumes:
+      - ./backend:/app
+      - backend_node_modules:/app/node_modules
+    command: sh -c "if [ ! -d node_modules ] || [ -z \"$(ls -A node_modules 2>/dev/null)\" ]; then npm ci; fi && npm run dev"
+    depends_on:
+      - mongo
 
   mongo:
     image: mongo:7
@@ -15,3 +21,4 @@ services:
 
 volumes:
   mongo_data:
+  backend_node_modules:
